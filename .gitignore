@@ -1,0 +1,6 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# PDFs generados para compartir (no hacen parte del sitio publicado)
+*.pdf

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-i18n="contact.meta_title">Contacto | El Remanso</title>
+<meta name="description" data-i18n-content="contact.meta_desc" content="Escríbenos por WhatsApp o Instagram. Encuentra nuestra ubicación.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:46px;width:46px;">
+      <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+    </a>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html" data-i18n="nav.home">Inicio</a></li>
+        <li><a href="catalogo.html" data-i18n="nav.catalog">Catálogo</a></li>
+        <li><a href="contacto.html" class="active" data-i18n="nav.contact">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <a href="catalogo.html" class="btn btn-outline" data-i18n="header.cta_catalog">Ver catálogo</a>
+      <button class="nav-toggle" data-i18n-aria="header.open_menu" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section-tight">
+    <div class="container text-center">
+      <span class="eyebrow" data-i18n="contact.eyebrow">Contacto</span>
+      <h1 data-i18n="contact.title">Hablemos de tu próximo mueble</h1>
+      <p class="lede center" data-i18n="contact.lede">Escríbenos por WhatsApp para la atención más rápida, o usa el formulario y te respondemos por ese mismo medio.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container contact-grid">
+
+      <div>
+        <div class="info-row">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div>
+            <h3 class="mt-0" data-i18n="contact.whatsapp_title">WhatsApp</h3>
+            <p data-i18n="contact.whatsapp_hours">+57 310 459 9629</p>
+            <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="contact.whatsapp_btn">Escribir por WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></div>
+          <div>
+            <h3 class="mt-0" data-i18n="contact.instagram_title">Instagram</h3>
+            <p data-i18n="contact.instagram_desc">Mira nuestro trabajo día a día.</p>
+            <a href="https://www.instagram.com/muebleria_elremanso" target="_blank" rel="noopener" class="btn btn-outline">@muebleria_elremanso</a>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <div>
+            <h3 class="mt-0" data-i18n="contact.workshop_title">Ubicación</h3>
+            <p data-i18n="contact.workshop_line1">Encuéntranos en el mapa.</p>
+            <p style="font-size:.85rem;" data-i18n="contact.workshop_line2">Escríbenos por WhatsApp si necesitas indicaciones para llegar.</p>
+            <a href="https://maps.app.goo.gl/cbDfr6D9gzwb2EyW9" target="_blank" rel="noopener" class="btn btn-outline" data-i18n="contact.directions_btn">Cómo llegar</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="map-embed">
+          <iframe src="https://www.google.com/maps?q=6.144614,-75.525143&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación El Remanso"></iframe>
+        </div>
+
+        <form class="card" id="contactForm" style="margin-top:24px;">
+          <h3 class="mt-0" data-i18n="contact.form_title">Escríbenos</h3>
+          <div class="field">
+            <label for="c-nombre" data-i18n="contact.field_name">Nombre</label>
+            <input type="text" id="c-nombre" data-i18n-placeholder="contact.placeholder_name" placeholder="Tu nombre" required>
+          </div>
+          <div class="field">
+            <label for="c-telefono" data-i18n="contact.field_phone">Teléfono</label>
+            <input type="tel" id="c-telefono" data-i18n-placeholder="contact.placeholder_phone" placeholder="Ej: 300 000 0000" required>
+          </div>
+          <div class="field">
+            <label for="c-mensaje" data-i18n="contact.field_message">Mensaje</label>
+            <textarea id="c-mensaje" data-i18n-placeholder="contact.placeholder_message" placeholder="Cuéntanos qué necesitas..." required></textarea>
+          </div>
+          <div class="consent-row">
+            <input type="checkbox" id="c-consent" required>
+            <label for="c-consent" data-i18n-html="contact.consent_html">Acepto el tratamiento de mis datos personales.</label>
+          </div>
+          <button type="submit" class="btn btn-whatsapp btn-block" data-i18n="contact.btn_send">Enviar por WhatsApp</button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/logo-full.png" alt="El Remanso - Mueblería Artesanal" style="height:120px; margin-bottom:14px;">
+        <p data-i18n="footer.tagline">Mueblería artesanal en mimbre, rattán, yaré y sintético. Piezas hechas a mano, con cariño, para tu hogar.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/muebleria_elremanso" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </a>
+          <a href="https://wa.me/573104599629" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="footer.materials_title">Materiales</h4>
+        <ul>
+          <li data-i18n="footer.mat_mimbre">Mimbre natural</li>
+          <li data-i18n="footer.mat_rattan">Rattán</li>
+          <li data-i18n="footer.mat_yare">Yaré</li>
+          <li data-i18n="footer.mat_sintetico">Sintético</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.legal_title">Información legal</h4>
+        <ul>
+          <li><a href="ayuda-legal.html#terminos" data-i18n="footer.legal_terms">Términos y Condiciones</a></li>
+          <li><a href="ayuda-legal.html#envios" data-i18n="footer.legal_shipping">Política de Entrega</a></li>
+          <li><a href="ayuda-legal.html#reembolso" data-i18n="footer.legal_refund">Política de Reembolso</a></li>
+          <li><a href="ayuda-legal.html#datos" data-i18n="footer.legal_privacy">Política de Privacidad</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.legal_sic">Superintendencia de Industria y Comercio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.help_title">Ayuda al cliente</h4>
+        <ul>
+          <li><a href="ayuda-legal.html#faq" data-i18n="footer.help_faq">Preguntas Frecuentes</a></li>
+          <li><a href="ayuda-legal.html#garantias" data-i18n="footer.help_warranty">Garantías</a></li>
+          <li><a href="ayuda-legal.html#solicitud-garantia" data-i18n="footer.help_warranty_request">Solicitud de Garantía</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.help_sic">Superintendencia de Industria y Comercio</a></li>
+          <li><a href="ayuda-legal.html#pqr" data-i18n="footer.help_pqr">PQR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n-html="footer.bottom_left">© <span data-year></span> El Remanso — Mueblería Artesanal</span>
+      <span data-i18n="footer.bottom_right">Manos con talento, que hacen tus sueños realidad.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/573104599629" target="_blank" rel="noopener" data-i18n-aria="aria.whatsapp_float" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
