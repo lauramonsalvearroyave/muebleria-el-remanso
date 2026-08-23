@@ -40,6 +40,69 @@
   </div>
 </div>
 
+<!-- ===== VERIFICACIÓN EN DOS PASOS (al iniciar sesión) ===== -->
+<div id="otpVerifyView" style="display:none;">
+  <header class="admin-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:40px;width:40px;">
+        <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+      </a>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card login-box">
+      <h2 class="mt-0" style="text-align:center;">Verificación en dos pasos</h2>
+      <p style="text-align:center;">Abre tu app autenticadora (Google Authenticator, Authy, etc.) e ingresa el código de 6 dígitos.</p>
+      <form id="otpVerifyForm">
+        <div class="field">
+          <label for="otp-verify-code">Código de 6 dígitos</label>
+          <input type="text" id="otp-verify-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required>
+        </div>
+        <p id="otpVerifyError" style="color:#9A3B2A; font-size:.85rem;"></p>
+        <button type="submit" class="btn btn-primary btn-block">Verificar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ACTIVAR VERIFICACIÓN EN DOS PASOS (primera vez, obligatorio) ===== -->
+<div id="otpEnrollView" style="display:none;">
+  <header class="admin-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:40px;width:40px;">
+        <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+      </a>
+      <div class="admin-user">
+        <button id="otpEnrollLogoutBtn" class="btn btn-outline btn-sm" type="button" style="border-color:rgba(251,246,236,.4); color:var(--cream);">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card" style="max-width:460px; margin:60px auto;">
+      <h2 class="mt-0" style="text-align:center;">Activa la verificación en dos pasos</h2>
+      <p style="text-align:center;">Por seguridad, es obligatorio antes de administrar el catálogo. Necesitas una app autenticadora en tu celular (Google Authenticator, Authy, Microsoft Authenticator...).</p>
+      <ol style="color:var(--ink-soft); font-size:.9rem; padding-left:20px;">
+        <li>Abre tu app autenticadora y escanea este código QR:</li>
+      </ol>
+      <div id="otpQrContainer" style="display:flex; justify-content:center; margin:16px 0;">
+        <canvas id="otpQrCanvas"></canvas>
+      </div>
+      <p style="text-align:center; font-size:.8rem;">¿No puedes escanear? Ingresa esta clave manualmente:</p>
+      <p id="otpSecretKey" style="text-align:center; font-family:monospace; font-weight:800; letter-spacing:.05em; background:var(--sand); padding:10px; border-radius:8px; word-break:break-all;"></p>
+      <form id="otpEnrollForm">
+        <div class="field">
+          <label for="otp-enroll-code">Código de 6 dígitos que muestra la app</label>
+          <input type="text" id="otp-enroll-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required>
+        </div>
+        <p id="otpEnrollError" style="color:#9A3B2A; font-size:.85rem;"></p>
+        <button type="submit" class="btn btn-primary btn-block">Activar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ===== PANEL ===== -->
 <div id="adminView" style="display:none;">
   <header class="admin-header">
@@ -176,6 +239,7 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script type="module" src="assets/js/firebase-init.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>

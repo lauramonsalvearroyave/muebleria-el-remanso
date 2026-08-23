@@ -375,6 +375,7 @@ function wireEvents() {
   document.getElementById('seedBtn').addEventListener('click', runSeed);
 
   document.getElementById('logoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
+  document.getElementById('otpEnrollLogoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -383,11 +384,69 @@ function wireEvents() {
     const errorEl = document.getElementById('loginError');
     errorEl.textContent = '';
     try {
-      await window.ErFirebase.signIn(email, password);
+      const result = await window.ErFirebase.signIn(email, password);
+      if (result.mfaRequired) {
+        showView('otpVerifyView');
+        document.getElementById('otp-verify-code').value = '';
+        document.getElementById('otp-verify-code').focus();
+      }
+      // Si no requiere MFA, onAuthChange se encarga de mostrar la vista correcta.
     } catch (err) {
       errorEl.textContent = 'No se pudo iniciar sesión. Revisa el correo y la contraseña.';
     }
   });
+
+  document.getElementById('otpVerifyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = document.getElementById('otp-verify-code').value.trim();
+    const errorEl = document.getElementById('otpVerifyError');
+    errorEl.textContent = '';
+    try {
+      await window.ErFirebase.completeMfaSignIn(code);
+      // onAuthChange se encarga de mostrar la vista correcta a partir de aquí.
+    } catch (err) {
+      errorEl.textContent = 'Código incorrecto o vencido. Intenta con el código actual de tu app.';
+    }
+  });
+
+  document.getElementById('otpEnrollForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = document.getElementById('otp-enroll-code').value.trim();
+    const errorEl = document.getElementById('otpEnrollError');
+    errorEl.textContent = '';
+    try {
+      await window.ErFirebase.completeMfaEnrollment(code);
+      await enterAdminView();
+    } catch (err) {
+      errorEl.textContent = 'Código incorrecto. Verifica la hora de tu celular y vuelve a intentar.';
+    }
+  });
+}
+
+function showView(name) {
+  ['loginView', 'otpVerifyView', 'otpEnrollView', 'adminView'].forEach(id => {
+    document.getElementById(id).style.display = id === name ? '' : 'none';
+  });
+}
+
+async function startEnrollmentScreen() {
+  showView('otpEnrollView');
+  try {
+    const { qrCodeUrl, secretKey } = await window.ErFirebase.startMfaEnrollment();
+    document.getElementById('otpSecretKey').textContent = secretKey;
+    await QRCode.toCanvas(document.getElementById('otpQrCanvas'), qrCodeUrl, { width: 220 });
+  } catch (err) {
+    document.getElementById('otpEnrollError').textContent =
+      'No se pudo iniciar la activación: ' + err.message + '. Si el error menciona el correo, primero debes verificarlo (revisa tu bandeja de entrada).';
+  }
+}
+
+let currentUserEmail = '';
+
+async function enterAdminView() {
+  showView('adminView');
+  document.getElementById('adminUserEmail').textContent = currentUserEmail;
+  await loadData();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -399,16 +458,15 @@ document.addEventListener('DOMContentLoaded', () => {
     clearInterval(waitForFirebase);
 
     window.ErFirebase.onAuthChange(async (user) => {
-      const loginView = document.getElementById('loginView');
-      const adminView = document.getElementById('adminView');
-      if (user) {
-        loginView.style.display = 'none';
-        adminView.style.display = '';
-        document.getElementById('adminUserEmail').textContent = user.email;
-        await loadData();
+      if (!user) {
+        showView('loginView');
+        return;
+      }
+      currentUserEmail = user.email;
+      if (window.ErFirebase.hasMfaEnrolled()) {
+        await enterAdminView();
       } else {
-        loginView.style.display = '';
-        adminView.style.display = 'none';
+        await startEnrollmentScreen();
       }
     });
   }, 50);
