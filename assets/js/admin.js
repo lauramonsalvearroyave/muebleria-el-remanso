@@ -351,6 +351,9 @@ async function loadData() {
     invites = await window.ErFirebase.fetchInvites();
     renderInviteList();
     await loadHomeSettings();
+    await loadSiteSettings();
+    await loadLeads();
+    await loadTeamMembers();
   }
 }
 
@@ -411,6 +414,126 @@ async function saveHomeImagesFromForm(e) {
   }
 }
 
+// ---------------- Ajustes: número de WhatsApp ----------------
+
+async function loadSiteSettings() {
+  const settings = await window.ErFirebase.fetchSiteSettings();
+  document.getElementById('whatsapp-number').value = settings.whatsappNumber || '';
+}
+
+async function saveWhatsappFromForm(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('whatsappError');
+  const btn = document.getElementById('whatsappSaveBtn');
+  errorEl.textContent = '';
+  const digits = document.getElementById('whatsapp-number').value.replace(/\D/g, '');
+  if (digits.length < 10) {
+    errorEl.textContent = 'Escribe el número completo con indicativo de país (ej: 57 para Colombia), solo números.';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    await window.ErFirebase.saveSiteSettings({ whatsappNumber: digits });
+    document.getElementById('whatsapp-number').value = digits;
+  } catch (err) {
+    errorEl.textContent = 'No se pudo guardar: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar número';
+  }
+}
+
+// ---------------- Interesados (leads) ----------------
+
+let leads = [];
+
+async function loadLeads() {
+  leads = await window.ErFirebase.fetchLeads();
+  renderLeadList();
+}
+
+function renderLeadList() {
+  const list = document.getElementById('leadList');
+  if (!leads.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no hay personas interesadas.</p>';
+    return;
+  }
+  list.innerHTML = leads.map(l => {
+    const when = l.createdAt && l.createdAt.toDate ? l.createdAt.toDate().toLocaleString('es-CO') : '';
+    const detail = l.product ? `Producto: ${esc(l.product)}` : (l.message ? esc(l.message) : '');
+    return `
+      <div class="admin-row">
+        <div class="info">
+          <strong>${esc(l.name || '(sin nombre)')}</strong>
+          <span>${esc(l.phone || '')} · ${when}</span>
+          ${detail ? `<span>${detail}</span>` : ''}
+        </div>
+        <div class="pills">
+          <label style="display:flex; align-items:center; gap:6px; font-size:.85rem;">
+            <input type="checkbox" data-contacted="${esc(l.id)}" ${l.contacted ? 'checked' : ''}> Contactado
+          </label>
+        </div>
+        <div class="actions">
+          <button class="btn btn-light btn-sm" data-delete-lead="${esc(l.id)}" type="button">Eliminar</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function toggleLeadContacted(id, contacted) {
+  await window.ErFirebase.updateLead(id, { contacted });
+  const lead = leads.find(l => l.id === id);
+  if (lead) lead.contacted = contacted;
+}
+
+async function deleteLeadById(id) {
+  if (!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
+  await window.ErFirebase.deleteLead(id);
+  await loadLeads();
+}
+
+// ---------------- Equipo: miembros actuales ----------------
+
+let teamMembers = [];
+let currentUserUid = null;
+
+async function loadTeamMembers() {
+  teamMembers = await window.ErFirebase.fetchTeamMembers();
+  renderTeamMemberList();
+}
+
+function renderTeamMemberList() {
+  const list = document.getElementById('teamMemberList');
+  if (!teamMembers.length) {
+    list.innerHTML = '<p class="admin-empty">No hay miembros del equipo todavía.</p>';
+    return;
+  }
+  list.innerHTML = teamMembers.map(m => `
+    <div class="admin-row">
+      <div class="info">
+        <strong>${esc(m.email || m.uid)}</strong>
+        <span>${esc(m.role)}</span>
+      </div>
+      <div class="actions">
+        ${m.uid === currentUserUid
+          ? '<span style="font-size:.85rem; color:var(--ink-soft);">(tu cuenta)</span>'
+          : `<button class="btn btn-light btn-sm" data-remove-team="${esc(m.uid)}" type="button">Quitar acceso</button>`}
+      </div>
+    </div>`).join('');
+}
+
+async function removeTeamMemberById(uid) {
+  const member = teamMembers.find(m => m.uid === uid);
+  if (!confirm(`¿Quitarle el acceso a "${member ? (member.email || uid) : uid}"?`)) return;
+  try {
+    await window.ErFirebase.removeTeamMember(uid);
+    await loadTeamMembers();
+  } catch (err) {
+    alert('No se pudo quitar el acceso: ' + err.message);
+  }
+}
+
 function renderInviteList() {
   const list = document.getElementById('inviteList');
   if (!list) return;
@@ -436,15 +559,18 @@ function applyRoleUI() {
   const catBtn = document.getElementById('tabBtnCategories');
   const teamBtn = document.getElementById('tabBtnTeam');
   const homeBtn = document.getElementById('tabBtnHome');
+  const leadsBtn = document.getElementById('tabBtnLeads');
   if (catBtn) catBtn.style.display = isCollaborator ? 'none' : '';
   if (teamBtn) teamBtn.style.display = isCollaborator ? 'none' : '';
   if (homeBtn) homeBtn.style.display = isCollaborator ? 'none' : '';
+  if (leadsBtn) leadsBtn.style.display = isCollaborator ? 'none' : '';
   switchTab(isCollaborator ? 'products' : 'categories');
 }
 
 function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
+  document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
   document.getElementById('homePanel').style.display = tab === 'home' ? '' : 'none';
   document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
@@ -518,6 +644,23 @@ function wireEvents() {
   document.getElementById('home-hero-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeHeroPreview', 'hero'));
   document.getElementById('home-about-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeAboutPreview', 'about'));
   document.getElementById('homeImagesForm').addEventListener('submit', saveHomeImagesFromForm);
+  document.getElementById('whatsappForm').addEventListener('submit', saveWhatsappFromForm);
+
+  document.getElementById('leadList').addEventListener('click', (e) => {
+    const delBtn = e.target.closest('[data-delete-lead]');
+    if (delBtn) deleteLeadById(delBtn.dataset.deleteLead);
+  });
+  document.getElementById('leadList').addEventListener('change', (e) => {
+    const checkbox = e.target.closest('[data-contacted]');
+    if (checkbox) toggleLeadContacted(checkbox.dataset.contacted, checkbox.checked);
+  });
+
+  document.getElementById('teamMemberList').addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('[data-remove-team]');
+    if (removeBtn) removeTeamMemberById(removeBtn.dataset.removeTeam);
+  });
+
+  document.getElementById('noAccessLogoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
 
   document.getElementById('inviteForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -550,7 +693,7 @@ function wireEvents() {
 }
 
 function showView(name) {
-  ['loginView', 'signupView', 'adminView'].forEach(id => {
+  ['loginView', 'signupView', 'noAccessView', 'adminView'].forEach(id => {
     document.getElementById(id).style.display = id === name ? '' : 'none';
   });
 }
@@ -558,9 +701,13 @@ function showView(name) {
 let currentUserEmail = '';
 
 async function enterAdminView() {
+  currentUserRole = await window.ErFirebase.fetchMyRole();
+  if (!currentUserRole) {
+    showView('noAccessView');
+    return;
+  }
   showView('adminView');
   document.getElementById('adminUserEmail').textContent = currentUserEmail;
-  currentUserRole = await window.ErFirebase.fetchMyRole();
   applyRoleUI();
   await loadData();
 }
@@ -579,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       currentUserEmail = user.email;
+      currentUserUid = user.uid;
       await enterAdminView();
     });
   }, 50);

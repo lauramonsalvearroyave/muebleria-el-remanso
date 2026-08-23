@@ -1,5 +1,29 @@
 // El Remanso — comportamiento compartido del sitio
+
+const DEFAULT_WHATSAPP_NUMBER = '573104599629';
+
+// El número de WhatsApp se puede cambiar desde el panel admin (pestaña
+// "Ajustes") sin tocar el código. Mientras carga, se usa el número por
+// defecto en los enlaces ya escritos en el HTML.
+function initWhatsappNumber() {
+  window.ErWhatsappNumber = DEFAULT_WHATSAPP_NUMBER;
+  const waitForFirebase = setInterval(() => {
+    if (!window.ErFirebase) return;
+    clearInterval(waitForFirebase);
+    window.ErFirebase.getWhatsappNumber().then(number => {
+      window.ErWhatsappNumber = number;
+      document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => {
+        const url = new URL(a.href);
+        url.pathname = '/' + number;
+        a.href = url.toString();
+      });
+    });
+  }, 50);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initWhatsappNumber();
+
   const toggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');
 
@@ -46,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         t('interest.wa_consent')
       ];
       const msg = encodeURIComponent(lines.join('\n'));
-      window.open(`https://wa.me/573104599629?text=${msg}`, '_blank');
+      window.open(`https://wa.me/${window.ErWhatsappNumber || DEFAULT_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 
       if (window.ErFirebase) {
         window.ErFirebase.saveLead({

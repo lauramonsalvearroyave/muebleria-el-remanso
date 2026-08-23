@@ -59,6 +59,45 @@ function track(eventName, params) {
   if (analytics) logEvent(analytics, eventName, params);
 }
 
+// ---------- Leads: lectura/edición para el panel admin ----------
+
+async function fetchLeads() {
+  const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function updateLead(id, data) {
+  await setDoc(doc(db, "leads", id), data, { merge: true });
+}
+
+async function deleteLead(id) {
+  await deleteDoc(doc(db, "leads", id));
+}
+
+// ---------- Ajustes del sitio (número de WhatsApp) ----------
+// Se guarda por fuera del código para que se pueda cambiar sin tocar el sitio.
+
+const DEFAULT_WHATSAPP_NUMBER = "573104599629";
+
+async function fetchSiteSettings() {
+  const snap = await getDoc(doc(db, "settings", "site"));
+  return snap.exists() ? snap.data() : {};
+}
+
+async function saveSiteSettings(data) {
+  await setDoc(doc(db, "settings", "site"), data, { merge: true });
+}
+
+async function getWhatsappNumber() {
+  try {
+    const settings = await fetchSiteSettings();
+    return settings.whatsappNumber || DEFAULT_WHATSAPP_NUMBER;
+  } catch (err) {
+    return DEFAULT_WHATSAPP_NUMBER;
+  }
+}
+
 // ---------- Catálogo: lectura pública (solo activos) ----------
 
 async function fetchCategories() {
@@ -200,6 +239,17 @@ async function fetchInvites() {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
+async function fetchTeamMembers() {
+  const snap = await getDocs(collection(db, "team"));
+  return snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+}
+
+// Le quita el rol a alguien (deja de poder editar nada) — no borra su cuenta
+// de inicio de sesión, eso requeriría un backend con permisos de administrador.
+async function removeTeamMember(uid) {
+  await deleteDoc(doc(db, "team", uid));
+}
+
 // Flujo de "Registrarme": valida el código, crea la cuenta, reclama la
 // invitación y crea el documento de equipo — en ese orden, porque las
 // reglas de seguridad verifican cada paso antes de permitir el siguiente.
@@ -246,7 +296,10 @@ window.ErFirebase = {
   saveProduct, deleteProduct,
   uploadProductImage, deleteProductImage,
   fetchHomeSettings, saveHomeSettings, uploadSiteImage,
+  fetchSiteSettings, saveSiteSettings, getWhatsappNumber,
+  fetchLeads, updateLead, deleteLead,
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
+  fetchTeamMembers, removeTeamMember,
   seedInitialCatalog
 };

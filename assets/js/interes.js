@@ -3,8 +3,6 @@
 // WhatsApp con un mensaje ya redactado dirigido al número del negocio.
 // No hay backend: el propio dispositivo del cliente envía el mensaje.
 
-const INTEREST_WHATSAPP_NUMBER = '573104599629';
-
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('interestModal');
   if (!overlay) return;
@@ -68,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       t('interest.wa_consent')
     ];
     const msg = encodeURIComponent(lines.join('\n'));
-    window.open(`https://wa.me/${INTEREST_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+    window.open(`https://wa.me/${window.ErWhatsappNumber || '573104599629'}?text=${msg}`, '_blank');
 
     if (window.ErFirebase) {
       window.ErFirebase.saveLead({
