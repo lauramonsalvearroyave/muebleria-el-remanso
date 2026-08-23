@@ -19,8 +19,7 @@ import {
   getStorage, ref, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut,
-  multiFactor, TotpMultiFactorGenerator, getMultiFactorResolver
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -129,62 +128,14 @@ async function deleteProductImage(path) {
   }
 }
 
-// ---------- Autenticación (panel admin) + doble factor (TOTP) ----------
-// El segundo factor usa una app autenticadora (Google Authenticator, Authy...),
-// no SMS: es gratis y no depende de que Firebase tenga plan de pago.
-
-let pendingMfaResolver = null;
-let pendingEnrollSecret = null;
+// ---------- Autenticación (panel admin) ----------
 
 function onAuthChange(callback) {
   return onAuthStateChanged(auth, callback);
 }
 
-// Devuelve { mfaRequired: false } si entró directo, o
-// { mfaRequired: true, hint } si hay que pedir el código de 6 dígitos.
 async function signIn(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    return { mfaRequired: false };
-  } catch (err) {
-    if (err.code === "auth/multi-factor-auth-required") {
-      pendingMfaResolver = getMultiFactorResolver(auth, err);
-      return { mfaRequired: true, hint: pendingMfaResolver.hints[0] };
-    }
-    throw err;
-  }
-}
-
-async function completeMfaSignIn(code) {
-  if (!pendingMfaResolver) throw new Error("No hay una verificación en dos pasos pendiente.");
-  const assertion = TotpMultiFactorGenerator.assertionForSignIn(pendingMfaResolver.hints[0].uid, code);
-  await pendingMfaResolver.resolveSignIn(assertion);
-  pendingMfaResolver = null;
-}
-
-function hasMfaEnrolled() {
-  const user = auth.currentUser;
-  return !!(user && multiFactor(user).enrolledFactors.length > 0);
-}
-
-// Paso 1 de activar el segundo factor: genera el secreto + el link para el QR.
-async function startMfaEnrollment() {
-  const user = auth.currentUser;
-  const session = await multiFactor(user).getSession();
-  const secret = await TotpMultiFactorGenerator.generateSecret(session);
-  pendingEnrollSecret = secret;
-  return {
-    qrCodeUrl: secret.generateQrCodeUrl(user.email, "El Remanso Admin"),
-    secretKey: secret.secretKey
-  };
-}
-
-// Paso 2: confirma con el código de 6 dígitos que ya generó la app autenticadora.
-async function completeMfaEnrollment(code) {
-  if (!pendingEnrollSecret) throw new Error("Primero inicia el proceso de activación.");
-  const assertion = TotpMultiFactorGenerator.assertionForEnrollment(pendingEnrollSecret, code);
-  await multiFactor(auth.currentUser).enroll(assertion, "App autenticadora");
-  pendingEnrollSecret = null;
+  await signInWithEmailAndPassword(auth, email, password);
 }
 
 async function signOutUser() {
@@ -275,7 +226,6 @@ window.ErFirebase = {
   saveProduct, deleteProduct,
   uploadProductImage, deleteProductImage,
   onAuthChange, signIn, signOut: signOutUser,
-  completeMfaSignIn, hasMfaEnrolled, startMfaEnrollment, completeMfaEnrollment,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   seedInitialCatalog
 };
