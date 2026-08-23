@@ -107,12 +107,12 @@
         <p data-i18n="home.flagship_lede">Así llamamos a las piezas que mejor representan nuestras manos: lo más querido de El Remanso.</p>
       </div>
       <div class="text-center">
-        <a href="catalogo.html#remanso" class="btn btn-primary" data-i18n="home.flagship_cta">Ver la línea Remanso</a>
+        <a href="catalogo.html#remanso" id="homeFlagshipLink" class="btn btn-primary" data-i18n="home.flagship_cta">Ver la línea Remanso</a>
       </div>
     </div>
   </section>
 
-  <!-- CATEGORIAS -->
+  <!-- CATEGORIAS (dibujadas desde Firestore — ver assets/js/catalog-render.js) -->
   <section>
     <div class="container">
       <div class="text-center mb-lg">
@@ -120,28 +120,7 @@
         <h2 data-i18n="home.cat_title">Nuestras colecciones</h2>
         <p class="lede center" data-i18n="home.cat_lede">Cada pieza tiene su propio nombre — y una pequeña historia detrás.</p>
       </div>
-      <div class="grid grid-3">
-        <a href="catalogo.html#sofas" class="card">
-          <h3 data-i18n="home.cat_sofas">Sofás</h3>
-          <p data-i18n="home.cat_sofas_desc">Para las tardes en familia.</p>
-        </a>
-        <a href="catalogo.html#sillas" class="card">
-          <h3 data-i18n="home.cat_sillas">Sillas y mecedoras</h3>
-          <p data-i18n="home.cat_sillas_desc">Para la mesa y para arrullar.</p>
-        </a>
-        <a href="catalogo.html#mesas" class="card">
-          <h3 data-i18n="home.cat_mesas">Mesas</h3>
-          <p data-i18n="home.cat_mesas_desc">El punto de encuentro de la casa.</p>
-        </a>
-        <a href="catalogo.html#columpios" class="card">
-          <h3 data-i18n="home.cat_columpios">Columpios</h3>
-          <p data-i18n="home.cat_columpios_desc">Para el jardín y para adentro.</p>
-        </a>
-        <a href="catalogo.html#accesorios" class="card">
-          <h3 data-i18n="home.cat_accesorios">Accesorios y espejos</h3>
-          <p data-i18n="home.cat_accesorios_desc">Los detalles que visten un hogar.</p>
-        </a>
-      </div>
+      <div class="grid grid-3" id="homeCategoriesRoot"></div>
     </div>
   </section>
 
@@ -311,5 +290,6 @@
 <script type="module" src="assets/js/firebase-init.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/catalog-render.js"></script>
 </body>
 </html>

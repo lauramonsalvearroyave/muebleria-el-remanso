@@ -39,12 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll('.btn-interest').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.product-card');
-      const name = card ? card.querySelector('h3').textContent.trim() : '';
-      openModal(name);
-    });
+  // Delegación: el catálogo se dibuja después de cargar Firestore, así que
+  // las tarjetas ".product-card" no existen todavía en el DOMContentLoaded.
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-interest');
+    if (!btn) return;
+    const card = btn.closest('.product-card');
+    const name = card ? card.querySelector('h3').textContent.trim() : '';
+    openModal(name);
   });
 
   document.getElementById('modalClose').addEventListener('click', closeModal);

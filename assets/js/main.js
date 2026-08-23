@@ -14,29 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Filtro del catálogo: muestra/oculta la SECCIÓN de categoría completa
-  // y salta directo a los productos, para no depender de hacer scroll manual.
-  const chips = document.querySelectorAll('.filter-chip');
-  const blocks = document.querySelectorAll('.category-block[data-category]');
-  const filterBar = document.querySelector('.filter-bar');
-  if (chips.length && blocks.length) {
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        chips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const category = chip.dataset.filter;
-        blocks.forEach(block => {
-          const match = category === 'todos' || block.dataset.category === category;
-          block.style.display = match ? '' : 'none';
-        });
-        if (filterBar) {
-          const headerOffset = 90; // altura aprox. del header fijo
-          const top = filterBar.getBoundingClientRect().top + window.scrollY - headerOffset;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
-      });
-    });
-  }
+  // El filtro del catálogo lo maneja assets/js/catalog-render.js (los
+  // productos se dibujan después de leer Firestore, así que el filtro
+  // se conecta ahí, no aquí).
 
   // Botón "volver arriba": aparece tras bajar un poco y sube con scroll suave
   const backToTop = document.getElementById('backToTop');

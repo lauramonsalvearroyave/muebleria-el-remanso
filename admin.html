@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Panel de administración | El Remanso</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body style="background:var(--sand);">
+
+<!-- ===== LOGIN ===== -->
+<div id="loginView">
+  <header class="admin-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:40px;width:40px;">
+        <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+      </a>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card login-box">
+      <h2 class="mt-0" style="text-align:center;">Panel de administración</h2>
+      <p style="text-align:center;">Inicia sesión para editar el catálogo.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="login-email">Correo</label>
+          <input type="email" id="login-email" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <p id="loginError" style="color:#9A3B2A; font-size:.85rem;"></p>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANEL ===== -->
+<div id="adminView" style="display:none;">
+  <header class="admin-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:40px;width:40px;">
+        <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+      </a>
+      <div class="admin-user">
+        <span id="adminUserEmail"></span>
+        <button id="logoutBtn" class="btn btn-outline btn-sm" type="button" style="border-color:rgba(251,246,236,.4); color:var(--cream);">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-tight">
+    <div class="container">
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="categories" type="button">Categorías</button>
+        <button class="admin-tab" data-tab="products" type="button">Productos</button>
+      </div>
+
+      <!-- ===== CATEGORÍAS ===== -->
+      <div id="categoriesPanel">
+        <div class="card">
+          <h3 id="categoryFormTitle" class="admin-form-title">Agregar categoría</h3>
+          <form id="categoryForm">
+            <div class="field-row">
+              <div class="field">
+                <label for="cat-label">Nombre de la categoría</label>
+                <input type="text" id="cat-label" placeholder="Ej: Sofás" required>
+              </div>
+              <div class="field">
+                <label for="cat-id">Identificador (URL, se genera solo)</label>
+                <input type="text" id="cat-id" placeholder="ej: sofas">
+              </div>
+            </div>
+            <div class="field">
+              <label for="cat-teaser">Descripción corta (para la tarjeta en el Inicio)</label>
+              <input type="text" id="cat-teaser" placeholder="Ej: Para las tardes en familia.">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="cat-order">Orden (0 = primero)</label>
+                <input type="number" id="cat-order" value="0" min="0">
+              </div>
+              <div class="field">
+                <label>&nbsp;</label>
+                <label style="display:flex; align-items:center; gap:8px; font-weight:700; padding-top:10px;">
+                  <input type="checkbox" id="cat-flagship" style="width:18px; height:18px; accent-color:var(--gold);">
+                  Es la línea insignia (destacada en Inicio)
+                </label>
+              </div>
+            </div>
+            <div class="step-actions" style="margin-top:10px;">
+              <button type="button" id="categoryCancelBtn" class="btn btn-light" style="display:none;">Cancelar edición</button>
+              <button type="submit" class="btn btn-primary">Guardar categoría</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="categoryList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== PRODUCTOS ===== -->
+      <div id="productsPanel" style="display:none;">
+
+        <div id="seedBlock" class="card" style="display:none; margin-bottom:24px; background:var(--sand);">
+          <h3 class="mt-0">Importar catálogo inicial</h3>
+          <p>Todavía no hay productos guardados. Puedes importar de una vez las categorías y los ~19 productos con los que se lanzó el sitio, y luego editarlos uno por uno para subir las fotos reales.</p>
+          <button id="seedBtn" type="button" class="btn btn-primary">Importar catálogo inicial</button>
+        </div>
+
+        <div class="card">
+          <h3 id="productFormTitle" class="admin-form-title">Agregar producto</h3>
+          <form id="productForm">
+            <div class="field-row">
+              <div class="field">
+                <label for="prod-name">Nombre del producto</label>
+                <input type="text" id="prod-name" placeholder="Ej: Silla trenzada Cauca" required>
+              </div>
+              <div class="field">
+                <label for="prod-category">Categoría</label>
+                <select id="prod-category"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="prod-story">Historia del nombre (opcional)</label>
+              <textarea id="prod-story" placeholder="Ej: Cauca: el río que ha visto tejer a varias generaciones."></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="prod-material">Material</label>
+                <select id="prod-material"></select>
+              </div>
+              <div class="field">
+                <label for="prod-order">Orden dentro de la categoría</label>
+                <input type="number" id="prod-order" value="0" min="0">
+              </div>
+            </div>
+
+            <div class="admin-checks">
+              <label><input type="checkbox" id="prod-soldout"> Agotado</label>
+              <label><input type="checkbox" id="prod-featured"> Destacado</label>
+              <label><input type="checkbox" id="prod-new"> Nuevo</label>
+            </div>
+
+            <div class="field">
+              <label for="prod-image">Foto del producto</label>
+              <div class="admin-spec">
+                <strong>Especificación de la imagen:</strong> horizontal, idealmente 1200×900px (proporción 4:3), formato JPG o PNG, menos de 5MB. Si no cumple la proporción, se puede ver un poco recortada en las esquinas de la tarjeta.
+              </div>
+              <input type="file" id="prod-image" accept="image/*">
+              <p id="imgWarning" style="color:var(--gold-bronze); font-size:.8rem; margin-top:6px;"></p>
+              <div id="imgPreview" class="img-preview"></div>
+            </div>
+
+            <div class="step-actions" style="margin-top:10px;">
+              <button type="button" id="productCancelBtn" class="btn btn-light" style="display:none;">Cancelar edición</button>
+              <button type="submit" id="productSaveBtn" class="btn btn-primary">Guardar producto</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="field" style="margin-top:24px;">
+          <label for="productFilter">Filtrar por categoría</label>
+          <select id="productFilter"></select>
+        </div>
+        <div id="productList" class="admin-list"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script type="module" src="assets/js/firebase-init.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

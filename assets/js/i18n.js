@@ -78,16 +78,6 @@ const DICT = {
     cat_eyebrow: { es: 'Catálogo', en: 'Catalog' },
     cat_title:   { es: 'Nuestras colecciones', en: 'Our Collections' },
     cat_lede:    { es: 'Cada pieza tiene su propio nombre — y una pequeña historia detrás.', en: 'Every piece has its own name — and a small story behind it.' },
-    cat_sofas: { es: 'Sofás', en: 'Sofas' },
-    cat_sofas_desc: { es: 'Para las tardes en familia.', en: 'For family afternoons.' },
-    cat_sillas: { es: 'Sillas y mecedoras', en: 'Chairs & rockers' },
-    cat_sillas_desc: { es: 'Para la mesa y para arrullar.', en: 'For the table, and for rocking.' },
-    cat_mesas: { es: 'Mesas', en: 'Tables' },
-    cat_mesas_desc: { es: 'El punto de encuentro de la casa.', en: "The home's meeting point." },
-    cat_columpios: { es: 'Columpios', en: 'Swings' },
-    cat_columpios_desc: { es: 'Para el jardín y para adentro.', en: 'For the garden, and indoors.' },
-    cat_accesorios: { es: 'Accesorios y espejos', en: 'Accessories & mirrors' },
-    cat_accesorios_desc: { es: 'Los detalles que visten un hogar.', en: 'The details that dress a home.' },
 
     proc_eyebrow: { es: 'Nuestro oficio', en: 'Our Craft' },
     proc_title:   { es: 'Hecho a mano, paso a paso', en: 'Handmade, step by step' },
@@ -117,83 +107,26 @@ const DICT = {
 
   catalog: {
     meta_title: { es: 'Catálogo | El Remanso', en: 'Catalog | El Remanso' },
-    meta_desc: { es: 'Nuestras colecciones: Remanso, Sofás, Sillas y mecedoras, Mesas, Columpios y Accesorios. Muebles artesanales en mimbre, rattán, yaré y sintético.', en: 'Our collections: Remanso, Sofas, Chairs & rockers, Tables, Swings and Accessories. Handcrafted furniture in wicker, rattan, yaré and synthetic fiber.' },
+    meta_desc: { es: 'Nuestras colecciones de muebles artesanales en mimbre, rattán, yaré y sintético.', en: 'Our collections of handcrafted furniture in wicker, rattan, yaré and synthetic fiber.' },
     eyebrow: { es: 'Catálogo', en: 'Catalog' },
     title:   { es: 'Nuestras piezas, una por una', en: 'Our pieces, one by one' },
     lede: { es: 'Cada mueble tiene un nombre propio y una pequeña historia. Escríbenos si algo te enamora.', en: 'Every piece carries its own name and a small story. Write to us if something catches your heart.' },
 
     filter_all: { es: 'Todas', en: 'All' },
-    filter_remanso: { es: 'Remanso', en: 'Remanso' },
-    filter_sofas: { es: 'Sofás', en: 'Sofas' },
-    filter_sillas: { es: 'Sillas y mecedoras', en: 'Chairs & rockers' },
-    filter_mesas: { es: 'Mesas', en: 'Tables' },
-    filter_columpios: { es: 'Columpios', en: 'Swings' },
-    filter_accesorios: { es: 'Accesorios', en: 'Accessories' },
-
     photo_note: { es: 'Foto próximamente', en: 'Photo coming soon' },
     interest_btn: { es: 'Me interesa', en: "I'm interested" },
+    empty_category: { es: 'Pronto agregaremos piezas a esta colección.', en: "We'll be adding pieces to this collection soon." },
+    loading: { es: 'Cargando catálogo...', en: 'Loading catalog...' },
+    cat_flagship_badge: { es: 'Línea insignia', en: 'Signature line' },
+
+    badge_featured: { es: 'Destacado', en: 'Featured' },
+    badge_new: { es: 'Nuevo', en: 'New' },
+    badge_soldout: { es: 'Agotado', en: 'Sold out' },
 
     tag_mimbre: { es: 'Mimbre', en: 'Wicker' },
     tag_rattan: { es: 'Rattán', en: 'Rattan' },
     tag_yare: { es: 'Yaré', en: 'Yaré' },
-    tag_sintetico: { es: 'Sintético', en: 'Synthetic' },
-
-    /* ---- REMANSO — línea insignia ---- */
-    cat_remanso_label: { es: 'Remanso', en: 'Remanso' },
-    cat_remanso_badge: { es: 'Línea insignia', en: 'Signature line' },
-    r1_title: { es: 'Poltrona Remanso', en: 'Poltrona Remanso' },
-    r1_story: { es: 'Remanso: el nombre de nuestro taller, y el de esta mecedora insignia tejida a mano.', en: 'Remanso: the name of our workshop, and of this signature hand-woven rocker.' },
-    r2_title: { es: 'Set Remanso', en: 'Remanso Set' },
-    r2_story: { es: 'El mismo nombre, ahora en sofá, poltronas y mesa de centro: nuestra combinación más querida.', en: 'The same name, now as a sofa, armchairs and coffee table: our most beloved combination.' },
-    r3_title: { es: 'Columpio Nido Remanso', en: 'Remanso Nest Swing' },
-    r3_story: { es: 'Nuestra pieza más pedida lleva, con orgullo, el nombre de la casa.', en: 'Our most requested piece proudly carries the name of the house.' },
-
-    /* ---- SOFÁS ---- */
-    cat_sofas_label: { es: 'Sofás', en: 'Sofas' },
-    a1_title: { es: 'Sofá Yaguará 2 puestos', en: 'Yaguará 2-Seat Sofa' },
-    a1_story: { es: 'Yaguará: como el felino que camina con calma por nuestros montes.', en: 'Yaguará: like the jaguar that walks calmly through our highlands.' },
-    a2_title: { es: 'Sofá Yaguará 3 puestos', en: 'Yaguará 3-Seat Sofa' },
-    a2_story: { es: 'Yaguará: como el felino que camina con calma por nuestros montes.', en: 'Yaguará: like the jaguar that walks calmly through our highlands.' },
-    a3_title: { es: 'Set de sala Manso', en: 'Manso Living Room Set' },
-    a3_story: { es: 'Manso: sinónimo de calma — la misma raíz de nuestro propio nombre.', en: 'Manso: a word for calm — the same root as our own name.' },
-
-    /* ---- SILLAS Y MECEDORAS ---- */
-    cat_sillas_label: { es: 'Sillas y mecedoras', en: 'Chairs & rockers' },
-    t1_title: { es: 'Mecedora de cuarto Nana', en: 'Nana Nursery Rocker' },
-    t1_story: { es: 'Nana: como le decimos a quien nos arrulla desde siempre.', en: 'Nana: what we call the one who has always rocked us to sleep.' },
-    t2_title: { es: 'Silla trenzada Cauca', en: 'Cauca Woven Chair' },
-    t2_story: { es: 'Cauca: el río que ha visto tejer a varias generaciones.', en: 'Cauca: the river that has watched generations weave.' },
-    t3_title: { es: 'Banca tejida Cariño', en: 'Cariño Woven Bench' },
-    t3_story: { es: 'Porque así se teje cada pieza: con cariño.', en: 'Because that is how every piece is woven: with love.' },
-    t4_title: { es: 'Silla de bar Remolino', en: 'Remolino Bar Stool' },
-    t4_story: { es: 'Remolino: como se siente una buena conversación en la barra.', en: 'Remolino (whirl): how a good conversation at the bar feels.' },
-
-    /* ---- MESAS ---- */
-    cat_mesas_label: { es: 'Mesas', en: 'Tables' },
-    s1_title: { es: 'Juego de comedor Orilla', en: 'Orilla Dining Set' },
-    s1_story: { es: 'Orilla: el borde donde el río se detiene, como se detiene esta mesa.', en: 'Orilla (shore): where the river comes to rest, like this table does.' },
-    s2_title: { es: 'Mesa auxiliar Junco', en: 'Junco Side Table' },
-    s2_story: { es: 'Junco: la fibra que crece junto al agua tranquila.', en: 'Junco (reed): the fiber that grows beside calm water.' },
-    s3_title: { es: 'Mesa de centro Raíz', en: 'Raíz Coffee Table' },
-    s3_story: { es: 'Raíz: lo que sostiene, igual que el centro de una casa.', en: 'Raíz (root): what holds everything up, like the center of a home.' },
-
-    /* ---- COLUMPIOS ---- */
-    cat_columpios_label: { es: 'Columpios', en: 'Swings' },
-    v1_title: { es: 'Columpio de jardín Cauca', en: 'Cauca Garden Swing' },
-    v1_story: { es: 'Cauca: el río que ha visto tejer a varias generaciones.', en: 'Cauca: the river that has watched generations weave.' },
-    v2_title: { es: 'Columpio infantil Retoño', en: 'Retoño Kids Swing' },
-    v2_story: { es: 'Retoño: como llamamos a los brotes nuevos de la familia.', en: 'Retoño (sprout): what we call the newest members of the family.' },
-
-    /* ---- ACCESORIOS Y ESPEJOS ---- */
-    cat_accesorios_label: { es: 'Accesorios y espejos', en: 'Accessories & mirrors' },
-    e1_title: { es: 'Espejo tejido Aura', en: 'Aura Woven Mirror' },
-    e1_story: { es: 'Aura: ese brillo que rodea lo hecho con amor.', en: 'Aura: that glow around anything made with love.' },
-    e2_title: { es: 'Lámpara colgante Junco', en: 'Junco Hanging Lamp' },
-    e2_story: { es: 'Junco: la fibra que crece junto al agua tranquila.', en: 'Junco (reed): the fiber that grows beside calm water.' },
-    e3_title: { es: 'Matera tejida Raíz', en: 'Raíz Woven Planter' },
-    e3_story: { es: 'Raíz: para las plantas que llevan años en la familia.', en: 'Raíz (root): for the plants that have been part of the family for years.' },
-    e4_title: { es: 'Cojín para mascotas Compañía', en: 'Compañía Pet Cushion' },
-    e4_story: { es: 'Compañía: porque las mascotas también son familia.', en: 'Compañía (company): because pets are family too.' }
+    tag_sintetico: { es: 'Sintético', en: 'Synthetic' }
   },
 
   interest: {

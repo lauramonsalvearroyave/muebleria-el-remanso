@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title data-i18n="catalog.meta_title">Catálogo | El Remanso</title>
-<meta name="description" data-i18n-content="catalog.meta_desc" content="Nuestras colecciones: Remanso, Sofás, Sillas y mecedoras, Mesas, Columpios y Accesorios.">
+<meta name="description" data-i18n-content="catalog.meta_desc" content="Nuestras colecciones de muebles artesanales en mimbre, rattán, yaré y sintético.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
@@ -47,241 +47,12 @@
 
   <section class="section-tight">
     <div class="container">
-      <div class="filter-bar">
-        <button class="filter-chip active" data-filter="todos" data-i18n="catalog.filter_all">Todas</button>
-        <button class="filter-chip" data-filter="remanso" data-i18n="catalog.filter_remanso">Remanso</button>
-        <button class="filter-chip" data-filter="sofas" data-i18n="catalog.filter_sofas">Sofás</button>
-        <button class="filter-chip" data-filter="sillas" data-i18n="catalog.filter_sillas">Sillas y mecedoras</button>
-        <button class="filter-chip" data-filter="mesas" data-i18n="catalog.filter_mesas">Mesas</button>
-        <button class="filter-chip" data-filter="columpios" data-i18n="catalog.filter_columpios">Columpios</button>
-        <button class="filter-chip" data-filter="accesorios" data-i18n="catalog.filter_accesorios">Accesorios</button>
+      <!-- El contenido de esta sección (filtros + categorías + productos) se
+           dibuja desde Firestore. Ver assets/js/catalog-render.js.
+           Se administra desde admin.html. -->
+      <div id="catalogRoot">
+        <p class="admin-empty" data-i18n="catalog.loading">Cargando catálogo...</p>
       </div>
-
-      <!-- REMANSO -->
-      <div class="category-block" data-category="remanso" id="remanso">
-        <div class="category-intro">
-          <h2><span data-i18n="catalog.cat_remanso_label">Remanso</span> <span class="category-badge" data-i18n="catalog.cat_remanso_badge">Línea insignia</span></h2>
-        </div>
-        <div class="grid grid-3">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.r1_title">Poltrona Remanso</h3>
-              <p class="product-name-story" data-i18n="catalog.r1_story">Remanso: el nombre de nuestro taller, y el de esta mecedora insignia tejida a mano.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.r2_title">Set Remanso</h3>
-              <p class="product-name-story" data-i18n="catalog.r2_story">El mismo nombre, ahora en sofá, poltronas y mesa de centro: nuestra combinación más querida.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_sintetico">Sintético</span></div>
-              <h3 data-i18n="catalog.r3_title">Columpio Nido Remanso</h3>
-              <p class="product-name-story" data-i18n="catalog.r3_story">Nuestra pieza más pedida lleva, con orgullo, el nombre de la casa.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SOFÁS -->
-      <div class="category-block" data-category="sofas" id="sofas">
-        <div class="category-intro">
-          <h2 data-i18n="catalog.cat_sofas_label">Sofás</h2>
-        </div>
-        <div class="grid grid-3">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.a1_title">Sofá Yaguará 2 puestos</h3>
-              <p class="product-name-story" data-i18n="catalog.a1_story">Yaguará: como el felino que camina con calma por nuestros montes.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.a2_title">Sofá Yaguará 3 puestos</h3>
-              <p class="product-name-story" data-i18n="catalog.a2_story">Yaguará: como el felino que camina con calma por nuestros montes.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_yare">Yaré</span></div>
-              <h3 data-i18n="catalog.a3_title">Set de sala Manso</h3>
-              <p class="product-name-story" data-i18n="catalog.a3_story">Manso: sinónimo de calma — la misma raíz de nuestro propio nombre.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SILLAS Y MECEDORAS -->
-      <div class="category-block" data-category="sillas" id="sillas">
-        <div class="category-intro">
-          <h2 data-i18n="catalog.cat_sillas_label">Sillas y mecedoras</h2>
-        </div>
-        <div class="grid grid-4">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.t1_title">Mecedora de cuarto Nana</h3>
-              <p class="product-name-story" data-i18n="catalog.t1_story">Nana: como le decimos a quien nos arrulla desde siempre.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.t2_title">Silla trenzada Cauca</h3>
-              <p class="product-name-story" data-i18n="catalog.t2_story">Cauca: el río que ha visto tejer a varias generaciones.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_yare">Yaré</span></div>
-              <h3 data-i18n="catalog.t3_title">Banca tejida Cariño</h3>
-              <p class="product-name-story" data-i18n="catalog.t3_story">Porque así se teje cada pieza: con cariño.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.t4_title">Silla de bar Remolino</h3>
-              <p class="product-name-story" data-i18n="catalog.t4_story">Remolino: como se siente una buena conversación en la barra.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MESAS -->
-      <div class="category-block" data-category="mesas" id="mesas">
-        <div class="category-intro">
-          <h2 data-i18n="catalog.cat_mesas_label">Mesas</h2>
-        </div>
-        <div class="grid grid-3">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.s1_title">Juego de comedor Orilla</h3>
-              <p class="product-name-story" data-i18n="catalog.s1_story">Orilla: el borde donde el río se detiene, como se detiene esta mesa.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.s2_title">Mesa auxiliar Junco</h3>
-              <p class="product-name-story" data-i18n="catalog.s2_story">Junco: la fibra que crece junto al agua tranquila.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.s3_title">Mesa de centro Raíz</h3>
-              <p class="product-name-story" data-i18n="catalog.s3_story">Raíz: lo que sostiene, igual que el centro de una casa.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- COLUMPIOS -->
-      <div class="category-block" data-category="columpios" id="columpios">
-        <div class="category-intro">
-          <h2 data-i18n="catalog.cat_columpios_label">Columpios</h2>
-        </div>
-        <div class="grid grid-3">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_sintetico">Sintético</span></div>
-              <h3 data-i18n="catalog.v1_title">Columpio de jardín Cauca</h3>
-              <p class="product-name-story" data-i18n="catalog.v1_story">Cauca: el río que ha visto tejer a varias generaciones.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.v2_title">Columpio infantil Retoño</h3>
-              <p class="product-name-story" data-i18n="catalog.v2_story">Retoño: como llamamos a los brotes nuevos de la familia.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACCESORIOS Y ESPEJOS -->
-      <div class="category-block" data-category="accesorios" id="accesorios">
-        <div class="category-intro">
-          <h2 data-i18n="catalog.cat_accesorios_label">Accesorios y espejos</h2>
-        </div>
-        <div class="grid grid-4">
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.e1_title">Espejo tejido Aura</h3>
-              <p class="product-name-story" data-i18n="catalog.e1_story">Aura: ese brillo que rodea lo hecho con amor.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_yare">Yaré</span></div>
-              <h3 data-i18n="catalog.e2_title">Lámpara colgante Junco</h3>
-              <p class="product-name-story" data-i18n="catalog.e2_story">Junco: la fibra que crece junto al agua tranquila.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_rattan">Rattán</span></div>
-              <h3 data-i18n="catalog.e3_title">Matera tejida Raíz</h3>
-              <p class="product-name-story" data-i18n="catalog.e3_story">Raíz: para las plantas que llevan años en la familia.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-thumb"><span class="placeholder-note" data-i18n="catalog.photo_note">Foto próximamente</span></div>
-            <div class="product-body">
-              <div class="product-tags"><span class="tag-pill" data-i18n="catalog.tag_mimbre">Mimbre</span></div>
-              <h3 data-i18n="catalog.e4_title">Cojín para mascotas Compañía</h3>
-              <p class="product-name-story" data-i18n="catalog.e4_story">Compañía: porque las mascotas también son familia.</p>
-              <button class="btn-interest" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg><span data-i18n="catalog.interest_btn">Me interesa</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 </main>
@@ -373,5 +144,6 @@
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/interes.js"></script>
+<script src="assets/js/catalog-render.js"></script>
 </body>
 </html>
