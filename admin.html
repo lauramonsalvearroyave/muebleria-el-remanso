@@ -36,6 +36,46 @@
         <p id="loginError" style="color:#9A3B2A; font-size:.85rem;"></p>
         <button type="submit" class="btn btn-primary btn-block">Entrar</button>
       </form>
+      <p style="text-align:center; margin-top:16px; font-size:.88rem;">
+        ¿Tienes una invitación de colaborador? <a href="#" id="showSignupLink" style="color:var(--gold); font-weight:700; text-decoration:underline;">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTRARME (con código de invitación) ===== -->
+<div id="signupView" style="display:none;">
+  <header class="admin-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:40px;width:40px;">
+        <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+      </a>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card login-box">
+      <h2 class="mt-0" style="text-align:center;">Registrarme como colaborador</h2>
+      <p style="text-align:center;">Pide el código de invitación a un administrador.</p>
+      <form id="signupForm">
+        <div class="field">
+          <label for="signup-code">Código de invitación</label>
+          <input type="text" id="signup-code" style="text-transform:uppercase;" required>
+        </div>
+        <div class="field">
+          <label for="signup-email">Correo</label>
+          <input type="email" id="signup-email" required>
+        </div>
+        <div class="field">
+          <label for="signup-password">Elige una contraseña</label>
+          <input type="password" id="signup-password" minlength="6" required>
+        </div>
+        <p id="signupError" style="color:#9A3B2A; font-size:.85rem;"></p>
+        <button type="submit" class="btn btn-primary btn-block">Crear mi cuenta</button>
+      </form>
+      <p style="text-align:center; margin-top:16px; font-size:.88rem;">
+        <a href="#" id="showLoginLink" style="color:var(--gold); font-weight:700; text-decoration:underline;">Ya tengo cuenta, iniciar sesión</a>
+      </p>
     </div>
   </div>
 </div>
@@ -122,8 +162,9 @@
     <div class="container">
 
       <div class="admin-tabs">
-        <button class="admin-tab active" data-tab="categories" type="button">Categorías</button>
+        <button class="admin-tab active" data-tab="categories" type="button" id="tabBtnCategories">Categorías</button>
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
+        <button class="admin-tab" data-tab="team" type="button" id="tabBtnTeam">Equipo</button>
       </div>
 
       <!-- ===== CATEGORÍAS ===== -->
@@ -177,31 +218,34 @@
           <button id="seedBtn" type="button" class="btn btn-primary">Importar catálogo inicial</button>
         </div>
 
-        <div class="card">
+        <div class="card" id="productFormCard">
           <h3 id="productFormTitle" class="admin-form-title">Agregar producto</h3>
+          <p id="collaboratorNotice" style="display:none; background:var(--sand); padding:10px 14px; border-radius:8px; font-size:.85rem;">Como colaborador, solo puedes cambiar la foto y las etiquetas de este producto.</p>
           <form id="productForm">
-            <div class="field-row">
-              <div class="field">
-                <label for="prod-name">Nombre del producto</label>
-                <input type="text" id="prod-name" placeholder="Ej: Silla trenzada Cauca" required>
+            <div id="productAdminFields">
+              <div class="field-row">
+                <div class="field">
+                  <label for="prod-name">Nombre del producto</label>
+                  <input type="text" id="prod-name" placeholder="Ej: Silla trenzada Cauca" required>
+                </div>
+                <div class="field">
+                  <label for="prod-category">Categoría</label>
+                  <select id="prod-category"></select>
+                </div>
               </div>
               <div class="field">
-                <label for="prod-category">Categoría</label>
-                <select id="prod-category"></select>
+                <label for="prod-story">Historia del nombre (opcional)</label>
+                <textarea id="prod-story" placeholder="Ej: Cauca: el río que ha visto tejer a varias generaciones."></textarea>
               </div>
-            </div>
-            <div class="field">
-              <label for="prod-story">Historia del nombre (opcional)</label>
-              <textarea id="prod-story" placeholder="Ej: Cauca: el río que ha visto tejer a varias generaciones."></textarea>
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label for="prod-material">Material</label>
-                <select id="prod-material"></select>
-              </div>
-              <div class="field">
-                <label for="prod-order">Orden dentro de la categoría</label>
-                <input type="number" id="prod-order" value="0" min="0">
+              <div class="field-row">
+                <div class="field">
+                  <label for="prod-material">Material</label>
+                  <select id="prod-material"></select>
+                </div>
+                <div class="field">
+                  <label for="prod-order">Orden dentro de la categoría</label>
+                  <input type="number" id="prod-order" value="0" min="0">
+                </div>
               </div>
             </div>
 
@@ -233,6 +277,28 @@
           <select id="productFilter"></select>
         </div>
         <div id="productList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== EQUIPO (solo administradores) ===== -->
+      <div id="teamPanel" style="display:none;">
+        <div class="card">
+          <h3 class="mt-0">Invitar colaborador</h3>
+          <p>Genera un código y compártelo por WhatsApp con la persona — lo usa una sola vez en "Registrarme". Un colaborador solo puede cambiar la foto y las etiquetas (Agotado/Destacado/Nuevo) de productos que ya existen.</p>
+          <form id="inviteForm">
+            <div class="field">
+              <label for="invite-email">Correo del colaborador (opcional, restringe la invitación a ese correo)</label>
+              <input type="email" id="invite-email" placeholder="correo@ejemplo.com">
+            </div>
+            <button type="submit" class="btn btn-primary">Generar invitación</button>
+          </form>
+          <div id="newInviteBox" style="display:none; margin-top:16px; background:var(--sand); border-radius:10px; padding:14px;">
+            <p style="margin:0 0 6px; font-weight:800;">Código generado — cópialo y envíalo:</p>
+            <p id="newInviteCode" style="font-family:monospace; font-size:1.3rem; font-weight:800; letter-spacing:.1em; margin:0;"></p>
+          </div>
+        </div>
+
+        <h3 style="margin-top:28px;">Invitaciones</h3>
+        <div id="inviteList" class="admin-list"></div>
       </div>
 
     </div>

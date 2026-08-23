@@ -45,9 +45,11 @@ const SEED_PRODUCTS = [
 
 let categories = [];
 let products = [];
+let invites = [];
 let editingCategoryId = null; // null = creando una nueva
 let editingProductId = null;
 let selectedImageFile = null;
+let currentUserRole = null; // 'admin' | 'colaborador'
 
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -180,6 +182,13 @@ function renderProductForm() {
 
   document.getElementById('productFormTitle').textContent = editing ? `Editar producto: ${editing.name}` : 'Agregar producto';
   document.getElementById('productCancelBtn').style.display = editing ? '' : 'none';
+
+  const isCollaborator = currentUserRole === 'colaborador';
+  document.getElementById('productAdminFields').style.display = isCollaborator ? 'none' : '';
+  document.getElementById('collaboratorNotice').style.display = isCollaborator ? '' : 'none';
+  // Un colaborador no puede crear productos nuevos, solo editar los existentes.
+  document.getElementById('productFormCard').style.display = (isCollaborator && !editing) ? 'none' : '';
+  form.querySelector('#prod-name').required = !isCollaborator;
 }
 
 function renderProductList() {
@@ -209,7 +218,7 @@ function renderProductList() {
         </div>
         <div class="actions">
           <button class="btn btn-outline btn-sm" data-edit-prod="${esc(p.id)}" type="button">Editar</button>
-          <button class="btn btn-light btn-sm" data-delete-prod="${esc(p.id)}" type="button">Eliminar</button>
+          ${currentUserRole === 'colaborador' ? '' : `<button class="btn btn-light btn-sm" data-delete-prod="${esc(p.id)}" type="button">Eliminar</button>`}
         </div>
       </div>`;
   }).join('');
@@ -229,7 +238,13 @@ async function saveProductFromForm(e) {
 
   try {
     const existing = products.find(p => p.id === editingProductId);
-    const data = {
+    // Un colaborador solo puede tocar imagen y promociones — las reglas de
+    // seguridad de Firestore exigen esto también, esto es solo para la UI.
+    const data = currentUserRole === 'colaborador' ? {
+      soldOut: form.querySelector('#prod-soldout').checked,
+      featured: form.querySelector('#prod-featured').checked,
+      isNew: form.querySelector('#prod-new').checked
+    } : {
       name,
       story: form.querySelector('#prod-story').value.trim(),
       categoryId,
@@ -331,11 +346,46 @@ async function loadData() {
     '<option value="">Todas las categorías</option>' + categoryOptionsHtml(null);
 
   document.getElementById('seedBlock').style.display = products.length === 0 ? '' : 'none';
+
+  if (currentUserRole === 'admin') {
+    invites = await window.ErFirebase.fetchInvites();
+    renderInviteList();
+  }
+}
+
+function renderInviteList() {
+  const list = document.getElementById('inviteList');
+  if (!list) return;
+  if (!invites.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no has generado invitaciones.</p>';
+    return;
+  }
+  const sorted = [...invites].sort((a, b) => (a.used === b.used) ? 0 : (a.used ? 1 : -1));
+  list.innerHTML = sorted.map(inv => `
+    <div class="admin-row">
+      <div class="info">
+        <strong style="font-family:monospace; letter-spacing:.05em;">${esc(inv.id)}</strong>
+        <span>${inv.email ? esc(inv.email) : 'Cualquier correo'}</span>
+      </div>
+      <div class="pills">
+        ${inv.used ? '<span class="tag-pill">Usada</span>' : '<span class="tag-pill">Disponible</span>'}
+      </div>
+    </div>`).join('');
+}
+
+function applyRoleUI() {
+  const isCollaborator = currentUserRole === 'colaborador';
+  const catBtn = document.getElementById('tabBtnCategories');
+  const teamBtn = document.getElementById('tabBtnTeam');
+  if (catBtn) catBtn.style.display = isCollaborator ? 'none' : '';
+  if (teamBtn) teamBtn.style.display = isCollaborator ? 'none' : '';
+  switchTab(isCollaborator ? 'products' : 'categories');
 }
 
 function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
+  document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
 }
 
@@ -376,6 +426,49 @@ function wireEvents() {
 
   document.getElementById('logoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
   document.getElementById('otpEnrollLogoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
+
+  document.getElementById('showSignupLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showView('signupView');
+  });
+  document.getElementById('showLoginLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showView('loginView');
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = document.getElementById('signup-code').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const errorEl = document.getElementById('signupError');
+    errorEl.textContent = '';
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    try {
+      await window.ErFirebase.redeemInviteAndSignUp(code, email, password);
+      // onAuthChange lleva a la persona directo a activar el segundo factor (obligatorio).
+    } catch (err) {
+      errorEl.textContent = err.message || 'No se pudo crear la cuenta. Revisa el código e intenta de nuevo.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const emailInput = document.getElementById('invite-email');
+    try {
+      const code = await window.ErFirebase.createInvite(emailInput.value.trim());
+      document.getElementById('newInviteCode').textContent = code;
+      document.getElementById('newInviteBox').style.display = '';
+      emailInput.value = '';
+      invites = await window.ErFirebase.fetchInvites();
+      renderInviteList();
+    } catch (err) {
+      alert('No se pudo generar la invitación: ' + err.message);
+    }
+  });
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -424,7 +517,7 @@ function wireEvents() {
 }
 
 function showView(name) {
-  ['loginView', 'otpVerifyView', 'otpEnrollView', 'adminView'].forEach(id => {
+  ['loginView', 'signupView', 'otpVerifyView', 'otpEnrollView', 'adminView'].forEach(id => {
     document.getElementById(id).style.display = id === name ? '' : 'none';
   });
 }
@@ -446,6 +539,8 @@ let currentUserEmail = '';
 async function enterAdminView() {
   showView('adminView');
   document.getElementById('adminUserEmail').textContent = currentUserEmail;
+  currentUserRole = await window.ErFirebase.fetchMyRole();
+  applyRoleUI();
   await loadData();
 }
 

@@ -19,7 +19,7 @@ import {
   getStorage, ref, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut as fbSignOut,
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut,
   multiFactor, TotpMultiFactorGenerator, getMultiFactorResolver
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
@@ -191,6 +191,69 @@ async function signOutUser() {
   await fbSignOut(auth);
 }
 
+// ---------- Roles y equipo ----------
+// "admin": administra categorías, productos e invitaciones.
+// "colaborador": solo puede cambiar imagen y promociones (Agotado/Destacado/Nuevo)
+// de productos que ya existen. Ver reglas de seguridad de Firestore.
+
+function randomInviteCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O/1/I para evitar confusiones
+  let code = "";
+  for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+async function fetchMyRole() {
+  const user = auth.currentUser;
+  if (!user) return null;
+  const snap = await getDoc(doc(db, "team", user.uid));
+  return snap.exists() ? snap.data().role : null;
+}
+
+// Solo un admin puede generar invitaciones (lo exige la regla de seguridad).
+async function createInvite(email) {
+  const code = randomInviteCode();
+  await setDoc(doc(db, "invites", code), {
+    email: email || "",
+    role: "colaborador",
+    createdBy: auth.currentUser.uid,
+    createdAt: serverTimestamp(),
+    used: false,
+    usedBy: null
+  });
+  return code;
+}
+
+async function fetchInvites() {
+  const snap = await getDocs(collection(db, "invites"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+// Flujo de "Registrarme": valida el código, crea la cuenta, reclama la
+// invitación y crea el documento de equipo — en ese orden, porque las
+// reglas de seguridad verifican cada paso antes de permitir el siguiente.
+async function redeemInviteAndSignUp(code, email, password) {
+  const inviteRef = doc(db, "invites", code.trim().toUpperCase());
+  const inviteSnap = await getDoc(inviteRef);
+  if (!inviteSnap.exists()) throw new Error("Ese código de invitación no existe.");
+  const invite = inviteSnap.data();
+  if (invite.used) throw new Error("Ese código de invitación ya fue usado.");
+  if (invite.email && invite.email.toLowerCase() !== email.toLowerCase()) {
+    throw new Error("Este código de invitación es para otro correo.");
+  }
+
+  await createUserWithEmailAndPassword(auth, email, password);
+  const uid = auth.currentUser.uid;
+
+  await setDoc(inviteRef, { used: true, usedBy: uid }, { merge: true });
+  await setDoc(doc(db, "team", uid), {
+    role: "colaborador",
+    email,
+    inviteCode: inviteRef.id,
+    createdAt: serverTimestamp()
+  });
+}
+
 // ---------- Importar catálogo inicial (una sola vez, desde el panel admin) ----------
 
 async function seedInitialCatalog(categories, products) {
@@ -213,5 +276,6 @@ window.ErFirebase = {
   uploadProductImage, deleteProductImage,
   onAuthChange, signIn, signOut: signOutUser,
   completeMfaSignIn, hasMfaEnrolled, startMfaEnrollment, completeMfaEnrollment,
+  fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   seedInitialCatalog
 };
