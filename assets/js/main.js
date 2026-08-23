@@ -51,6 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
       ];
       const msg = encodeURIComponent(lines.join('\n'));
       window.open(`https://wa.me/573104599629?text=${msg}`, '_blank');
+
+      if (window.ErFirebase) {
+        window.ErFirebase.saveLead({
+          source: 'contacto',
+          name: nombre,
+          phone: telefono,
+          message: mensaje,
+          consent: true
+        });
+        window.ErFirebase.track('generate_lead', { method: 'contacto' });
+      }
+
       contactForm.reset();
     });
   }

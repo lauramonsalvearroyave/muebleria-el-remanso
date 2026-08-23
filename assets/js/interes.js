@@ -56,15 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sendBtn.addEventListener('click', () => {
     const t = window.ErI18n.t;
+    const nombre = nameInput.value.trim();
+    const telefono = phoneInput.value.trim();
     const lines = [
       t('interest.wa_greeting'),
       `${t('interest.wa_product')}: ${currentProduct}`,
-      `${t('interest.wa_name')}: ${nameInput.value.trim()}`,
-      `${t('interest.wa_phone')}: ${phoneInput.value.trim()}`,
+      `${t('interest.wa_name')}: ${nombre}`,
+      `${t('interest.wa_phone')}: ${telefono}`,
       t('interest.wa_consent')
     ];
     const msg = encodeURIComponent(lines.join('\n'));
     window.open(`https://wa.me/${INTEREST_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+
+    if (window.ErFirebase) {
+      window.ErFirebase.saveLead({
+        source: 'interes',
+        product: currentProduct,
+        name: nombre,
+        phone: telefono,
+        consent: true
+      });
+      window.ErFirebase.track('generate_lead', { method: 'interes', product: currentProduct });
+    }
+
     closeModal();
   });
 });
