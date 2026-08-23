@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Filtro del catálogo: muestra/oculta la SECCIÓN de categoría completa
-  // (antes solo ocultaba las tarjetas y el encabezado de la categoría quedaba
-  // visible igual, lo que hacía parecer que el filtro no hacía nada)
+  // y salta directo a los productos, para no depender de hacer scroll manual.
   const chips = document.querySelectorAll('.filter-chip');
   const blocks = document.querySelectorAll('.category-block[data-category]');
+  const filterBar = document.querySelector('.filter-bar');
   if (chips.length && blocks.length) {
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
@@ -29,7 +29,23 @@ document.addEventListener('DOMContentLoaded', () => {
           const match = category === 'todos' || block.dataset.category === category;
           block.style.display = match ? '' : 'none';
         });
+        if (filterBar) {
+          const headerOffset = 90; // altura aprox. del header fijo
+          const top = filterBar.getBoundingClientRect().top + window.scrollY - headerOffset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
       });
+    });
+  }
+
+  // Botón "volver arriba": aparece tras bajar un poco y sube con scroll suave
+  const backToTop = document.getElementById('backToTop');
+  if (backToTop) {
+    window.addEventListener('scroll', () => {
+      backToTop.classList.toggle('visible', window.scrollY > 480);
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 

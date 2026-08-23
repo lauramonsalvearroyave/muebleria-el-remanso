@@ -12,7 +12,8 @@ const DICT = {
     open_menu:   { es: 'Abrir menú',           en: 'Open menu' }
   },
   aria: {
-    whatsapp_float: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' }
+    whatsapp_float: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
+    back_to_top: { es: 'Volver arriba', en: 'Back to top' }
   },
   footer: {
     tagline:        { es: 'Mueblería artesanal en mimbre, rattán, yaré y sintético. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in wicker, rattan, yaré and synthetic fiber. Pieces made by hand, with love, for your home.' },
