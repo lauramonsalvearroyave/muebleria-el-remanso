@@ -171,6 +171,10 @@ section{ padding: 68px 0; }
 .hero .container{
   display:grid; grid-template-columns: 1.1fr .9fr; gap:48px; align-items:center;
 }
+@media (max-width: 860px){
+  .hero .container{ grid-template-columns: 1fr; }
+  .hero-art{ aspect-ratio: 16/10; }
+}
 .hero-badges{ display:flex; flex-wrap:wrap; gap:10px; margin: 20px 0 28px; }
 .badge{
   display:inline-flex; align-items:center; gap:6px;
