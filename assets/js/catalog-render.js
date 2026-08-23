@@ -120,16 +120,38 @@ function renderHomeCategoryTeasers(root, categories) {
     </a>`).join('');
 }
 
+async function renderHomeImages() {
+  const heroSlot = document.getElementById('heroImageSlot');
+  const aboutSlot = document.getElementById('aboutImageSlot');
+  if (!heroSlot && !aboutSlot) return;
+
+  try {
+    const settings = await window.ErFirebase.fetchHomeSettings();
+    if (heroSlot && settings.heroImageUrl) {
+      heroSlot.innerHTML = `<img src="${esc(settings.heroImageUrl)}" alt="" loading="lazy">`;
+    }
+    if (aboutSlot && settings.aboutImageUrl) {
+      aboutSlot.innerHTML = `<img src="${esc(settings.aboutImageUrl)}" alt="" loading="lazy">`;
+    }
+  } catch (err) {
+    console.error('No se pudieron cargar las fotos del inicio:', err);
+  }
+}
+
 async function init() {
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
   const flagshipLink = document.getElementById('homeFlagshipLink');
-  if (!catalogRoot && !homeRoot && !flagshipLink) return;
+  const heroSlot = document.getElementById('heroImageSlot');
+  const aboutSlot = document.getElementById('aboutImageSlot');
+  if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot) return;
 
   if (!window.ErFirebase) {
     console.error('Firebase no está disponible todavía.');
     return;
   }
+
+  await renderHomeImages();
 
   try {
     const categories = await window.ErFirebase.fetchCategories();

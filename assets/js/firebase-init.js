@@ -128,6 +128,26 @@ async function deleteProductImage(path) {
   }
 }
 
+// ---------- Fotos del inicio (hero + "Nuestra historia") ----------
+
+async function fetchHomeSettings() {
+  const snap = await getDoc(doc(db, "settings", "home"));
+  return snap.exists() ? snap.data() : {};
+}
+
+async function saveHomeSettings(data) {
+  await setDoc(doc(db, "settings", "home"), data, { merge: true });
+}
+
+async function uploadSiteImage(file, key) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
+  const path = `site/${key}/${Date.now()}-${safeName}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  return { url, path };
+}
+
 // ---------- Autenticación (panel admin) ----------
 
 function onAuthChange(callback) {
@@ -225,6 +245,7 @@ window.ErFirebase = {
   saveCategory, deleteCategory,
   saveProduct, deleteProduct,
   uploadProductImage, deleteProductImage,
+  fetchHomeSettings, saveHomeSettings, uploadSiteImage,
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   seedInitialCatalog

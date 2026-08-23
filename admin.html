@@ -101,6 +101,7 @@
       <div class="admin-tabs">
         <button class="admin-tab active" data-tab="categories" type="button" id="tabBtnCategories">Categorías</button>
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
+        <button class="admin-tab" data-tab="home" type="button" id="tabBtnHome">Fotos de inicio</button>
         <button class="admin-tab" data-tab="team" type="button" id="tabBtnTeam">Equipo</button>
       </div>
 
@@ -214,6 +215,28 @@
           <select id="productFilter"></select>
         </div>
         <div id="productList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== FOTOS DE INICIO (solo administradores) ===== -->
+      <div id="homePanel" style="display:none;">
+        <div class="card">
+          <h3 class="mt-0">Fotos de la página de Inicio</h3>
+          <p>Estas dos fotos son las únicas de la página de Inicio (no de productos): la foto principal arriba de todo, y la del taller en "Nuestra historia". Cada una es una sola imagen — se recomienda una foto horizontal de buena calidad para que se vea nítida en pantallas grandes.</p>
+          <form id="homeImagesForm">
+            <div class="field">
+              <label>Foto principal (hero)</label>
+              <div id="homeHeroPreview" class="img-preview"></div>
+              <input type="file" id="home-hero-image" accept="image/*">
+            </div>
+            <div class="field">
+              <label>Foto del taller ("Nuestra historia")</label>
+              <div id="homeAboutPreview" class="img-preview"></div>
+              <input type="file" id="home-about-image" accept="image/*">
+            </div>
+            <p id="homeImagesError" style="color:#9A3B2A; font-size:.85rem;"></p>
+            <button type="submit" class="btn btn-primary" id="homeImagesSaveBtn">Guardar fotos de inicio</button>
+          </form>
+        </div>
       </div>
 
       <!-- ===== EQUIPO (solo administradores) ===== -->

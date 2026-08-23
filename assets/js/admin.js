@@ -350,6 +350,64 @@ async function loadData() {
   if (currentUserRole === 'admin') {
     invites = await window.ErFirebase.fetchInvites();
     renderInviteList();
+    await loadHomeSettings();
+  }
+}
+
+// ---------------- Fotos de inicio (hero + "Nuestra historia") ----------------
+
+let homeSettings = {};
+let selectedHomeHeroFile = null;
+let selectedHomeAboutFile = null;
+
+async function loadHomeSettings() {
+  homeSettings = await window.ErFirebase.fetchHomeSettings();
+  const heroPreview = document.getElementById('homeHeroPreview');
+  const aboutPreview = document.getElementById('homeAboutPreview');
+  heroPreview.innerHTML = homeSettings.heroImageUrl ? `<img src="${esc(homeSettings.heroImageUrl)}" alt="">` : '';
+  aboutPreview.innerHTML = homeSettings.aboutImageUrl ? `<img src="${esc(homeSettings.aboutImageUrl)}" alt="">` : '';
+}
+
+function handleHomeImageSelect(e, previewId, which) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (which === 'hero') selectedHomeHeroFile = file; else selectedHomeAboutFile = file;
+  const objectUrl = URL.createObjectURL(file);
+  document.getElementById(previewId).innerHTML = `<img src="${objectUrl}" alt="">`;
+}
+
+async function saveHomeImagesFromForm(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('homeImagesError');
+  const btn = document.getElementById('homeImagesSaveBtn');
+  errorEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    const data = {};
+    if (selectedHomeHeroFile) {
+      const { url, path } = await window.ErFirebase.uploadSiteImage(selectedHomeHeroFile, 'hero');
+      data.heroImageUrl = url;
+      data.heroImagePath = path;
+      if (homeSettings.heroImagePath) await window.ErFirebase.deleteProductImage(homeSettings.heroImagePath);
+    }
+    if (selectedHomeAboutFile) {
+      const { url, path } = await window.ErFirebase.uploadSiteImage(selectedHomeAboutFile, 'about');
+      data.aboutImageUrl = url;
+      data.aboutImagePath = path;
+      if (homeSettings.aboutImagePath) await window.ErFirebase.deleteProductImage(homeSettings.aboutImagePath);
+    }
+    if (Object.keys(data).length) {
+      await window.ErFirebase.saveHomeSettings(data);
+      selectedHomeHeroFile = null;
+      selectedHomeAboutFile = null;
+      await loadHomeSettings();
+    }
+  } catch (err) {
+    errorEl.textContent = 'No se pudo guardar: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar fotos de inicio';
   }
 }
 
@@ -377,14 +435,17 @@ function applyRoleUI() {
   const isCollaborator = currentUserRole === 'colaborador';
   const catBtn = document.getElementById('tabBtnCategories');
   const teamBtn = document.getElementById('tabBtnTeam');
+  const homeBtn = document.getElementById('tabBtnHome');
   if (catBtn) catBtn.style.display = isCollaborator ? 'none' : '';
   if (teamBtn) teamBtn.style.display = isCollaborator ? 'none' : '';
+  if (homeBtn) homeBtn.style.display = isCollaborator ? 'none' : '';
   switchTab(isCollaborator ? 'products' : 'categories');
 }
 
 function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
+  document.getElementById('homePanel').style.display = tab === 'home' ? '' : 'none';
   document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
 }
@@ -453,6 +514,10 @@ function wireEvents() {
       btn.disabled = false;
     }
   });
+
+  document.getElementById('home-hero-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeHeroPreview', 'hero'));
+  document.getElementById('home-about-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeAboutPreview', 'about'));
+  document.getElementById('homeImagesForm').addEventListener('submit', saveHomeImagesFromForm);
 
   document.getElementById('inviteForm').addEventListener('submit', async (e) => {
     e.preventDefault();
