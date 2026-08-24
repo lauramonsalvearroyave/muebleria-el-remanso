@@ -122,6 +122,7 @@
       <div class="admin-tabs">
         <button class="admin-tab active" data-tab="categories" type="button" id="tabBtnCategories">Categorías</button>
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
+        <button class="admin-tab" data-tab="customers" type="button">Clientes</button>
         <button class="admin-tab" data-tab="leads" type="button" id="tabBtnLeads">Interesados</button>
         <button class="admin-tab" data-tab="home" type="button" id="tabBtnHome">Ajustes</button>
         <button class="admin-tab" data-tab="team" type="button" id="tabBtnTeam">Equipo</button>
@@ -237,6 +238,91 @@
           <select id="productFilter"></select>
         </div>
         <div id="productList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== CLIENTES / CRM (administrador y colaborador) ===== -->
+      <div id="customersPanel" style="display:none;">
+
+        <div class="card" id="customerFormCard">
+          <h3 id="customerFormTitle" class="admin-form-title">Agregar cliente</h3>
+          <p id="customerReadOnlyNotice" style="display:none; background:var(--sand); padding:10px 14px; border-radius:8px; font-size:.85rem;">Como colaborador, puedes ver estos datos pero no editarlos — solo puedes agregar una compra nueva más abajo.</p>
+          <form id="customerForm">
+            <div class="field-row">
+              <div class="field">
+                <label for="cust-name">Nombre</label>
+                <input type="text" id="cust-name" required>
+              </div>
+              <div class="field">
+                <label for="cust-cedula">Cédula</label>
+                <input type="text" id="cust-cedula">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="cust-email">Correo</label>
+                <input type="email" id="cust-email">
+              </div>
+              <div class="field">
+                <label for="cust-phone">Teléfono</label>
+                <input type="text" id="cust-phone">
+              </div>
+            </div>
+            <div class="field">
+              <label for="cust-material">Material preferido</label>
+              <select id="cust-material"></select>
+            </div>
+            <div class="field">
+              <label for="cust-likes">Gustos / preferencias</label>
+              <input type="text" id="cust-likes" placeholder="Ej: piezas grandes, tonos claros, para exterior...">
+            </div>
+            <div class="field">
+              <label for="cust-notes">Notas</label>
+              <input type="text" id="cust-notes">
+            </div>
+            <div class="consent-row">
+              <input type="checkbox" id="cust-consent">
+              <label for="cust-consent">La persona autorizó guardar sus datos personales (incluida la cédula) para este fin.</label>
+            </div>
+            <div class="step-actions" style="margin-top:10px;">
+              <button type="button" id="customerCancelBtn" class="btn btn-light" style="display:none;">Cancelar edición</button>
+              <button type="submit" class="btn btn-primary" id="customerSaveBtn">Guardar cliente</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="customerDetail" style="display:none; margin-top:24px;">
+          <h3>Historial de compras</h3>
+          <div id="purchaseList" class="admin-list" style="margin-bottom:16px;"></div>
+          <div class="card">
+            <h4 class="mt-0">Agregar compra</h4>
+            <form id="purchaseForm">
+              <div class="field-row">
+                <div class="field">
+                  <label for="purchase-product">Producto</label>
+                  <input type="text" id="purchase-product" required>
+                </div>
+                <div class="field">
+                  <label for="purchase-material">Material</label>
+                  <select id="purchase-material"></select>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="purchase-value">Valor (COP)</label>
+                  <input type="number" id="purchase-value" min="0">
+                </div>
+                <div class="field">
+                  <label for="purchase-date">Fecha</label>
+                  <input type="date" id="purchase-date">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Agregar compra</button>
+            </form>
+          </div>
+        </div>
+
+        <h3 style="margin-top:28px;">Clientes</h3>
+        <div id="customerList" class="admin-list"></div>
       </div>
 
       <!-- ===== INTERESADOS / LEADS (solo administradores) ===== -->

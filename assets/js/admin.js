@@ -347,6 +347,8 @@ async function loadData() {
 
   document.getElementById('seedBlock').style.display = products.length === 0 ? '' : 'none';
 
+  await loadCustomers();
+
   if (currentUserRole === 'admin') {
     invites = await window.ErFirebase.fetchInvites();
     renderInviteList();
@@ -444,6 +446,166 @@ async function saveWhatsappFromForm(e) {
   }
 }
 
+// ---------------- Clientes (CRM) ----------------
+// Colaborador puede ver y agregar (clientes nuevos, compras nuevas);
+// solo administrador puede editar o borrar. Ver reglas de seguridad.
+
+let customers = [];
+let editingCustomerId = null;
+let purchases = [];
+
+async function loadCustomers() {
+  customers = await window.ErFirebase.fetchCustomers();
+  document.getElementById('purchase-material').innerHTML = materialOptionsHtml('');
+  renderCustomerList();
+  renderCustomerForm();
+}
+
+function renderCustomerList() {
+  const list = document.getElementById('customerList');
+  if (!customers.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no hay clientes guardados.</p>';
+    return;
+  }
+  list.innerHTML = customers.map(c => `
+    <div class="admin-row">
+      <div class="info">
+        <strong>${esc(c.name)}</strong>
+        <span>${c.cedula ? 'CC ' + esc(c.cedula) + ' · ' : ''}${esc(c.email || c.phone || '')}</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-outline btn-sm" data-edit-cust="${esc(c.id)}" type="button">Ver / Editar</button>
+        ${currentUserRole === 'admin' ? `<button class="btn btn-light btn-sm" data-delete-cust="${esc(c.id)}" type="button">Eliminar</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderCustomerForm() {
+  const editing = customers.find(c => c.id === editingCustomerId);
+  const form = document.getElementById('customerForm');
+
+  if (editing) {
+    document.getElementById('cust-name').value = editing.name || '';
+    document.getElementById('cust-cedula').value = editing.cedula || '';
+    document.getElementById('cust-email').value = editing.email || '';
+    document.getElementById('cust-phone').value = editing.phone || '';
+    document.getElementById('cust-likes').value = editing.likes || '';
+    document.getElementById('cust-notes').value = editing.notes || '';
+    document.getElementById('cust-consent').checked = !!editing.consent;
+  } else {
+    form.reset();
+  }
+  document.getElementById('cust-material').innerHTML = materialOptionsHtml(editing ? editing.material : '');
+
+  document.getElementById('customerFormTitle').textContent = editing ? `Editar cliente: ${editing.name}` : 'Agregar cliente';
+  document.getElementById('customerCancelBtn').style.display = editing ? '' : 'none';
+
+  const isReadOnly = currentUserRole === 'colaborador' && !!editing;
+  ['cust-name', 'cust-cedula', 'cust-email', 'cust-phone', 'cust-material', 'cust-likes', 'cust-notes', 'cust-consent'].forEach(id => {
+    document.getElementById(id).disabled = isReadOnly;
+  });
+  document.getElementById('customerReadOnlyNotice').style.display = isReadOnly ? '' : 'none';
+  document.getElementById('customerSaveBtn').style.display = isReadOnly ? 'none' : '';
+
+  const detail = document.getElementById('customerDetail');
+  if (editing) {
+    detail.style.display = '';
+    loadPurchases(editing.id);
+  } else {
+    detail.style.display = 'none';
+    purchases = [];
+  }
+}
+
+async function saveCustomerFromForm(e) {
+  e.preventDefault();
+  const name = document.getElementById('cust-name').value.trim();
+  if (!name) { alert('El nombre es obligatorio.'); return; }
+
+  const btn = document.getElementById('customerSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    const data = {
+      name,
+      cedula: document.getElementById('cust-cedula').value.trim(),
+      email: document.getElementById('cust-email').value.trim(),
+      phone: document.getElementById('cust-phone').value.trim(),
+      material: document.getElementById('cust-material').value,
+      likes: document.getElementById('cust-likes').value.trim(),
+      notes: document.getElementById('cust-notes').value.trim(),
+      consent: document.getElementById('cust-consent').checked
+    };
+    await window.ErFirebase.saveCustomer(editingCustomerId, data);
+    editingCustomerId = null;
+    await loadCustomers();
+  } catch (err) {
+    alert('No se pudo guardar el cliente: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar cliente';
+  }
+}
+
+async function deleteCustomerById(id) {
+  const cust = customers.find(c => c.id === id);
+  if (!confirm(`¿Eliminar a "${cust ? cust.name : ''}"? Esta acción no se puede deshacer.`)) return;
+  try {
+    await window.ErFirebase.deleteCustomer(id);
+    if (editingCustomerId === id) editingCustomerId = null;
+    await loadCustomers();
+  } catch (err) {
+    alert('No se pudo eliminar: ' + err.message);
+  }
+}
+
+async function loadPurchases(customerId) {
+  purchases = await window.ErFirebase.fetchPurchases(customerId);
+  renderPurchaseList();
+}
+
+function renderPurchaseList() {
+  const list = document.getElementById('purchaseList');
+  if (!purchases.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no hay compras registradas.</p>';
+    return;
+  }
+  list.innerHTML = purchases.map(p => `
+    <div class="admin-row">
+      <div class="info">
+        <strong>${esc(p.product || '')}</strong>
+        <span>${p.material ? esc(materialLabel(p.material)) + ' · ' : ''}${p.value ? '$' + Number(p.value).toLocaleString('es-CO') : ''}${p.date ? ' · ' + esc(p.date) : ''}</span>
+      </div>
+      ${currentUserRole === 'admin' ? `<div class="actions"><button class="btn btn-light btn-sm" data-delete-purchase="${esc(p.id)}" type="button">Eliminar</button></div>` : ''}
+    </div>`).join('');
+}
+
+async function savePurchaseFromForm(e) {
+  e.preventDefault();
+  if (!editingCustomerId) return;
+  const product = document.getElementById('purchase-product').value.trim();
+  if (!product) { alert('El producto es obligatorio.'); return; }
+  try {
+    await window.ErFirebase.addPurchase(editingCustomerId, {
+      product,
+      material: document.getElementById('purchase-material').value,
+      value: Number(document.getElementById('purchase-value').value) || 0,
+      date: document.getElementById('purchase-date').value
+    });
+    document.getElementById('purchaseForm').reset();
+    await loadPurchases(editingCustomerId);
+  } catch (err) {
+    alert('No se pudo agregar la compra: ' + err.message);
+  }
+}
+
+async function deletePurchaseById(purchaseId) {
+  if (!editingCustomerId) return;
+  if (!confirm('¿Eliminar esta compra?')) return;
+  await window.ErFirebase.deletePurchase(editingCustomerId, purchaseId);
+  await loadPurchases(editingCustomerId);
+}
+
 // ---------------- Interesados (leads) ----------------
 
 let leads = [];
@@ -475,6 +637,9 @@ function renderLeadList() {
           </label>
         </div>
         <div class="actions">
+          ${l.convertedToCustomerId
+            ? '<span style="font-size:.85rem; color:var(--ink-soft);">Ya es cliente</span>'
+            : `<button class="btn btn-outline btn-sm" data-convert-lead="${esc(l.id)}" type="button">Convertir en cliente</button>`}
           <button class="btn btn-light btn-sm" data-delete-lead="${esc(l.id)}" type="button">Eliminar</button>
         </div>
       </div>`;
@@ -491,6 +656,22 @@ async function deleteLeadById(id) {
   if (!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
   await window.ErFirebase.deleteLead(id);
   await loadLeads();
+}
+
+async function convertLeadById(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  try {
+    const customerId = await window.ErFirebase.convertLeadToCustomer(lead);
+    await loadLeads();
+    await loadCustomers();
+    editingCustomerId = customerId;
+    switchTab('customers');
+    renderCustomerForm();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    alert('No se pudo convertir en cliente: ' + err.message);
+  }
 }
 
 // ---------------- Equipo: miembros actuales ----------------
@@ -570,6 +751,7 @@ function applyRoleUI() {
 function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
+  document.getElementById('customersPanel').style.display = tab === 'customers' ? '' : 'none';
   document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
   document.getElementById('homePanel').style.display = tab === 'home' ? '' : 'none';
   document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
@@ -648,11 +830,31 @@ function wireEvents() {
 
   document.getElementById('leadList').addEventListener('click', (e) => {
     const delBtn = e.target.closest('[data-delete-lead]');
+    const convertBtn = e.target.closest('[data-convert-lead]');
     if (delBtn) deleteLeadById(delBtn.dataset.deleteLead);
+    if (convertBtn) convertLeadById(convertBtn.dataset.convertLead);
   });
   document.getElementById('leadList').addEventListener('change', (e) => {
     const checkbox = e.target.closest('[data-contacted]');
     if (checkbox) toggleLeadContacted(checkbox.dataset.contacted, checkbox.checked);
+  });
+
+  document.getElementById('customerForm').addEventListener('submit', saveCustomerFromForm);
+  document.getElementById('customerCancelBtn').addEventListener('click', () => {
+    editingCustomerId = null;
+    document.getElementById('customerForm').reset();
+    renderCustomerForm();
+  });
+  document.getElementById('customerList').addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit-cust]');
+    const delBtn = e.target.closest('[data-delete-cust]');
+    if (editBtn) { editingCustomerId = editBtn.dataset.editCust; renderCustomerForm(); window.scrollTo({ top: document.getElementById('customerForm').offsetTop - 100, behavior: 'smooth' }); }
+    if (delBtn) deleteCustomerById(delBtn.dataset.deleteCust);
+  });
+  document.getElementById('purchaseForm').addEventListener('submit', savePurchaseFromForm);
+  document.getElementById('purchaseList').addEventListener('click', (e) => {
+    const delBtn = e.target.closest('[data-delete-purchase]');
+    if (delBtn) deletePurchaseById(delBtn.dataset.deletePurchase);
   });
 
   document.getElementById('teamMemberList').addEventListener('click', (e) => {

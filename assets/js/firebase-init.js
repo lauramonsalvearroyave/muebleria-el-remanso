@@ -275,6 +275,56 @@ async function redeemInviteAndSignUp(code, email, password) {
   });
 }
 
+// ---------- Clientes (CRM) + historial de compras ----------
+// Colaborador puede ver y crear (clientes nuevos, compras nuevas);
+// solo administrador puede editar o borrar. Ver reglas de seguridad.
+
+async function fetchCustomers() {
+  const q = query(collection(db, "customers"), orderBy("name", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function saveCustomer(id, data) {
+  const newId = id || doc(collection(db, "customers")).id;
+  await setDoc(doc(db, "customers", newId), data, { merge: true });
+  return newId;
+}
+
+async function deleteCustomer(id) {
+  await deleteDoc(doc(db, "customers", id));
+}
+
+async function fetchPurchases(customerId) {
+  const q = query(collection(db, "customers", customerId, "purchases"), orderBy("date", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function addPurchase(customerId, data) {
+  await addDoc(collection(db, "customers", customerId, "purchases"), {
+    ...data,
+    createdAt: serverTimestamp()
+  });
+}
+
+async function deletePurchase(customerId, purchaseId) {
+  await deleteDoc(doc(db, "customers", customerId, "purchases", purchaseId));
+}
+
+// Crea un cliente a partir de un interesado ya existente, sin perder lo
+// que ya sabíamos de él (nombre, teléfono, qué producto le interesó).
+async function convertLeadToCustomer(lead) {
+  const customerId = await saveCustomer(null, {
+    name: lead.name || "",
+    phone: lead.phone || "",
+    notes: lead.product ? `Interesado originalmente en: ${lead.product}` : "",
+    createdAt: serverTimestamp()
+  });
+  await updateLead(lead.id, { convertedToCustomerId: customerId });
+  return customerId;
+}
+
 // ---------- Importar catálogo inicial (una sola vez, desde el panel admin) ----------
 
 async function seedInitialCatalog(categories, products) {
@@ -298,6 +348,8 @@ window.ErFirebase = {
   fetchHomeSettings, saveHomeSettings, uploadSiteImage,
   fetchSiteSettings, saveSiteSettings, getWhatsappNumber,
   fetchLeads, updateLead, deleteLead,
+  fetchCustomers, saveCustomer, deleteCustomer,
+  fetchPurchases, addPurchase, deletePurchase, convertLeadToCustomer,
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   fetchTeamMembers, removeTeamMember,
