@@ -536,8 +536,7 @@ async function saveCustomerFromForm(e) {
       notes: document.getElementById('cust-notes').value.trim(),
       consent: document.getElementById('cust-consent').checked
     };
-    await window.ErFirebase.saveCustomer(editingCustomerId, data);
-    editingCustomerId = null;
+    editingCustomerId = await window.ErFirebase.saveCustomer(editingCustomerId, data);
     await loadCustomers();
   } catch (err) {
     alert('No se pudo guardar el cliente: ' + err.message);
