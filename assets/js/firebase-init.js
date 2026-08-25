@@ -253,7 +253,7 @@ async function removeTeamMember(uid) {
 // Flujo de "Registrarme": valida el código, crea la cuenta, reclama la
 // invitación y crea el documento de equipo — en ese orden, porque las
 // reglas de seguridad verifican cada paso antes de permitir el siguiente.
-async function redeemInviteAndSignUp(code, email, password) {
+async function redeemInviteAndSignUp(code, name, email, password) {
   const inviteRef = doc(db, "invites", code.trim().toUpperCase());
   const inviteSnap = await getDoc(inviteRef);
   if (!inviteSnap.exists()) throw new Error("Ese código de invitación no existe.");
@@ -269,6 +269,7 @@ async function redeemInviteAndSignUp(code, email, password) {
   await setDoc(inviteRef, { used: true, usedBy: uid }, { merge: true });
   await setDoc(doc(db, "team", uid), {
     role: "colaborador",
+    name,
     email,
     inviteCode: inviteRef.id,
     createdAt: serverTimestamp()

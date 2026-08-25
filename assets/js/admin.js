@@ -91,18 +91,31 @@ function renderCategoryList() {
   }
   list.innerHTML = categories.map(c => {
     const count = products.filter(p => p.categoryId === c.id).length;
+    const isHidden = c.active === false;
     return `
       <div class="admin-row">
         <div class="info">
-          <strong>${esc(c.label)} ${c.flagship ? '<span class="tag-pill">Línea insignia</span>' : ''}</strong>
+          <strong>${esc(c.label)} ${c.flagship ? '<span class="tag-pill">Línea insignia</span>' : ''} ${isHidden ? '<span class="tag-pill">Oculta</span>' : ''}</strong>
           <span>ID: ${esc(c.id)} · orden ${c.order ?? 0} · ${count} producto(s)</span>
         </div>
         <div class="actions">
           <button class="btn btn-outline btn-sm" data-edit-cat="${esc(c.id)}" type="button">Editar</button>
+          <button class="btn btn-outline btn-sm" data-toggle-active-cat="${esc(c.id)}" type="button">${isHidden ? 'Mostrar' : 'Ocultar'}</button>
           <button class="btn btn-light btn-sm" data-delete-cat="${esc(c.id)}" type="button">Eliminar</button>
         </div>
       </div>`;
   }).join('');
+}
+
+async function toggleCategoryActive(id) {
+  const cat = categories.find(c => c.id === id);
+  if (!cat) return;
+  try {
+    await window.ErFirebase.saveCategory(id, { active: cat.active === false });
+    await loadData();
+  } catch (err) {
+    alert('No se pudo actualizar: ' + err.message);
+  }
 }
 
 async function saveCategoryFromForm(e) {
@@ -115,12 +128,13 @@ async function saveCategoryFromForm(e) {
   const id = editingCategoryId || slugify(idInput || label);
   if (!id) { alert('No se pudo generar un identificador válido para la categoría.'); return; }
 
+  const existing = categories.find(c => c.id === editingCategoryId);
   const data = {
     label,
     teaser: form.querySelector('#cat-teaser').value.trim(),
     flagship: form.querySelector('#cat-flagship').checked,
     order: Number(form.querySelector('#cat-order').value) || 0,
-    active: true
+    active: existing ? existing.active !== false : true
   };
 
   try {
@@ -204,10 +218,12 @@ function renderProductList() {
   list.innerHTML = filtered.map(p => {
     const cat = categories.find(c => c.id === p.categoryId);
     const thumb = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="">` : '';
+    const isHidden = p.active === false;
     const pills = [];
     if (p.featured) pills.push('<span class="tag-pill">Destacado</span>');
     if (p.isNew) pills.push('<span class="tag-pill">Nuevo</span>');
     if (p.soldOut) pills.push('<span class="tag-pill">Agotado</span>');
+    if (isHidden) pills.push('<span class="tag-pill">Oculto</span>');
     return `
       <div class="admin-row">
         <div class="thumb">${thumb}</div>
@@ -218,10 +234,22 @@ function renderProductList() {
         </div>
         <div class="actions">
           <button class="btn btn-outline btn-sm" data-edit-prod="${esc(p.id)}" type="button">Editar</button>
+          ${currentUserRole === 'admin' ? `<button class="btn btn-outline btn-sm" data-toggle-active-prod="${esc(p.id)}" type="button">${isHidden ? 'Mostrar' : 'Ocultar'}</button>` : ''}
           ${currentUserRole === 'colaborador' ? '' : `<button class="btn btn-light btn-sm" data-delete-prod="${esc(p.id)}" type="button">Eliminar</button>`}
         </div>
       </div>`;
   }).join('');
+}
+
+async function toggleProductActive(id) {
+  const prod = products.find(p => p.id === id);
+  if (!prod) return;
+  try {
+    await window.ErFirebase.saveProduct(id, { active: prod.active === false });
+    await loadData();
+  } catch (err) {
+    alert('No se pudo actualizar: ' + err.message);
+  }
 }
 
 async function saveProductFromForm(e) {
@@ -253,7 +281,7 @@ async function saveProductFromForm(e) {
       soldOut: form.querySelector('#prod-soldout').checked,
       featured: form.querySelector('#prod-featured').checked,
       isNew: form.querySelector('#prod-new').checked,
-      active: true,
+      active: existing ? existing.active !== false : true,
       imageUrl: existing ? (existing.imageUrl || '') : '',
       imagePath: existing ? (existing.imagePath || '') : ''
     };
@@ -692,8 +720,8 @@ function renderTeamMemberList() {
   list.innerHTML = teamMembers.map(m => `
     <div class="admin-row">
       <div class="info">
-        <strong>${esc(m.email) || '(correo no configurado)'}</strong>
-        <span>${esc(m.role)}</span>
+        <strong>${esc(m.name) || esc(m.email) || '(sin datos)'}</strong>
+        <span>${esc(m.role)}${m.email ? ' · ' + esc(m.email) : ''}</span>
       </div>
       <div class="actions">
         ${m.uid === currentUserUid
@@ -771,8 +799,10 @@ function wireEvents() {
   document.getElementById('categoryList').addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-cat]');
     const delBtn = e.target.closest('[data-delete-cat]');
+    const toggleBtn = e.target.closest('[data-toggle-active-cat]');
     if (editBtn) { editingCategoryId = editBtn.dataset.editCat; renderCategoryForm(); window.scrollTo({ top: document.getElementById('categoryForm').offsetTop - 100, behavior: 'smooth' }); }
     if (delBtn) deleteCategoryById(delBtn.dataset.deleteCat);
+    if (toggleBtn) toggleCategoryActive(toggleBtn.dataset.toggleActiveCat);
   });
 
   document.getElementById('productForm').addEventListener('submit', saveProductFromForm);
@@ -785,8 +815,10 @@ function wireEvents() {
   document.getElementById('productList').addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-prod]');
     const delBtn = e.target.closest('[data-delete-prod]');
+    const toggleBtn = e.target.closest('[data-toggle-active-prod]');
     if (editBtn) { editingProductId = editBtn.dataset.editProd; renderProductForm(); window.scrollTo({ top: document.getElementById('productForm').offsetTop - 100, behavior: 'smooth' }); }
     if (delBtn) deleteProductById(delBtn.dataset.deleteProd);
+    if (toggleBtn) toggleProductActive(toggleBtn.dataset.toggleActiveProd);
   });
   document.getElementById('productFilter').addEventListener('change', renderProductList);
   document.getElementById('prod-image').addEventListener('change', handleImageSelect);
@@ -806,6 +838,7 @@ function wireEvents() {
   document.getElementById('signupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const code = document.getElementById('signup-code').value.trim();
+    const name = document.getElementById('signup-name').value.trim();
     const email = document.getElementById('signup-email').value.trim();
     const password = document.getElementById('signup-password').value;
     const errorEl = document.getElementById('signupError');
@@ -813,7 +846,7 @@ function wireEvents() {
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
     try {
-      await window.ErFirebase.redeemInviteAndSignUp(code, email, password);
+      await window.ErFirebase.redeemInviteAndSignUp(code, name, email, password);
       // onAuthChange lleva a la persona directo al panel.
     } catch (err) {
       errorEl.textContent = err.message || 'No se pudo crear la cuenta. Revisa el código e intenta de nuevo.';
