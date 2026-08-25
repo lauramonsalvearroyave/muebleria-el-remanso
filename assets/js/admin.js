@@ -692,7 +692,7 @@ function renderTeamMemberList() {
   list.innerHTML = teamMembers.map(m => `
     <div class="admin-row">
       <div class="info">
-        <strong>${esc(m.email || m.uid)}</strong>
+        <strong>${esc(m.email) || '(correo no configurado)'}</strong>
         <span>${esc(m.role)}</span>
       </div>
       <div class="actions">
