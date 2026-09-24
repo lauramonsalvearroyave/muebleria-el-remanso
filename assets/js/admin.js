@@ -5,9 +5,11 @@
 const MATERIALS = [
   { value: '', label: '(sin material)' },
   { value: 'mimbre', label: 'Mimbre' },
-  { value: 'rattan', label: 'Rattán' },
   { value: 'yare', label: 'Yaré' },
-  { value: 'sintetico', label: 'Sintético' }
+  { value: 'rattan', label: 'Rattán' },
+  { value: 'calceta', label: 'Calceta de plátano' },
+  { value: 'sintetico', label: 'Sintético' },
+  { value: 'piola', label: 'Piola náutica' }
 ];
 
 // Catálogo inicial: se usa una sola vez con el botón "Importar catálogo inicial"

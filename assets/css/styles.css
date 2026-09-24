@@ -220,13 +220,35 @@ section{ padding: 68px 0; }
 
 .material-card{ text-align:left; }
 .material-swatch{
+  position:relative; overflow:hidden;
   height: 108px; border-radius: var(--radius-s); margin-bottom:14px;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
 }
+/* Si se agrega una foto del material dentro del swatch, cubre toda el area
+   y la textura de color queda solo como respaldo mientras carga. */
+.material-swatch img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
 .swatch-mimbre{ background: repeating-linear-gradient(45deg,#d9b273,#d9b273 6px,#c79a5c 6px,#c79a5c 12px); }
-.swatch-rattan{ background: repeating-linear-gradient(135deg,#a9713f,#a9713f 6px,#8f5a2e 6px,#8f5a2e 12px); }
 .swatch-yare{ background: repeating-linear-gradient(90deg,#c4924f,#c4924f 5px,#a9763a 5px,#a9763a 10px); }
+.swatch-rattan{ background: repeating-linear-gradient(135deg,#a9713f,#a9713f 6px,#8f5a2e 6px,#8f5a2e 12px); }
+.swatch-calceta{ background: repeating-linear-gradient(20deg,#c2a883,#c2a883 8px,#a08462 8px,#a08462 16px); }
 .swatch-sintetico{ background: repeating-linear-gradient(60deg,#6b5847,#6b5847 6px,#584636 6px,#584636 12px); }
+.swatch-piola{ background: repeating-linear-gradient(115deg,#ece2cd,#ece2cd 5px,#cdbfa2 5px,#cdbfa2 10px); }
+
+/* Subtitulos de los dos grupos de materiales (fibras / alta resistencia) */
+.material-group{ margin: 40px 0 18px; }
+.mb-lg + .material-group{ margin-top: 0; }
+.material-group-title{
+  display:flex; align-items:center; gap:12px; margin:0 0 6px; font-size:1.05rem;
+  text-transform:uppercase; letter-spacing:.09em; color: var(--gold-bronze);
+}
+.material-group-title::after{
+  content:""; flex:1; height:1px; background: var(--sand-line);
+}
+.material-group-note{ margin:0; max-width: 60ch; font-size:.92rem; }
+/* Los dos materiales de alta resistencia no deben estirarse a media pagina */
+.grid-tech{ max-width: 760px; }
 
 /* ===== Section variants ===== */
 .section-alt{ background: var(--sand); }

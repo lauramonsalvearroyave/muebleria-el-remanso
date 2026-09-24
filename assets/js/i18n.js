@@ -16,12 +16,14 @@ const DICT = {
     back_to_top: { es: 'Volver arriba', en: 'Back to top' }
   },
   footer: {
-    tagline:        { es: 'Mueblería artesanal en mimbre, rattán, yaré y sintético. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in wicker, rattan, yaré and synthetic fiber. Pieces made by hand, with love, for your home.' },
+    tagline:        { es: 'Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in natural fibers and high-resistance materials. Pieces made by hand, with love, for your home.' },
     materials_title:{ es: 'Materiales', en: 'Materials' },
-    mat_mimbre:     { es: 'Mimbre natural', en: 'Natural wicker' },
-    mat_rattan:     { es: 'Rattán', en: 'Rattan' },
+    mat_mimbre:     { es: 'Mimbre', en: 'Wicker' },
     mat_yare:       { es: 'Yaré', en: 'Yaré' },
-    mat_sintetico:  { es: 'Sintético', en: 'Synthetic' },
+    mat_rattan:     { es: 'Rattán', en: 'Rattan' },
+    mat_calceta:    { es: 'Calceta de plátano', en: 'Banana fiber' },
+    mat_sintetico:  { es: 'Sintético', en: 'Synthetic fiber' },
+    mat_piola:      { es: 'Piola náutica', en: 'Nautical rope' },
     whatsapp_line:  { es: 'WhatsApp: +57 310 459 9629', en: 'WhatsApp: +57 310 459 9629' },
     instagram_line: { es: '@muebleria_elremanso', en: '@muebleria_elremanso' },
     bottom_left:    { es: '© {{year}} El Remanso — Mueblería Artesanal', en: '© {{year}} El Remanso — Handcrafted Furniture' },
@@ -44,11 +46,11 @@ const DICT = {
 
   home: {
     meta_title: { es: 'El Remanso | Mueblería Artesanal en Mimbre, Rattán y Yaré', en: 'El Remanso | Handcrafted Furniture in Wicker, Rattan & Yaré' },
-    meta_desc: { es: 'Muebles artesanales tejidos a mano en mimbre, rattán, yaré y sintético. Conoce nuestras colecciones y escríbenos por WhatsApp.', en: 'Handcrafted furniture, hand-woven in wicker, rattan, yaré and synthetic fiber. Explore our collections and reach us on WhatsApp.' },
+    meta_desc: { es: 'Muebles artesanales tejidos a mano en mimbre, yaré, rattán, calceta de plátano, sintético y piola náutica. Conoce nuestras colecciones y escríbenos por WhatsApp.', en: 'Handcrafted furniture, hand-woven in wicker, yaré, rattan, banana fiber, synthetic fiber and nautical rope. Explore our collections and reach us on WhatsApp.' },
 
     hero_eyebrow: { es: 'Tejido a mano · Colombia', en: 'Handwoven · Colombia' },
     hero_title:   { es: 'Muebles con el alma de la fibra natural', en: 'Furniture with the soul of natural fiber' },
-    hero_lede:    { es: 'En El Remanso tejemos mimbre, rattán, yaré y sintético para crear piezas cálidas y duraderas, pensadas para los momentos en familia.', en: 'At El Remanso we weave wicker, rattan, yaré and synthetic fiber into warm, long-lasting pieces, made for family moments.' },
+    hero_lede:    { es: 'En El Remanso tejemos fibras naturales y materiales de alta resistencia para crear piezas cálidas y duraderas, pensadas para los momentos en familia.', en: 'At El Remanso we weave natural fibers and high-resistance materials into warm, long-lasting pieces, made for family moments.' },
     badge1: { es: '🌿 100% artesanal', en: '🌿 100% handcrafted' },
     badge2: { es: '🏠 Interior y exterior', en: '🏠 Indoor & outdoor' },
     badge3: { es: '💛 Hecho con cariño', en: '💛 Made with love' },
@@ -59,16 +61,26 @@ const DICT = {
     hero_art_line2: { es: '(reemplazar con fotografía real del taller)', en: '(to be replaced with real workshop photography)' },
 
     materials_eyebrow: { es: 'Nuestros materiales', en: 'Our Materials' },
-    materials_title:   { es: 'Cuatro fibras, un mismo oficio', en: 'Four fibers, one craft' },
-    materials_lede:    { es: 'Cada material tiene su propio carácter. Te contamos las diferencias para que elijas con confianza — o déjalo en nuestras manos.', en: "Every material has its own character. We'll walk you through the differences so you can choose with confidence — or just leave it to us." },
-    mat_mimbre_title: { es: 'Mimbre natural', en: 'Natural Wicker' },
-    mat_mimbre_desc:  { es: 'Fibra liviana y cálida, tejida a mano. Perfecta para interiores.', en: 'Light and warm fiber, hand-woven. Perfect for indoor spaces.' },
-    mat_rattan_title: { es: 'Rattán', en: 'Rattan' },
-    mat_rattan_desc:  { es: 'Mayor densidad y resistencia, con un acabado elegante.', en: 'Denser and more resistant, with an elegant finish.' },
+    materials_title:   { es: 'Cuatro fibras y dos materiales, un mismo oficio', en: 'Four fibers, two materials, one craft' },
+    materials_lede:    { es: 'Cada material tiene su textura, su carácter y su mejor lugar en la casa. Te contamos en qué se diferencian para que elijas con confianza — o déjalo en nuestras manos.', en: "Every material has its own texture, its own character and its own best place in the home. We'll walk you through the differences so you can choose with confidence — or just leave it to us." },
+
+    fibers_group_title: { es: 'Fibras naturales', en: 'Natural fibers' },
+    fibers_group_note:  { es: 'Se recogen y se trabajan a mano. Su lugar está bajo techo: sala, comedor, alcoba y terrazas cubiertas.', en: 'Gathered and worked by hand. Their place is under a roof: living room, dining room, bedroom and covered terraces.' },
+    tech_group_title:   { es: 'Materiales de alta resistencia', en: 'High-resistance materials' },
+    tech_group_note:    { es: 'Se tejen con la misma técnica artesanal, pero están pensados para aguantar sol, lluvia y uso diario sin perder la forma.', en: 'Woven with the same artisan technique, but made to take sun, rain and daily use without losing their shape.' },
+
+    mat_mimbre_title: { es: 'Mimbre', en: 'Wicker' },
+    mat_mimbre_desc:  { es: 'Fibra clara y liviana que se dobla sin quebrarse. Es la más noble para tejidos finos y detalles: cálida al tacto y fácil de combinar con cualquier cojinería.', en: 'A pale, light fiber that bends without breaking. The kindest one for fine weaves and detail work: warm to the touch and easy to pair with any upholstery.' },
     mat_yare_title:   { es: 'Yaré', en: 'Yaré' },
-    mat_yare_desc:    { es: 'Fibra tradicional colombiana, flexible y muy duradera.', en: 'Traditional Colombian fiber, flexible and very durable.' },
-    mat_sintetico_title: { es: 'Sintético', en: 'Synthetic' },
-    mat_sintetico_desc:  { es: 'Resistente al sol y la lluvia. Ideal para terrazas y exteriores.', en: 'Resistant to sun and rain. Ideal for terraces and outdoor spaces.' },
+    mat_yare_desc:    { es: 'Raíz tradicional colombiana, muy flexible y de una resistencia enorme. Aguanta el uso diario y con los años toma un tono más profundo.', en: 'A traditional Colombian root, very flexible and remarkably strong. It stands up to daily use and deepens into a richer tone over the years.' },
+    mat_rattan_title: { es: 'Rattán', en: 'Rattan' },
+    mat_rattan_desc:  { es: 'La más firme de las fibras naturales. Su bejuco macizo sostiene estructuras grandes —sofás, comedores, camas— con un acabado elegante y sobrio.', en: 'The firmest of the natural fibers. Its solid cane holds up large structures — sofas, dining sets, beds — with an elegant, understated finish.' },
+    mat_calceta_title: { es: 'Calceta de plátano', en: 'Banana fiber' },
+    mat_calceta_desc:  { es: 'Se obtiene del tallo seco del plátano, lo que el cultivo ya no usa. De textura gruesa y tono tierra: da un tejido rústico, con mucho carácter.', en: 'Made from the dried banana stem — what the harvest leaves behind. Thick in texture and earthy in tone, it gives a rustic weave with real character.' },
+    mat_sintetico_title: { es: 'Sintético', en: 'Synthetic fiber' },
+    mat_sintetico_desc:  { es: 'Fibra técnica tejida igual que la natural. No se decolora con el sol ni se daña con la lluvia: es la que recomendamos para terraza, piscina y jardín.', en: "A technical fiber woven just like the natural ones. It doesn't fade in the sun or suffer in the rain: our pick for terraces, poolsides and gardens." },
+    mat_piola_title: { es: 'Piola náutica', en: 'Nautical rope' },
+    mat_piola_desc:  { es: 'Cuerda trenzada de uso marino, suave al sentarse y muy resistente a la humedad y al roce. Ideal para columpios, mecedoras y piezas de uso diario.', en: 'Braided marine rope — soft to sit on, and highly resistant to damp and friction. Ideal for swings, rockers and everyday pieces.' },
 
     flagship_eyebrow: { es: 'Línea insignia', en: 'Signature Line' },
     flagship_title:   { es: 'Remanso: lo mejor de nuestro oficio', en: 'Remanso: the best of our craft' },
@@ -80,15 +92,22 @@ const DICT = {
     cat_lede:    { es: 'Cada pieza tiene su propio nombre — y una pequeña historia detrás.', en: 'Every piece has its own name — and a small story behind it.' },
 
     proc_eyebrow: { es: 'Nuestro oficio', en: 'Our Craft' },
-    proc_title:   { es: 'Hecho a mano, paso a paso', en: 'Handmade, step by step' },
-    proc1_title: { es: 'Selección de fibra', en: 'Fiber Selection' },
-    proc1_desc:  { es: 'Escogemos mimbre, rattán o yaré de la mejor calidad.', en: 'We select the best-quality wicker, rattan or yaré.' },
-    proc2_title: { es: 'Tejido artesanal', en: 'Artisan Weaving' },
-    proc2_desc:  { es: 'Nuestros maestros tejen cada pieza a mano, sin prisa.', en: 'Our craftspeople weave every piece by hand, without rushing.' },
-    proc3_title: { es: 'Acabado y color', en: 'Finish & Color' },
-    proc3_desc:  { es: 'Aplicamos el tono y protección que elegiste.', en: 'We apply the tone and protection you chose.' },
-    proc4_title: { es: 'Entrega', en: 'Delivery' },
-    proc4_desc:  { es: 'Llevamos tu mueble terminado hasta tu hogar.', en: 'We bring your finished piece to your home.' },
+    proc_title:   { es: 'De tu idea a tu casa, en siete pasos', en: 'From your idea to your home, in seven steps' },
+    proc_lede:    { es: 'Los primeros cuatro pasos los decidimos contigo; los tres últimos ocurren en el taller. Así sabes siempre en qué va tu mueble.', en: 'The first four steps we decide together; the last three happen in the workshop. That way you always know where your piece stands.' },
+    proc1_title: { es: 'Medidas', en: 'Measurements' },
+    proc1_desc:  { es: 'Tomamos las medidas del espacio donde va a vivir el mueble, para que entre justo y se sienta cómodo.', en: 'We take the measurements of the space the piece will live in, so it fits just right and feels comfortable.' },
+    proc2_title: { es: 'Diseño', en: 'Design' },
+    proc2_desc:  { es: 'Elegimos juntos la forma: un modelo del catálogo tal cual, o una versión pensada a tu medida.', en: 'We choose the shape together: a catalog model as it is, or a version made to your own measurements.' },
+    proc3_title: { es: 'Material', en: 'Material' },
+    proc3_desc:  { es: 'Escogemos la fibra según el uso y el lugar: natural para interiores; sintético o piola náutica si va a estar a la intemperie.', en: 'We pick the fiber by use and place: natural indoors; synthetic or nautical rope if it will face the weather.' },
+    proc4_title: { es: 'Color y cojinería', en: 'Color & Upholstery' },
+    proc4_desc:  { es: 'Eliges el tono del tejido y la tela de los cojines. Te mostramos muestras reales antes de empezar a tejer.', en: 'You choose the tone of the weave and the fabric for the cushions. We show you real samples before any weaving starts.' },
+    proc5_title: { es: 'Tejido', en: 'Weaving' },
+    proc5_desc:  { es: 'Nuestros maestros tejen la pieza a mano, hebra por hebra. Es el paso más lento — y el que marca la diferencia.', en: "Our craftspeople weave the piece by hand, strand by strand. It's the slowest step — and the one that makes the difference." },
+    proc6_title: { es: 'Acabado', en: 'Finish' },
+    proc6_desc:  { es: 'Aplicamos el color y la protección, y revisamos la pieza completa: uniones, nivelación y terminados.', en: 'We apply the color and the protective coat, then check the whole piece: joints, leveling and finishing.' },
+    proc7_title: { es: 'Entrega', en: 'Delivery' },
+    proc7_desc:  { es: 'Coordinamos la fecha contigo y llevamos tu mueble armado hasta tu hogar.', en: 'We agree a date with you and bring your finished piece home, fully assembled.' },
 
     comments_eyebrow: { es: 'Comentarios', en: 'Comments' },
     comments_title: { es: 'Lo que cuentan quienes ya tienen su Remanso', en: 'What people with their own Remanso say' },
@@ -107,7 +126,7 @@ const DICT = {
 
   catalog: {
     meta_title: { es: 'Catálogo | El Remanso', en: 'Catalog | El Remanso' },
-    meta_desc: { es: 'Nuestras colecciones de muebles artesanales en mimbre, rattán, yaré y sintético.', en: 'Our collections of handcrafted furniture in wicker, rattan, yaré and synthetic fiber.' },
+    meta_desc: { es: 'Nuestras colecciones de muebles artesanales en mimbre, yaré, rattán, calceta de plátano, sintético y piola náutica.', en: 'Our collections of handcrafted furniture in wicker, yaré, rattan, banana fiber, synthetic fiber and nautical rope.' },
     eyebrow: { es: 'Catálogo', en: 'Catalog' },
     title:   { es: 'Nuestras piezas, una por una', en: 'Our pieces, one by one' },
     lede: { es: 'Cada mueble tiene un nombre propio y una pequeña historia. Escríbenos si algo te enamora.', en: 'Every piece carries its own name and a small story. Write to us if something catches your heart.' },
@@ -124,9 +143,11 @@ const DICT = {
     badge_soldout: { es: 'Agotado', en: 'Sold out' },
 
     tag_mimbre: { es: 'Mimbre', en: 'Wicker' },
-    tag_rattan: { es: 'Rattán', en: 'Rattan' },
     tag_yare: { es: 'Yaré', en: 'Yaré' },
-    tag_sintetico: { es: 'Sintético', en: 'Synthetic' }
+    tag_rattan: { es: 'Rattán', en: 'Rattan' },
+    tag_calceta: { es: 'Calceta de plátano', en: 'Banana fiber' },
+    tag_sintetico: { es: 'Sintético', en: 'Synthetic' },
+    tag_piola: { es: 'Piola náutica', en: 'Nautical rope' }
   },
 
   interest: {
@@ -154,7 +175,7 @@ const DICT = {
     photo_line2: { es: '(reemplazar con fotografía real)', en: '(to be replaced with real photography)' },
 
     h2_1: { es: 'Tradición artesanal, hecha para hoy', en: 'Artisan Tradition, Made for Today' },
-    p1: { es: 'En El Remanso trabajamos junto a tejedores que dominan el mimbre, el rattán y el yaré desde hace años. Combinamos ese conocimiento tradicional con materiales sintéticos para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.', en: 'At El Remanso we work alongside weavers who have mastered wicker, rattan and yaré for years. We combine that traditional knowledge with synthetic materials so you can also enjoy woven furniture on your terrace or garden, without worrying about the weather.' },
+    p1: { es: 'En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.', en: 'At El Remanso we work alongside weavers who have mastered wicker, yaré, rattan and banana fiber for years. We combine that traditional knowledge with synthetic fiber and nautical rope so you can also enjoy woven furniture on your terrace or garden, without worrying about the weather.' },
     p2: { es: 'Cada pieza sale de nuestro taller revisada a mano, una por una, antes de llegar a tu casa.', en: 'Every piece leaves our workshop hand-checked, one by one, before it reaches your home.' },
 
     why_title: { es: 'Por qué elegir El Remanso', en: 'Why Choose El Remanso' },

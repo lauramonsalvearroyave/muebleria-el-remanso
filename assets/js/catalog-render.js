@@ -9,9 +9,11 @@ function esc(str) {
 
 const MATERIAL_KEYS = {
   mimbre: 'catalog.tag_mimbre',
-  rattan: 'catalog.tag_rattan',
   yare: 'catalog.tag_yare',
-  sintetico: 'catalog.tag_sintetico'
+  rattan: 'catalog.tag_rattan',
+  calceta: 'catalog.tag_calceta',
+  sintetico: 'catalog.tag_sintetico',
+  piola: 'catalog.tag_piola'
 };
 
 function productCardHtml(p) {
