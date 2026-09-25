@@ -375,6 +375,38 @@ section{ padding: 68px 0; }
 .form-msg.ok{ color:#2F6B4F; }
 .form-msg.error{ color:#9A3B2A; }
 
+/* ===== Spinner de carga =====
+   Va dentro de los huecos que se llenan desde Firestore, no como capa sobre
+   toda la pagina: el resto del contenido ya esta ahi y taparlo seria peor. */
+.er-loader{
+  display:flex; align-items:center; justify-content:center;
+  width:100%; min-height:140px; padding:24px 0;
+}
+.er-loader__mark{ position:relative; }
+.er-loader__ring{
+  position:absolute; inset:0; width:100%; height:100%;
+  animation: er-spin 1.6s linear infinite;
+}
+.er-loader__ring circle{ fill:none; stroke-width:3; stroke-linecap:round; }
+.er-loader__ring .track{ stroke: var(--sand-line); }
+.er-loader__ring .arc{ stroke: var(--gold); stroke-dasharray: 190 363; }
+.er-loader__logo{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  animation: er-breathe 2.4s ease-in-out infinite;
+  opacity:.9;
+}
+@keyframes er-spin{ to{ transform: rotate(360deg); } }
+@keyframes er-breathe{
+  0%,100%{ transform:translate(-50%,-50%) scale(1); }
+  50%    { transform:translate(-50%,-50%) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce){
+  .er-loader__ring{ animation-duration: 4s; }
+  .er-loader__logo{ animation: none; }
+}
+/* En los huecos de foto el spinner ocupa todo el alto disponible */
+.hero-art .er-loader{ position:absolute; inset:0; min-height:0; padding:0; }
+
 /* Bloque de identificacion legal */
 .legal-id{
   background: var(--sand); border-left:3px solid var(--gold);

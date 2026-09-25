@@ -64,7 +64,16 @@
            dibuja desde Firestore. Ver assets/js/catalog-render.js.
            Se administra desde admin.html. -->
       <div id="catalogRoot">
-        <p class="admin-empty" data-i18n="catalog.loading">Cargando catálogo...</p>
+        <!-- Spinner inicial. Lo reemplaza assets/js/catalog-render.js al dibujar. -->
+        <div class="er-loader" role="status" aria-label="Cargando">
+          <div class="er-loader__mark" style="width:140px;height:140px;">
+            <svg class="er-loader__ring" viewBox="0 0 184 184" aria-hidden="true">
+              <circle class="track" cx="92" cy="92" r="88"/>
+              <circle class="arc" cx="92" cy="92" r="88"/>
+            </svg>
+            <img class="er-loader__logo" src="assets/img/logo-mark.png" alt="" style="width:67px;height:67px;">
+          </div>
+        </div>
       </div>
     </div>
   </section>

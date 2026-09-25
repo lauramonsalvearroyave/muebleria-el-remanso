@@ -14,6 +14,23 @@ function variante(url, transformacion) {
   return url.replace('/upload/', '/upload/' + transformacion + '/');
 }
 
+// Spinner de carga. Se usa en los huecos que se llenan desde Firestore, para
+// que no se vea el fondo pelado mientras llega la respuesta. Sin texto: la
+// animacion ya dice lo que hay que decir.
+function spinnerHtml(px) {
+  const tam = px || 120;
+  return `
+    <div class="er-loader" role="status" aria-label="Cargando">
+      <div class="er-loader__mark" style="width:${tam}px;height:${tam}px;">
+        <svg class="er-loader__ring" viewBox="0 0 184 184" aria-hidden="true">
+          <circle class="track" cx="92" cy="92" r="88"/>
+          <circle class="arc" cx="92" cy="92" r="88"/>
+        </svg>
+        <img class="er-loader__logo" src="assets/img/logo-mark.png" alt="" style="width:${Math.round(tam*0.48)}px;height:${Math.round(tam*0.48)}px;">
+      </div>
+    </div>`;
+}
+
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -167,16 +184,29 @@ async function renderHomeImages() {
   const aboutSlot = document.getElementById('aboutImageSlot');
   if (!heroSlot && !aboutSlot) return;
 
+  // Mientras llega la respuesta de Firestore, spinner en vez de fondo pelado.
+  if (heroSlot) heroSlot.innerHTML = spinnerHtml(130);
+  if (aboutSlot) aboutSlot.innerHTML = spinnerHtml(130);
+
   try {
     const settings = await window.ErFirebase.fetchHomeSettings();
-    if (heroSlot && settings.heroImageUrl) {
-      heroSlot.innerHTML = `<img src="${esc(settings.heroImageUrl)}" alt="" loading="lazy">`;
+
+    // Los huecos miden unos 500 px de ancho: pedir 900 basta de sobra a 2x.
+    // La foto original se guarda intacta; esto es solo lo que se entrega.
+    if (heroSlot) {
+      heroSlot.innerHTML = settings.heroImageUrl
+        ? `<img src="${esc(variante(settings.heroImageUrl, 'w_900,f_auto,q_auto'))}" alt="" fetchpriority="high">`
+        : '';
     }
-    if (aboutSlot && settings.aboutImageUrl) {
-      aboutSlot.innerHTML = `<img src="${esc(settings.aboutImageUrl)}" alt="" loading="lazy">`;
+    if (aboutSlot) {
+      aboutSlot.innerHTML = settings.aboutImageUrl
+        ? `<img src="${esc(variante(settings.aboutImageUrl, 'w_900,f_auto,q_auto'))}" alt="" loading="lazy">`
+        : '';
     }
   } catch (err) {
     console.error('No se pudieron cargar las fotos del inicio:', err);
+    if (heroSlot) heroSlot.innerHTML = '';
+    if (aboutSlot) aboutSlot.innerHTML = '';
   }
 }
 
@@ -357,6 +387,7 @@ function setUpLightbox() {
 async function init() {
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
+  if (homeRoot) homeRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
   const flagshipLink = document.getElementById('homeFlagshipLink');
   const heroSlot = document.getElementById('heroImageSlot');
   const aboutSlot = document.getElementById('aboutImageSlot');
