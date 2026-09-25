@@ -34,6 +34,9 @@ function productCardHtml(p) {
     ? `<span class="tag-pill" data-i18n="${materialKey}">${esc(t(materialKey))}</span>`
     : '';
 
+  // Todas las piezas se tejen por encargo, asi que la etiqueta va en todas.
+  const customTag = `<span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">${esc(t('catalog.tag_custom'))}</span>`;
+
   const story = p.story ? `<p class="product-name-story">${esc(p.story)}</p>` : '';
   const interestBtn = p.soldOut ? '' : `
     <button class="btn-interest" type="button">
@@ -48,7 +51,7 @@ function productCardHtml(p) {
         ${media}
       </div>
       <div class="product-body">
-        <div class="product-tags">${materialTag}</div>
+        <div class="product-tags">${materialTag}${customTag}</div>
         <h3>${esc(p.name)}</h3>
         ${story}
         ${interestBtn}
@@ -153,11 +156,15 @@ async function init() {
     return;
   }
 
-  await renderHomeImages();
-
+  // Las tres lecturas son independientes entre si: en serie eran tres viajes
+  // de ida y vuelta encadenados, en paralelo tardan lo que tarde la mas lenta.
   try {
-    const categories = await window.ErFirebase.fetchCategories();
-    const products = catalogRoot ? await window.ErFirebase.fetchProducts() : [];
+    const homeImages = renderHomeImages();
+    const [categories, products] = await Promise.all([
+      window.ErFirebase.fetchCategories(),
+      catalogRoot ? window.ErFirebase.fetchProducts() : Promise.resolve([])
+    ]);
+    await homeImages;
 
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);
     if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories);

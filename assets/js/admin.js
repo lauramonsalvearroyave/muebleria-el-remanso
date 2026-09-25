@@ -351,13 +351,52 @@ function handleImageSelect(e) {
 // ---------------- Importar catálogo inicial ----------------
 
 async function runSeed() {
-  if (!confirm('Esto va a crear las 6 categorías y 19 productos del catálogo inicial. ¿Continuar?')) return;
+  const aviso = products.length > 0
+    ? 'Ya hay productos guardados. Los del catálogo se van a sobrescribir con su versión original (se pierden los cambios y las fotos que les hayas puesto). ¿Continuar?'
+    : 'Esto va a crear las 6 categorías y los 19 productos del catálogo. ¿Continuar?';
+  if (!confirm(aviso)) return;
+  const btn = document.getElementById('seedBtn');
+  btn.disabled = true;
   try {
     await window.ErFirebase.seedInitialCatalog(SEED_CATEGORIES, SEED_PRODUCTS);
     await loadData();
     alert('Catálogo importado. Ya puedes editar cada producto para subir su foto real.');
   } catch (err) {
     alert('No se pudo importar: ' + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Borrado total. Se pide escribir BORRAR a proposito: un solo clic de mas
+// sobre un confirm normal se lleva por delante todo el catalogo.
+async function runWipe() {
+  const { products: np, categories: nc, photos } = await window.ErFirebase.countCatalog();
+  if (np === 0 && nc === 0) { alert('El catálogo ya está vacío.'); return; }
+
+  const detalle = `Se van a borrar ${nc} categoría(s), ${np} producto(s)` +
+    (photos ? ` y ${photos} foto(s) subidas a Storage` : '') + '.';
+  const escrito = prompt(`${detalle}
+
+Esto NO se puede deshacer.
+Escribe BORRAR para confirmar:`);
+  if ((escrito || '').trim().toUpperCase() !== 'BORRAR') {
+    alert('Cancelado, no se borró nada.');
+    return;
+  }
+
+  const btn = document.getElementById('wipeBtn');
+  btn.disabled = true;
+  btn.textContent = 'Borrando...';
+  try {
+    const res = await window.ErFirebase.wipeCatalog();
+    await loadData();
+    alert(`Listo: se borraron ${res.categories} categoría(s) y ${res.products} producto(s). Ya puedes importar el catálogo de nuevo.`);
+  } catch (err) {
+    alert('No se pudo vaciar: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Vaciar el catálogo';
   }
 }
 
@@ -375,7 +414,18 @@ async function loadData() {
   document.getElementById('productFilter').innerHTML =
     '<option value="">Todas las categorías</option>' + categoryOptionsHtml(null);
 
-  document.getElementById('seedBlock').style.display = products.length === 0 ? '' : 'none';
+  // Importar y vaciar son siempre visibles para un administrador: hacen falta
+  // justamente cuando ya hay datos y se quiere reemplazar todo.
+  const isAdmin = currentUserRole === 'admin';
+  document.getElementById('seedBlock').style.display = isAdmin ? '' : 'none';
+  document.getElementById('seedText').textContent = products.length === 0
+    ? 'Importa de una vez las 6 categorías y los 19 productos del catálogo, con su nombre, material e historia. Después editas cada uno para subirle su foto.'
+    : 'Ya hay productos guardados. Si vuelves a importar, los del catálogo se sobrescriben con su versión original y los demás se quedan como están.';
+
+  const wipeBlock = document.getElementById('wipeBlock');
+  wipeBlock.style.display = isAdmin && (products.length > 0 || categories.length > 0) ? '' : 'none';
+  document.getElementById('wipeCounts').textContent =
+    `Hay ${categories.length} categoría(s) y ${products.length} producto(s) guardados.`;
 
   await loadCustomers();
 
@@ -825,6 +875,7 @@ function wireEvents() {
   document.getElementById('productFilter').addEventListener('change', renderProductList);
   document.getElementById('prod-image').addEventListener('change', handleImageSelect);
   document.getElementById('seedBtn').addEventListener('click', runSeed);
+  document.getElementById('wipeBtn').addEventListener('click', runWipe);
 
   document.getElementById('logoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
 

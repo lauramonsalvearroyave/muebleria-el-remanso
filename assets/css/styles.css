@@ -322,6 +322,19 @@ section{ padding: 68px 0; }
   font-size:.66rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   background: var(--sand); color: var(--near-black); padding:4px 10px; border-radius:999px;
 }
+.tag-pill.tag-custom{ background: transparent; color: var(--gold-bronze); box-shadow: inset 0 0 0 1px var(--sand-line); }
+.danger-zone{ background:#FDF3F1; border:1px solid #E7C5BC; }
+.danger-zone h3{ color:#9A3B2A; }
+.wipe-counts{ font-weight:700; color:#9A3B2A; margin:0 0 14px; }
+.btn-danger{ background:#9A3B2A; color:#fff; border:1.5px solid #9A3B2A; }
+.btn-danger:hover{ background:#7E2F21; border-color:#7E2F21; }
+.custom-note{
+  display:flex; flex-wrap:wrap; gap:6px; align-items:baseline;
+  margin:0 0 30px; padding:16px 20px; border-radius: var(--radius-m);
+  background: var(--sand); border-left: 3px solid var(--gold);
+  font-size:.92rem; color: var(--ink);
+}
+.custom-note strong{ color: var(--black); font-family: var(--font-display); }
 .product-card h3{ font-size: 1.08rem; margin-bottom:2px; }
 .product-name-story{
   font-style: italic; font-size:.85rem; color: var(--gold-bronze); margin: 0 0 6px;

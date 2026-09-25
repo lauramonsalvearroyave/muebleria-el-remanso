@@ -142,6 +142,9 @@ const DICT = {
     badge_new: { es: 'Nuevo', en: 'New' },
     badge_soldout: { es: 'Agotado', en: 'Sold out' },
 
+    custom_title: { es: 'Ninguna pieza existe antes de que la pidas.', en: 'No piece exists until you ask for it.' },
+    custom_desc:  { es: 'Cada mueble se teje desde cero para ti: tus medidas, tu fibra, tu color y la tela que elijas para los cojines. Cuéntanos cómo lo imaginas y lo definimos juntos, sin afán.', en: "Every piece is woven from scratch for you: your measurements, your fiber, your color and the fabric you pick for the cushions. Tell us how you imagine it and we'll settle it together, unhurried." },
+    tag_custom: { es: 'Hecho para ti', en: 'Made for you' },
     tag_mimbre: { es: 'Mimbre', en: 'Wicker' },
     tag_yare: { es: 'Yaré', en: 'Yaré' },
     tag_rattan: { es: 'Rattán', en: 'Rattan' },
@@ -178,13 +181,13 @@ const DICT = {
     p1: { es: 'En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.', en: 'At El Remanso we work alongside weavers who have mastered wicker, yaré, rattan and banana fiber for years. We combine that traditional knowledge with synthetic fiber and nautical rope so you can also enjoy woven furniture on your terrace or garden, without worrying about the weather.' },
     p2: { es: 'Cada pieza sale de nuestro taller revisada a mano, una por una, antes de llegar a tu casa.', en: 'Every piece leaves our workshop hand-checked, one by one, before it reaches your home.' },
 
-    why_title: { es: 'Por qué elegir El Remanso', en: 'Why Choose El Remanso' },
-    why1_title: { es: '100% hecho a mano', en: '100% Handmade' },
-    why1_desc:  { es: 'Cada mueble pasa por manos artesanas, sin producción en serie.', en: 'Every piece passes through artisan hands, with no mass production.' },
-    why2_title: { es: 'Con nombre y con historia', en: 'Named with a Story' },
-    why2_desc:  { es: 'Cada mueble lleva un nombre propio pensado con cariño.', en: 'Every piece carries its own name, chosen with love.' },
-    why3_title: { es: 'Acompañamiento cercano', en: 'Close, Personal Support' },
-    why3_desc:  { es: 'Te escribimos por WhatsApp para resolver cualquier duda.', en: "We'll message you on WhatsApp to answer any questions." }
+    why_title: { es: 'Por qué la gente vuelve', en: 'Why People Come Back' },
+    why1_title: { es: 'Sin prisa', en: 'Unhurried' },
+    why1_desc:  { es: 'Cada mueble pasa por manos que llevan años haciendo esto, y que no se apuran.', en: 'Every piece passes through hands that have done this for years, and never rush.' },
+    why2_title: { es: 'Con nombre propio', en: 'A Name of Its Own' },
+    why2_desc:  { es: 'Le ponemos nombre a cada pieza antes de que tenga dueño.', en: 'We name every piece before it has an owner.' },
+    why3_title: { es: 'De la mano', en: 'Alongside You' },
+    why3_desc:  { es: 'Desde la primera medida hasta que lo vemos entrar por tu puerta.', en: 'From the first measurement until we watch it come through your door.' }
   },
 
   help: {

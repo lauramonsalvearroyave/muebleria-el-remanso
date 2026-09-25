@@ -6,6 +6,11 @@
 <title>Panel de administración | El Remanso</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body style="background:var(--sand);">
@@ -178,9 +183,16 @@
       <div id="productsPanel" style="display:none;">
 
         <div id="seedBlock" class="card" style="display:none; margin-bottom:24px; background:var(--sand);">
-          <h3 class="mt-0">Importar catálogo inicial</h3>
-          <p>Todavía no hay productos guardados. Puedes importar de una vez las categorías y los ~19 productos con los que se lanzó el sitio, y luego editarlos uno por uno para subir las fotos reales.</p>
-          <button id="seedBtn" type="button" class="btn btn-primary">Importar catálogo inicial</button>
+          <h3 class="mt-0">Importar catálogo del PDF</h3>
+          <p id="seedText">Importa de una vez las 6 categorías y los 19 productos del catálogo, con su nombre, material e historia. Después editas cada uno para subirle su foto.</p>
+          <button id="seedBtn" type="button" class="btn btn-primary">Importar catálogo</button>
+        </div>
+
+        <div id="wipeBlock" class="card danger-zone" style="display:none; margin-bottom:24px;">
+          <h3 class="mt-0">Vaciar el catálogo</h3>
+          <p>Borra <strong>todas</strong> las categorías, <strong>todos</strong> los productos y las fotos que tengan subidas. Útil para empezar de cero y volver a importar. <strong>No se puede deshacer.</strong></p>
+          <p id="wipeCounts" class="wipe-counts"></p>
+          <button id="wipeBtn" type="button" class="btn btn-danger">Vaciar el catálogo</button>
         </div>
 
         <div class="card" id="productFormCard">

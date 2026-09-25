@@ -6,21 +6,19 @@
 //  - fetchAllCategories / fetchAllProducts -> lectura completa para el panel admin
 //  - saveCategory / deleteCategory / saveProduct / deleteProduct -> escritura (requiere sesión)
 //  - uploadProductImage / deleteProductImage -> Storage
-//  - onAuthChange / signIn / signOut -> autenticación del panel admin
+//  - onAuthChange / signIn / signOut -> autenticación del panel admin (carga diferida)
 //  - seedInitialCatalog -> importa el catálogo inicial una sola vez
 
+// Solo se importan de entrada los dos modulos que el sitio publico necesita
+// para dibujar (app + firestore). Analytics, Storage y Auth se cargan con
+// import() dinamico cuando de verdad hacen falta: si se importan aqui arriba,
+// el navegador espera a que bajen los cinco antes de disparar DOMContentLoaded,
+// que es justo lo que arranca el catalogo.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { getAnalytics, logEvent, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
 import {
   getFirestore, collection, addDoc, doc, setDoc, deleteDoc, getDocs, getDoc,
   query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL, deleteObject
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
-import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDqiu8m3EIJMiYzMSlM6RF14TUomlkiQPE",
@@ -34,13 +32,52 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
-const auth = getAuth(app);
 
+const SDK = "https://www.gstatic.com/firebasejs/10.13.2";
+
+// Cada modulo se baja una sola vez: la promesa se guarda y se reutiliza.
+let storagePromise = null;
+function loadStorage() {
+  if (!storagePromise) {
+    storagePromise = import(`${SDK}/firebase-storage.js`)
+      .then(m => ({ ...m, storage: m.getStorage(app) }));
+  }
+  return storagePromise;
+}
+
+let authPromise = null;
+function loadAuth() {
+  if (!authPromise) {
+    authPromise = import(`${SDK}/firebase-auth.js`)
+      .then(m => ({ ...m, auth: m.getAuth(app) }));
+  }
+  return authPromise;
+}
+
+// Analytics no hace falta para dibujar nada, asi que se carga cuando el
+// navegador esta libre. Lo que se intente medir antes queda en cola.
 let analytics = null;
-analyticsSupported().then(ok => {
-  if (ok) analytics = getAnalytics(app);
-});
+let logEventFn = null;
+const pendingEvents = [];
+
+async function startAnalytics() {
+  try {
+    const m = await import(`${SDK}/firebase-analytics.js`);
+    if (!(await m.isSupported())) return;
+    analytics = m.getAnalytics(app);
+    logEventFn = m.logEvent;
+    for (const [name, params] of pendingEvents) logEventFn(analytics, name, params);
+    pendingEvents.length = 0;
+  } catch (err) {
+    console.error("No se pudo iniciar Analytics:", err);
+  }
+}
+
+if ("requestIdleCallback" in window) {
+  requestIdleCallback(startAnalytics, { timeout: 5000 });
+} else {
+  window.addEventListener("load", () => setTimeout(startAnalytics, 1500), { once: true });
+}
 
 async function saveLead(data) {
   try {
@@ -56,7 +93,8 @@ async function saveLead(data) {
 }
 
 function track(eventName, params) {
-  if (analytics) logEvent(analytics, eventName, params);
+  if (analytics && logEventFn) logEventFn(analytics, eventName, params);
+  else pendingEvents.push([eventName, params]);
 }
 
 // ---------- Leads: lectura/edición para el panel admin ----------
@@ -150,6 +188,7 @@ async function deleteProduct(id) {
 // ---------- Imágenes ----------
 
 async function uploadProductImage(file, productId) {
+  const { storage, ref, uploadBytes, getDownloadURL } = await loadStorage();
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
   const path = `products/${productId}/${Date.now()}-${safeName}`;
   const storageRef = ref(storage, path);
@@ -161,6 +200,7 @@ async function uploadProductImage(file, productId) {
 async function deleteProductImage(path) {
   if (!path) return;
   try {
+    const { storage, ref, deleteObject } = await loadStorage();
     await deleteObject(ref(storage, path));
   } catch (err) {
     console.error("No se pudo borrar la imagen anterior:", err);
@@ -179,6 +219,7 @@ async function saveHomeSettings(data) {
 }
 
 async function uploadSiteImage(file, key) {
+  const { storage, ref, uploadBytes, getDownloadURL } = await loadStorage();
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
   const path = `site/${key}/${Date.now()}-${safeName}`;
   const storageRef = ref(storage, path);
@@ -189,16 +230,26 @@ async function uploadSiteImage(file, key) {
 
 // ---------- Autenticación (panel admin) ----------
 
+// Mantiene la firma sincrona de siempre: engancha el listener en cuanto
+// el modulo de Auth termina de bajar.
 function onAuthChange(callback) {
-  return onAuthStateChanged(auth, callback);
+  loadAuth().then(({ auth, onAuthStateChanged }) => onAuthStateChanged(auth, callback));
 }
 
 async function signIn(email, password) {
+  const { auth, signInWithEmailAndPassword } = await loadAuth();
   await signInWithEmailAndPassword(auth, email, password);
 }
 
 async function signOutUser() {
-  await fbSignOut(auth);
+  const { auth, signOut } = await loadAuth();
+  await signOut(auth);
+}
+
+// Quien esta con sesion abierta ahora mismo (null si no hay).
+async function currentUser() {
+  const { auth } = await loadAuth();
+  return auth.currentUser;
 }
 
 // ---------- Roles y equipo ----------
@@ -214,7 +265,7 @@ function randomInviteCode() {
 }
 
 async function fetchMyRole() {
-  const user = auth.currentUser;
+  const user = await currentUser();
   if (!user) return null;
   const snap = await getDoc(doc(db, "team", user.uid));
   return snap.exists() ? snap.data().role : null;
@@ -226,7 +277,7 @@ async function createInvite(email) {
   await setDoc(doc(db, "invites", code), {
     email: email || "",
     role: "colaborador",
-    createdBy: auth.currentUser.uid,
+    createdBy: (await currentUser()).uid,
     createdAt: serverTimestamp(),
     used: false,
     usedBy: null
@@ -263,6 +314,7 @@ async function redeemInviteAndSignUp(code, name, email, password) {
     throw new Error("Este código de invitación es para otro correo.");
   }
 
+  const { auth, createUserWithEmailAndPassword } = await loadAuth();
   await createUserWithEmailAndPassword(auth, email, password);
   const uid = auth.currentUser.uid;
 
@@ -326,7 +378,40 @@ async function convertLeadToCustomer(lead) {
   return customerId;
 }
 
-// ---------- Importar catálogo inicial (una sola vez, desde el panel admin) ----------
+// ---------- Vaciar el catálogo (destructivo, solo desde el panel admin) ----------
+// Borra TODOS los productos y TODAS las categorías, y de paso las fotos que
+// esos productos tuvieran en Storage (si no, quedarían colgadas sin dueño).
+// No se puede deshacer: quien llama debe confirmarlo antes.
+
+async function countCatalog() {
+  const [prodSnap, catSnap] = await Promise.all([
+    getDocs(collection(db, "products")),
+    getDocs(collection(db, "categories"))
+  ]);
+  const photos = prodSnap.docs.filter(d => d.data().imagePath).length;
+  return { products: prodSnap.size, categories: catSnap.size, photos };
+}
+
+async function wipeCatalog() {
+  const [prodSnap, catSnap] = await Promise.all([
+    getDocs(collection(db, "products")),
+    getDocs(collection(db, "categories"))
+  ]);
+
+  // Primero las fotos: si algo falla aquí, los documentos siguen en pie y
+  // se puede reintentar sin haber perdido la referencia a la imagen.
+  for (const d of prodSnap.docs) {
+    const path = d.data().imagePath;
+    if (path) await deleteProductImage(path);
+  }
+
+  await Promise.all(prodSnap.docs.map(d => deleteDoc(doc(db, "products", d.id))));
+  await Promise.all(catSnap.docs.map(d => deleteDoc(doc(db, "categories", d.id))));
+
+  return { products: prodSnap.size, categories: catSnap.size };
+}
+
+// ---------- Importar catálogo inicial (desde el panel admin) ----------
 
 async function seedInitialCatalog(categories, products) {
   for (const cat of categories) {
@@ -354,5 +439,5 @@ window.ErFirebase = {
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   fetchTeamMembers, removeTeamMember,
-  seedInitialCatalog
+  seedInitialCatalog, wipeCatalog, countCatalog
 };
