@@ -381,8 +381,13 @@ async function deleteProductById(id) {
 // carga del catalogo y antes hacia que la foto se descartara por tamano.
 // Aqui se reduce en el navegador ANTES de subirla.
 
-const MAX_LADO = 1600;      // px del lado mayor: de sobra para la web
-const CALIDAD = 0.85;       // JPEG; por encima de esto casi no se nota
+// Las fotos del catalogo vienen a 1800 x 1200 y JPEG 95: esas NO se tocan,
+// se suben tal cual. Lo de abajo es solo una red de seguridad para cuando
+// alguien sube una foto cruda de celular (4000 px, 6 MB).
+const LADO_OK  = 2000;          // hasta aqui la foto pasa intacta
+const PESO_OK  = 2 * 1024 * 1024;
+const MAX_LADO = 2000;          // si hay que reducir, hasta aqui
+const CALIDAD  = 0.92;          // alto, para no degradar visiblemente
 
 function pesoLegible(bytes) {
   return bytes > 1024 * 1024
@@ -395,10 +400,12 @@ async function encogerImagen(file) {
   try {
     const bitmap = await createImageBitmap(file);
     const mayor = Math.max(bitmap.width, bitmap.height);
-    const escala = Math.min(1, MAX_LADO / mayor);
 
-    // Ya es chica y liviana: no vale la pena reprocesarla y perder calidad.
-    if (escala === 1 && file.size <= 900 * 1024) { bitmap.close?.(); return file; }
+    // Ya cumple: se devuelve el archivo ORIGINAL, byte por byte. Recodificarla
+    // solo le quitaria calidad sin ganar nada.
+    if (mayor <= LADO_OK && file.size <= PESO_OK) { bitmap.close?.(); return file; }
+
+    const escala = Math.min(1, MAX_LADO / mayor);
 
     const w = Math.round(bitmap.width * escala);
     const h = Math.round(bitmap.height * escala);
@@ -448,8 +455,9 @@ async function handleImageSelect(e) {
   img.onload = () => {
     document.getElementById('imgPreview').innerHTML = `<img src="${objectUrl}" alt="">`;
     const ratio = img.naturalWidth / img.naturalHeight;
-    if (ratio < 1.15 || ratio > 1.55) {
-      avisos.push('No tiene una proporción horizontal cercana a 4:3, así que se puede ver recortada en las esquinas. Puedes subirla igual si te gusta como se ve.');
+    if (ratio < 1.42 || ratio > 1.58) {
+      const medida = `${img.naturalWidth} × ${img.naturalHeight}`;
+      avisos.push(`Esta foto es ${medida} (proporción ${ratio.toFixed(2)}:1). El catálogo usa 3:2 — lo ideal es 1800 × 1200 — así que esta se va a ver recortada. Puedes subirla igual si te gusta como queda.`);
     }
     warning.textContent = avisos.join(' ');
   };
