@@ -50,7 +50,6 @@ let products = [];
 let invites = [];
 let editingCategoryId = null; // null = creando una nueva
 let editingProductId = null;
-let selectedImageFile = null;
 let preparandoImagen = false;   // evita guardar antes de que la foto termine de optimizarse
 let currentUserRole = null; // 'admin' | 'colaborador'
 let comments = [];
@@ -228,12 +227,13 @@ function renderProductForm() {
   form.querySelector('#prod-soldout').checked = editing ? !!editing.soldOut : false;
   form.querySelector('#prod-featured').checked = editing ? !!editing.featured : false;
   form.querySelector('#prod-new').checked = editing ? !!editing.isNew : false;
-  form.querySelector('#prod-image').value = '';
-  selectedImageFile = null;
+  const rutaActual = editing ? (editing.imageUrl || '') : '';
+  form.querySelector('#prod-image-path').value = rutaActual;
+  document.getElementById('imgWarning').textContent = '';
 
   const preview = document.getElementById('imgPreview');
-  if (editing && editing.imageUrl) {
-    preview.innerHTML = `<img src="${esc(editing.imageUrl)}" alt="">`;
+  if (rutaActual) {
+    previsualizarRuta(rutaActual, 'imgPreview', 'imgWarning');
   } else {
     preview.innerHTML = '';
   }
@@ -328,30 +328,13 @@ async function saveProductFromForm(e) {
       featured: form.querySelector('#prod-featured').checked,
       isNew: form.querySelector('#prod-new').checked,
       active: existing ? existing.active !== false : true,
-      imageUrl: existing ? (existing.imageUrl || '') : '',
-      imagePath: existing ? (existing.imagePath || '') : ''
+      imageUrl: document.getElementById('prod-image-path').value.trim(),
+      imagePath: ''
     };
 
-    const id = await window.ErFirebase.saveProduct(editingProductId, data);
-
-    if (selectedImageFile) {
-      const oldPath = data.imagePath;
-      try {
-        const { url, path } = await window.ErFirebase.uploadProductImage(selectedImageFile, id);
-        await window.ErFirebase.saveProduct(id, { imageUrl: url, imagePath: path });
-        if (oldPath) await window.ErFirebase.deleteProductImage(oldPath);
-      } catch (err) {
-        // El producto ya quedo guardado; lo que fallo fue solo la imagen.
-        // Decirlo con precision evita pensar que no se guardo nada.
-        console.error('Fallo la subida de la imagen:', err);
-        alert('El producto se guardó, pero la foto no se pudo subir:\n\n' +
-              (err.message || err) +
-              '\n\nVuelve a editarlo e intenta con la foto de nuevo.');
-      }
-    }
+    await window.ErFirebase.saveProduct(editingProductId, data);
 
     editingProductId = null;
-    selectedImageFile = null;
     await loadData();
     form.reset();
     renderProductForm();
@@ -375,96 +358,47 @@ async function deleteProductById(id) {
   }
 }
 
-// ---------------- Optimizacion de imagenes ----------------
-// Una foto de celular pesa entre 4 y 8 MB y mide unos 4000 px de ancho. En la
-// web se ve a unos 400 px. Subirla tal cual desperdicia espacio, hace lenta la
-// carga del catalogo y antes hacia que la foto se descartara por tamano.
-// Aqui se reduce en el navegador ANTES de subirla.
+// ---------------- Fotos por ruta ----------------
+// Las fotos viven en el repositorio y GitHub Pages las sirve. Aqui solo se
+// guarda su ruta; no se sube ningun archivo. Firebase Storage no esta
+// disponible en el plan gratuito, ver docs/activar-storage.md.
 
-// Las fotos del catalogo vienen a 1800 x 1200 y JPEG 95: esas NO se tocan,
-// se suben tal cual. Lo de abajo es solo una red de seguridad para cuando
-// alguien sube una foto cruda de celular (4000 px, 6 MB).
-const LADO_OK  = 2000;          // hasta aqui la foto pasa intacta
-const PESO_OK  = 2 * 1024 * 1024;
-const MAX_LADO = 2000;          // si hay que reducir, hasta aqui
-const CALIDAD  = 0.92;          // alto, para no degradar visiblemente
+const CARPETA_PRODUCTOS = 'assets/img/productos/';
 
-function pesoLegible(bytes) {
-  return bytes > 1024 * 1024
-    ? (bytes / 1024 / 1024).toFixed(1) + ' MB'
-    : Math.round(bytes / 1024) + ' KB';
+// "Poltrona Remanso" -> assets/img/productos/poltrona-remanso.jpg
+function rutaSugerida(nombre) {
+  const slug = slugify(nombre);
+  return slug ? CARPETA_PRODUCTOS + slug + '.jpg' : '';
 }
 
-async function encogerImagen(file) {
-  if (!file || !file.type.startsWith('image/')) return file;
-  try {
-    const bitmap = await createImageBitmap(file);
-    const mayor = Math.max(bitmap.width, bitmap.height);
+// Muestra la foto y avisa si la ruta no existe, que es el error tipico:
+// el nombre del archivo no coincide con lo que se escribio.
+function previsualizarRuta(ruta, contenedorId, avisoId) {
+  const cont = document.getElementById(contenedorId);
+  const aviso = avisoId ? document.getElementById(avisoId) : null;
+  if (aviso) aviso.textContent = '';
+  if (!cont) return;
+  if (!ruta) { cont.innerHTML = ''; return; }
 
-    // Ya cumple: se devuelve el archivo ORIGINAL, byte por byte. Recodificarla
-    // solo le quitaria calidad sin ganar nada.
-    if (mayor <= LADO_OK && file.size <= PESO_OK) { bitmap.close?.(); return file; }
-
-    const escala = Math.min(1, MAX_LADO / mayor);
-
-    const w = Math.round(bitmap.width * escala);
-    const h = Math.round(bitmap.height * escala);
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
-    bitmap.close?.();
-
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CALIDAD));
-    if (!blob || blob.size >= file.size) return file;   // no mejoro: se deja la original
-
-    const nombre = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-    return new File([blob], nombre, { type: 'image/jpeg' });
-  } catch (err) {
-    // Si el navegador no puede procesarla, se sube tal cual.
-    console.error('No se pudo optimizar la imagen:', err);
-    return file;
-  }
-}
-
-async function handleImageSelect(e) {
-  const file = e.target.files[0];
-  const warning = document.getElementById('imgWarning');
-  warning.textContent = '';
-  if (!file) { selectedImageFile = null; return; }
-
-  warning.textContent = 'Preparando la foto...';
-  preparandoImagen = true;
-  const guardar = document.getElementById('productSaveBtn');
-  guardar.disabled = true;
-  let optimizada;
-  try {
-    optimizada = await encogerImagen(file);
-  } finally {
-    preparandoImagen = false;
-    guardar.disabled = false;
-  }
-  selectedImageFile = optimizada;
-
-  const avisos = [];
-  if (optimizada !== file) {
-    avisos.push(`Foto optimizada: de ${pesoLegible(file.size)} a ${pesoLegible(optimizada.size)}.`);
-  }
-
-  const objectUrl = URL.createObjectURL(optimizada);
   const img = new Image();
   img.onload = () => {
-    document.getElementById('imgPreview').innerHTML = `<img src="${objectUrl}" alt="">`;
-    const ratio = img.naturalWidth / img.naturalHeight;
-    if (ratio < 1.42 || ratio > 1.58) {
-      const medida = `${img.naturalWidth} × ${img.naturalHeight}`;
-      avisos.push(`Esta foto es ${medida} (proporción ${ratio.toFixed(2)}:1). El catálogo usa 3:2 — lo ideal es 1800 × 1200 — así que esta se va a ver recortada. Puedes subirla igual si te gusta como queda.`);
+    cont.innerHTML = '';
+    cont.appendChild(img);
+    if (aviso) {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      if (ratio < 1.42 || ratio > 1.58) {
+        aviso.textContent = 'Esta foto es ' + img.naturalWidth + ' x ' + img.naturalHeight +
+          ' (proporcion ' + ratio.toFixed(2) + ':1). El catalogo usa 3:2 \u2014 lo ideal es 1800 x 1200 \u2014 asi que se va a ver recortada.';
+      }
     }
-    warning.textContent = avisos.join(' ');
   };
-  img.onerror = () => { warning.textContent = avisos.join(' '); };
-  img.src = objectUrl;
+  img.onerror = () => {
+    cont.innerHTML = '';
+    if (aviso) aviso.textContent = 'No se encuentra ese archivo. Revisa que la foto este en la carpeta y que el nombre coincida exactamente: minusculas, sin tildes ni espacios.';
+  };
+  img.alt = '';
+  img.src = ruta;
 }
-
 // ---------------- Importar catálogo inicial ----------------
 
 async function runSeed() {
@@ -560,8 +494,7 @@ async function loadData() {
 // ---------------- Fotos de inicio (hero + "Nuestra historia") ----------------
 
 let homeSettings = {};
-let selectedHomeHeroFile = null;
-let selectedHomeAboutFile = null;
+
 
 async function loadHomeSettings() {
   homeSettings = await window.ErFirebase.fetchHomeSettings();
@@ -569,15 +502,12 @@ async function loadHomeSettings() {
   const aboutPreview = document.getElementById('homeAboutPreview');
   heroPreview.innerHTML = homeSettings.heroImageUrl ? `<img src="${esc(homeSettings.heroImageUrl)}" alt="">` : '';
   aboutPreview.innerHTML = homeSettings.aboutImageUrl ? `<img src="${esc(homeSettings.aboutImageUrl)}" alt="">` : '';
+  document.getElementById('home-hero-path').value = homeSettings.heroImageUrl || '';
+  document.getElementById('home-about-path').value = homeSettings.aboutImageUrl || '';
 }
 
-async function handleHomeImageSelect(e, previewId, which) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const optimizada = await encogerImagen(file);
-  if (which === 'hero') selectedHomeHeroFile = optimizada; else selectedHomeAboutFile = optimizada;
-  const objectUrl = URL.createObjectURL(optimizada);
-  document.getElementById(previewId).innerHTML = `<img src="${objectUrl}" alt="">`;
+function handleHomeImageSelect(e, previewId) {
+  previsualizarRuta(e.target.value.trim(), previewId, null);
 }
 
 async function saveHomeImagesFromForm(e) {
@@ -588,25 +518,14 @@ async function saveHomeImagesFromForm(e) {
   btn.disabled = true;
   btn.textContent = 'Guardando...';
   try {
-    const data = {};
-    if (selectedHomeHeroFile) {
-      const { url, path } = await window.ErFirebase.uploadSiteImage(selectedHomeHeroFile, 'hero');
-      data.heroImageUrl = url;
-      data.heroImagePath = path;
-      if (homeSettings.heroImagePath) await window.ErFirebase.deleteProductImage(homeSettings.heroImagePath);
-    }
-    if (selectedHomeAboutFile) {
-      const { url, path } = await window.ErFirebase.uploadSiteImage(selectedHomeAboutFile, 'about');
-      data.aboutImageUrl = url;
-      data.aboutImagePath = path;
-      if (homeSettings.aboutImagePath) await window.ErFirebase.deleteProductImage(homeSettings.aboutImagePath);
-    }
-    if (Object.keys(data).length) {
-      await window.ErFirebase.saveHomeSettings(data);
-      selectedHomeHeroFile = null;
-      selectedHomeAboutFile = null;
-      await loadHomeSettings();
-    }
+    // Se guardan rutas del repositorio, no archivos subidos.
+    await window.ErFirebase.saveHomeSettings({
+      heroImageUrl: document.getElementById('home-hero-path').value.trim(),
+      heroImagePath: '',
+      aboutImageUrl: document.getElementById('home-about-path').value.trim(),
+      aboutImagePath: ''
+    });
+    await loadHomeSettings();
   } catch (err) {
     errorEl.textContent = 'No se pudo guardar: ' + err.message;
   } finally {
@@ -1111,7 +1030,6 @@ function wireEvents() {
   document.getElementById('productForm').addEventListener('submit', saveProductFromForm);
   document.getElementById('productCancelBtn').addEventListener('click', () => {
     editingProductId = null;
-    selectedImageFile = null;
     document.getElementById('productForm').reset();
     renderProductForm();
   });
@@ -1124,7 +1042,17 @@ function wireEvents() {
     if (toggleBtn) toggleProductActive(toggleBtn.dataset.toggleActiveProd);
   });
   document.getElementById('productFilter').addEventListener('change', renderProductList);
-  document.getElementById('prod-image').addEventListener('change', handleImageSelect);
+  const rutaInput = document.getElementById('prod-image-path');
+  rutaInput.addEventListener('input', () => {
+    previsualizarRuta(rutaInput.value.trim(), 'imgPreview', 'imgWarning');
+  });
+  document.getElementById('suggestPathBtn').addEventListener('click', () => {
+    const nombre = document.getElementById('prod-name').value.trim();
+    const ruta = rutaSugerida(nombre);
+    if (!ruta) { alert('Escribe primero el nombre de la pieza.'); return; }
+    rutaInput.value = ruta;
+    previsualizarRuta(ruta, 'imgPreview', 'imgWarning');
+  });
   document.getElementById('seedBtn').addEventListener('click', runSeed);
   document.getElementById('wipeBtn').addEventListener('click', runWipe);
   bindCommentActions();
@@ -1160,8 +1088,8 @@ function wireEvents() {
     }
   });
 
-  document.getElementById('home-hero-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeHeroPreview', 'hero'));
-  document.getElementById('home-about-image').addEventListener('change', (e) => handleHomeImageSelect(e, 'homeAboutPreview', 'about'));
+  document.getElementById('home-hero-path').addEventListener('input', (e) => handleHomeImageSelect(e, 'homeHeroPreview'));
+  document.getElementById('home-about-path').addEventListener('input', (e) => handleHomeImageSelect(e, 'homeAboutPreview'));
   document.getElementById('homeImagesForm').addEventListener('submit', saveHomeImagesFromForm);
   document.getElementById('whatsappForm').addEventListener('submit', saveWhatsappFromForm);
 

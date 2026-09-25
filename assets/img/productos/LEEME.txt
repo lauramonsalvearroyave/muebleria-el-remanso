@@ -1,0 +1,10 @@
+Aqui van las fotos de los productos del catalogo.
+
+Formato: 1800 x 1200 px (3:2 horizontal), JPG.
+Nombre: en minuscula, sin tildes ni espacios. Ej: poltrona-remanso.jpg
+
+En el panel de administracion, en la ficha del producto, se escribe la ruta:
+  assets/img/productos/poltrona-remanso.jpg
+
+El boton "Sugerir" arma esa ruta sola a partir del nombre de la pieza, asi
+que basta con que el archivo se llame igual.

@@ -390,6 +390,13 @@ section{ padding: 68px 0; }
 .admin-row.is-pending{ border-left:3px solid var(--gold); }
 .quote-preview{ font-style:italic; }
 
+.path-row{ display:flex; gap:8px; align-items:center; }
+.path-row input{ flex:1; }
+.admin-spec code{
+  background: var(--white); padding:1px 6px; border-radius:5px;
+  font-size:.85em; border:1px solid var(--sand-line);
+}
+
 .danger-zone{ background:#FDF3F1; border:1px solid #E7C5BC; }
 .danger-zone h3{ color:#9A3B2A; }
 .wipe-counts{ font-weight:700; color:#9A3B2A; margin:0 0 14px; }

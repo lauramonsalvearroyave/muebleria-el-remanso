@@ -1,0 +1,7 @@
+Aqui van las dos fotos de la pagina de Inicio.
+
+hero.jpg    -> la de arriba, VERTICAL 4:5 (ej. 1200 x 1500)
+taller.jpg  -> la de "Nuestra historia", CUADRADA 1:1 (ej. 1200 x 1200)
+
+En el panel, pestana Ajustes, se escribe la ruta:
+  assets/img/inicio/hero.jpg
