@@ -1,0 +1,8 @@
+# GitHub Pages construye el sitio con Jekyll. Lo de aqui abajo no se publica:
+# son notas internas de configuracion, no paginas del sitio. Siguen en el
+# repositorio, solo dejan de servirse en muebleriaelremanso.com
+exclude:
+  - docs
+  - README.md
+  - Catalogo-El-Remanso.pdf
+  - Manual-de-Marca-El-Remanso.pdf

@@ -4,4 +4,7 @@ Allow: /
 # El panel de administracion no tiene nada que buscar aqui.
 Disallow: /admin.html
 
+# Notas internas de configuracion: no son paginas del sitio.
+Disallow: /docs/
+
 Sitemap: https://muebleriaelremanso.com/sitemap.xml
