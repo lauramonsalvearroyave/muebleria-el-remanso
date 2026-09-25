@@ -66,6 +66,19 @@ function loadAuth() {
 // instante -- el fragmento del HTML lo define de forma sincrona y encola en
 // dataLayer -- asi que no hace falta cola propia.
 
+async function saveLead(data) {
+  try {
+    await addDoc(collection(db, "leads"), {
+      ...data,
+      page: location.pathname,
+      createdAt: serverTimestamp()
+    });
+  } catch (err) {
+    // No bloquea el envío por WhatsApp si Firebase falla (ej. sin internet)
+    console.error("No se pudo guardar el registro en Firebase:", err);
+  }
+}
+
 function track(eventName, params) {
   if (typeof window.gtag === 'function') {
     window.gtag('event', eventName, params || {});
