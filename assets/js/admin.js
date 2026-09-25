@@ -358,6 +358,78 @@ async function deleteProductById(id) {
   }
 }
 
+// ---------------- Subida de fotos (Cloudinary) ----------------
+// El sitio es estatico: GitHub Pages entrega archivos pero no los recibe, asi
+// que subir una foto necesita un servicio externo. Se usa Cloudinary con un
+// "upload preset" sin firma, que es lo que permite subir desde el navegador
+// sin tener un servidor propio.
+//
+// Estos dos datos son publicos por diseno (viajan en el codigo del panel). La
+// proteccion no esta en ocultarlos, sino en como se configura el preset en
+// Cloudinary: solo imagenes, con tamano maximo y en una carpeta fija.
+// Ver docs/configurar-cloudinary.md
+const CLOUDINARY_CLOUD_NAME = 'PENDIENTE';
+const CLOUDINARY_UPLOAD_PRESET = 'PENDIENTE';
+
+function cloudinaryListo() {
+  return CLOUDINARY_CLOUD_NAME !== 'PENDIENTE' && CLOUDINARY_UPLOAD_PRESET !== 'PENDIENTE';
+}
+
+async function subirACloudinary(file) {
+  if (!cloudinaryListo()) {
+    throw new Error('Falta configurar Cloudinary. Ver docs/configurar-cloudinary.md');
+  }
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: 'POST',
+    body: fd
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const motivo = (data.error && data.error.message) || `Cloudinary respondio ${res.status}`;
+    throw new Error(motivo);
+  }
+  // La foto se guarda y se entrega tal cual se subio: sin transformaciones,
+  // para no alterar los 1800 x 1200 a calidad 95 del original.
+  return data.secure_url;
+}
+
+// Conecta un boton de archivo con un campo de ruta y su previsualizacion.
+function conectarSubida({ fileId, pathId, statusId, previewId, warningId }) {
+  const fileInput = document.getElementById(fileId);
+  const pathInput = document.getElementById(pathId);
+  const status = document.getElementById(statusId);
+  if (!fileInput || !pathInput) return;
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    status.className = 'upload-status';
+    status.textContent = 'Subiendo ' + file.name + '...';
+    fileInput.disabled = true;
+
+    try {
+      const url = await subirACloudinary(file);
+      pathInput.value = url;
+      previsualizarRuta(url, previewId, warningId || null);
+      status.className = 'upload-status ok';
+      status.textContent = 'Listo, foto subida.';
+    } catch (err) {
+      console.error('Fallo la subida a Cloudinary:', err);
+      status.className = 'upload-status error';
+      status.textContent = 'No se pudo subir: ' + err.message;
+    } finally {
+      fileInput.disabled = false;
+      fileInput.value = '';   // permite volver a elegir el mismo archivo
+    }
+  });
+}
+
 // ---------------- Fotos por ruta ----------------
 // Las fotos viven en el repositorio y GitHub Pages las sirve. Aqui solo se
 // guarda su ruta; no se sube ningun archivo. Firebase Storage no esta
@@ -1046,6 +1118,13 @@ function wireEvents() {
   rutaInput.addEventListener('input', () => {
     previsualizarRuta(rutaInput.value.trim(), 'imgPreview', 'imgWarning');
   });
+  conectarSubida({ fileId: 'prod-image-file', pathId: 'prod-image-path',
+                   statusId: 'uploadStatus', previewId: 'imgPreview', warningId: 'imgWarning' });
+  conectarSubida({ fileId: 'home-hero-file', pathId: 'home-hero-path',
+                   statusId: 'heroUploadStatus', previewId: 'homeHeroPreview' });
+  conectarSubida({ fileId: 'home-about-file', pathId: 'home-about-path',
+                   statusId: 'aboutUploadStatus', previewId: 'homeAboutPreview' });
+
   document.getElementById('suggestPathBtn').addEventListener('click', () => {
     const nombre = document.getElementById('prod-name').value.trim();
     const ruta = rutaSugerida(nombre);

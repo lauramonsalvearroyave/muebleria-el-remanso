@@ -241,10 +241,18 @@
                 <br><strong>Especificación:</strong> 1800×1200 px (3:2 horizontal), JPG.
                 El nombre del archivo en minúscula, sin tildes ni espacios.
               </div>
-              <div class="path-row">
-                <input type="text" id="prod-image-path" placeholder="assets/img/productos/poltrona-remanso.jpg">
-                <button type="button" id="suggestPathBtn" class="btn btn-light btn-sm">Sugerir</button>
+              <div class="upload-row">
+                <label for="prod-image-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="prod-image-file" accept="image/*" hidden>
+                <span id="uploadStatus" class="upload-status"></span>
               </div>
+              <details class="path-details">
+                <summary>o escribir la ruta de una foto del proyecto</summary>
+                <div class="path-row">
+                  <input type="text" id="prod-image-path" placeholder="assets/img/productos/poltrona-remanso.jpg">
+                  <button type="button" id="suggestPathBtn" class="btn btn-light btn-sm">Sugerir</button>
+                </div>
+              </details>
               <p id="imgWarning" style="color:var(--gold-bronze); font-size:.8rem; margin-top:6px;"></p>
               <div id="imgPreview" class="img-preview"></div>
             </div>
@@ -387,11 +395,21 @@
             <div class="field">
               <label for="home-hero-path">Foto principal (hero) — vertical 4:5</label>
               <div id="homeHeroPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="home-hero-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="home-hero-file" accept="image/*" hidden>
+                <span id="heroUploadStatus" class="upload-status"></span>
+              </div>
               <input type="text" id="home-hero-path" placeholder="assets/img/inicio/hero.jpg">
             </div>
             <div class="field">
               <label for="home-about-path">Foto del taller ("Nuestra historia") — cuadrada 1:1</label>
               <div id="homeAboutPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="home-about-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="home-about-file" accept="image/*" hidden>
+                <span id="aboutUploadStatus" class="upload-status"></span>
+              </div>
               <input type="text" id="home-about-path" placeholder="assets/img/inicio/taller.jpg">
             </div>
             <p id="homeImagesError" style="color:#9A3B2A; font-size:.85rem;"></p>
