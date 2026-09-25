@@ -514,6 +514,80 @@
             <button type="submit" class="btn btn-primary" id="homeImagesSaveBtn">Guardar fotos de inicio</button>
           </form>
         </div>
+        <div class="card" style="margin-top:24px;">
+          <h3 class="mt-0">Fotos de los materiales</h3>
+          <p>Son las seis fotos de la sección "Nuestros materiales" del Inicio. Cada una debe ser una <strong>macro del tejido llenando todo el cuadro</strong>, sin fondo ni objetos.</p>
+          <div class="admin-spec">
+            <strong>Medida exacta: 1200 × 600 px</strong> (proporción 2:1, horizontal), formato JPG.
+            El recuadro en la página mide 208 × 108 px, así que con 1200 se ve nítida hasta en pantallas de alta resolución.
+            Si un material no tiene foto, se queda su textura de color.
+          </div>
+          <form id="materialImagesForm">
+            <div class="field">
+              <label for="mat-mimbre-path">Mimbre</label>
+              <div id="matMimbrePreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-mimbre-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-mimbre-file" accept="image/*" hidden>
+                <span id="matMimbreStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-mimbre-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <div class="field">
+              <label for="mat-yare-path">Yaré</label>
+              <div id="matYarePreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-yare-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-yare-file" accept="image/*" hidden>
+                <span id="matYareStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-yare-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <div class="field">
+              <label for="mat-rattan-path">Rattán</label>
+              <div id="matRattanPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-rattan-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-rattan-file" accept="image/*" hidden>
+                <span id="matRattanStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-rattan-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <div class="field">
+              <label for="mat-calceta-path">Calceta de plátano</label>
+              <div id="matCalcetaPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-calceta-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-calceta-file" accept="image/*" hidden>
+                <span id="matCalcetaStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-calceta-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <div class="field">
+              <label for="mat-sintetico-path">Sintético</label>
+              <div id="matSinteticoPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-sintetico-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-sintetico-file" accept="image/*" hidden>
+                <span id="matSinteticoStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-sintetico-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <div class="field">
+              <label for="mat-piola-path">Piola náutica</label>
+              <div id="matPiolaPreview" class="img-preview"></div>
+              <div class="upload-row">
+                <label for="mat-piola-file" class="btn btn-primary btn-sm">Subir una foto</label>
+                <input type="file" id="mat-piola-file" accept="image/*" hidden>
+                <span id="matPiolaStatus" class="upload-status"></span>
+              </div>
+              <input type="text" id="mat-piola-path" placeholder="Se llena solo al subir la foto">
+            </div>
+            <p id="materialImagesError" style="color:#9A3B2A; font-size:.85rem;"></p>
+            <button type="submit" class="btn btn-primary" id="materialImagesSaveBtn">Guardar fotos de materiales</button>
+          </form>
+        </div>
+
       </div>
 
       <!-- ===== EQUIPO (solo administradores) ===== -->

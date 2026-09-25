@@ -78,12 +78,11 @@
         <p class="lede center" data-i18n="home.materials_lede">Cada material tiene su textura, su carácter y su mejor lugar en la casa. Te contamos en qué se diferencian para que elijas con confianza — o déjalo en nuestras manos.</p>
       </div>
 
-      <!-- Fotos de los materiales: basta con dejar los archivos en
-           assets/img/materiales/ con estos nombres exactos:
-             mimbre.jpg  yare.jpg  rattan.jpg  calceta.jpg  sintetico.jpg  piola.jpg
-           Formato: 1000 x 440 px (banda horizontal), .jpg, menos de 300 KB.
-           Si el archivo todavia no existe, la <img> se retira sola y queda
-           visible la textura de color de respaldo. No hay que tocar el HTML. -->
+      <!-- Las fotos de los materiales se administran desde el panel
+           (Ajustes > Fotos de los materiales) y las dibuja
+           assets/js/catalog-render.js sobre cada data-material.
+           Medida: 1200 x 600 px (proporcion 2:1), JPG.
+           Si un material no tiene foto, queda su textura de color. -->
 
       <div class="material-group">
         <h3 class="material-group-title" data-i18n="home.fibers_group_title">Fibras naturales</h3>
@@ -91,22 +90,22 @@
       </div>
       <div class="grid grid-4">
         <div class="card material-card">
-          <div class="material-swatch swatch-mimbre"><img src="assets/img/materiales/mimbre.jpg" alt="Textura de mimbre" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-mimbre" data-material="mimbre"><img src="assets/img/materiales/mimbre.jpg" alt="Textura de mimbre" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_mimbre_title">Mimbre</h3>
           <p data-i18n="home.mat_mimbre_desc">Fibra clara y liviana que se dobla sin quebrarse. La más noble de todas: cálida al tacto, de tejido fino y fácil de combinar con cualquier cojinería.</p>
         </div>
         <div class="card material-card">
-          <div class="material-swatch swatch-yare"><img src="assets/img/materiales/yare.jpg" alt="Textura de yaré" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-yare" data-material="yare"><img src="assets/img/materiales/yare.jpg" alt="Textura de yaré" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_yare_title">Yaré</h3>
           <p data-i18n="home.mat_yare_desc">Raíz tradicional colombiana, muy flexible y de una resistencia enorme. Aguanta el uso diario y con los años toma un tono más profundo.</p>
         </div>
         <div class="card material-card">
-          <div class="material-swatch swatch-rattan"><img src="assets/img/materiales/rattan.jpg" alt="Textura de rattán" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-rattan" data-material="rattan"><img src="assets/img/materiales/rattan.jpg" alt="Textura de rattán" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_rattan_title">Rattán</h3>
           <p data-i18n="home.mat_rattan_desc">La más firme de las fibras naturales. Su bejuco macizo sostiene estructuras grandes sin ceder, con un acabado elegante y sobrio.</p>
         </div>
         <div class="card material-card">
-          <div class="material-swatch swatch-calceta"><img src="assets/img/materiales/calceta.jpg" alt="Textura de calceta de plátano" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-calceta" data-material="calceta"><img src="assets/img/materiales/calceta.jpg" alt="Textura de calceta de plátano" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_calceta_title">Calceta de plátano</h3>
           <p data-i18n="home.mat_calceta_desc">Se obtiene del tallo seco del plátano, lo que el cultivo ya no usa. De textura gruesa y tono tierra: da un tejido rústico, con mucho carácter.</p>
         </div>
@@ -118,12 +117,12 @@
       </div>
       <div class="grid grid-2 grid-tech">
         <div class="card material-card">
-          <div class="material-swatch swatch-sintetico"><img src="assets/img/materiales/sintetico.jpg" alt="Textura de fibra sintética" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-sintetico" data-material="sintetico"><img src="assets/img/materiales/sintetico.jpg" alt="Textura de fibra sintética" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_sintetico_title">Sintético</h3>
           <p data-i18n="home.mat_sintetico_desc">Fibra técnica tejida igual que la natural. No se decolora con el sol ni se daña con la lluvia, y no pierde la forma con el paso del tiempo.</p>
         </div>
         <div class="card material-card">
-          <div class="material-swatch swatch-piola"><img src="assets/img/materiales/piola.jpg" alt="Textura de piola náutica" loading="lazy" onerror="this.remove()"></div>
+          <div class="material-swatch swatch-piola" data-material="piola"><img src="assets/img/materiales/piola.jpg" alt="Textura de piola náutica" loading="lazy" onerror="this.remove()"></div>
           <h3 data-i18n="home.mat_piola_title">Piola náutica</h3>
           <p data-i18n="home.mat_piola_desc">Cuerda trenzada de uso marino, suave al sentarse y muy resistente a la humedad y al roce. No se deshilacha ni se endurece con el tiempo.</p>
         </div>

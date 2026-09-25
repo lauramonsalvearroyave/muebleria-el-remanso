@@ -438,6 +438,19 @@ async function convertLeadToCustomer(lead) {
   return customerId;
 }
 
+// ---------- Fotos de los materiales ----------
+// Se administran desde el panel, no por archivo, para no depender del
+// repositorio. Viven en settings/materials, que ya tiene lectura publica.
+
+async function fetchMaterialImages() {
+  const snap = await getDoc(doc(db, "settings", "materials"));
+  return snap.exists() ? snap.data() : {};
+}
+
+async function saveMaterialImages(data) {
+  await setDoc(doc(db, "settings", "materials"), data, { merge: true });
+}
+
 // ---------- Pedidos ----------
 // Coleccion propia y no subcoleccion del cliente: la pestana Pedidos necesita
 // listarlos TODOS para filtrar por estado, y eso desde una subcoleccion obliga
@@ -554,6 +567,7 @@ window.ErFirebase = {
   saveProduct, deleteProduct,
   uploadProductImage, deleteProductImage,
   fetchHomeSettings, saveHomeSettings, uploadSiteImage,
+  fetchMaterialImages, saveMaterialImages,
   fetchSiteSettings, saveSiteSettings, getWhatsappNumber,
   fetchLeads, updateLead, deleteLead,
   fetchCustomers, saveCustomer, deleteCustomer,

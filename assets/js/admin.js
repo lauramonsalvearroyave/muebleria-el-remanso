@@ -574,6 +574,7 @@ async function loadData() {
     invites = await window.ErFirebase.fetchInvites();
     renderInviteList();
     await loadHomeSettings();
+    await loadMaterialImages();
     await loadSiteSettings();
     await loadLeads();
     await loadTeamMembers();
@@ -620,6 +621,52 @@ async function saveHomeImagesFromForm(e) {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Guardar fotos de inicio';
+  }
+}
+
+// ---------------- Fotos de los materiales ----------------
+// Las seis del bloque "Nuestros materiales" del Inicio. Se guardan en
+// settings/materials como { mimbre: url, yare: url, ... }.
+
+const MATERIALES_FOTO = ['mimbre', 'yare', 'rattan', 'calceta', 'sintetico', 'piola'];
+
+function capitalizar(k) { return k.charAt(0).toUpperCase() + k.slice(1); }
+
+let materialImages = {};
+
+async function loadMaterialImages() {
+  try {
+    materialImages = await window.ErFirebase.fetchMaterialImages();
+  } catch (err) {
+    console.error('No se pudieron cargar las fotos de materiales:', err);
+    materialImages = {};
+  }
+  MATERIALES_FOTO.forEach(k => {
+    const url = materialImages[k] || '';
+    document.getElementById(`mat-${k}-path`).value = url;
+    previsualizarRuta(url, `mat${capitalizar(k)}Preview`, null);
+  });
+}
+
+async function saveMaterialImagesFromForm(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('materialImagesError');
+  const btn = document.getElementById('materialImagesSaveBtn');
+  errorEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    const data = {};
+    MATERIALES_FOTO.forEach(k => {
+      data[k] = document.getElementById(`mat-${k}-path`).value.trim();
+    });
+    await window.ErFirebase.saveMaterialImages(data);
+    await loadMaterialImages();
+  } catch (err) {
+    errorEl.textContent = 'No se pudo guardar: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar fotos de materiales';
   }
 }
 
@@ -1399,6 +1446,12 @@ function wireEvents() {
   });
   conectarSubida({ fileId: 'prod-image-file', pathId: 'prod-image-path',
                    statusId: 'uploadStatus', previewId: 'imgPreview', warningId: 'imgWarning' });
+  document.getElementById('materialImagesForm').addEventListener('submit', saveMaterialImagesFromForm);
+  MATERIALES_FOTO.forEach(k => {
+    conectarSubida({ fileId: `mat-${k}-file`, pathId: `mat-${k}-path`,
+                     statusId: `mat${capitalizar(k)}Status`, previewId: `mat${capitalizar(k)}Preview` });
+  });
+
   conectarSubida({ fileId: 'home-hero-file', pathId: 'home-hero-path',
                    statusId: 'heroUploadStatus', previewId: 'homeHeroPreview' });
   conectarSubida({ fileId: 'home-about-file', pathId: 'home-about-path',

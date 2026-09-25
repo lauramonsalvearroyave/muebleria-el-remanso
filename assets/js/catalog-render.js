@@ -251,6 +251,38 @@ function setUpCarousel(section, track, dotsRoot) {
   renderDots();
 }
 
+// ---------- Fotos de los materiales (inicio) ----------
+// Se administran desde el panel. Si un material no tiene foto, se queda su
+// textura de color, que es un respaldo digno y no un hueco.
+
+async function renderMaterialImages() {
+  const recuadros = document.querySelectorAll('.material-swatch[data-material]');
+  if (!recuadros.length) return;
+
+  let fotos = {};
+  try {
+    fotos = await window.ErFirebase.fetchMaterialImages();
+  } catch (err) {
+    console.error('No se pudieron cargar las fotos de los materiales:', err);
+    return;
+  }
+
+  recuadros.forEach(rec => {
+    const url = fotos[rec.dataset.material];
+    if (!url) return;
+    // El recuadro mide 208 px; 600 alcanza de sobra hasta en pantallas 2x.
+    const liviana = variante(url, 'w_600,f_auto,q_auto');
+    let img = rec.querySelector('img');
+    if (!img) {
+      img = new Image();
+      img.loading = 'lazy';
+      img.alt = '';
+      rec.appendChild(img);
+    }
+    img.src = liviana;
+  });
+}
+
 async function renderComments() {
   const section = document.getElementById('commentsSection');
   if (!section) return;
@@ -329,7 +361,8 @@ async function init() {
   const heroSlot = document.getElementById('heroImageSlot');
   const aboutSlot = document.getElementById('aboutImageSlot');
   const commentsSection = document.getElementById('commentsSection');
-  if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot && !commentsSection) return;
+  const swatches = document.querySelector('.material-swatch[data-material]');
+  if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot && !commentsSection && !swatches) return;
 
   // No depende de Firestore: se engancha antes, para que siga funcionando
   // aunque la carga del catalogo falle.
@@ -345,11 +378,12 @@ async function init() {
   try {
     const homeImages = renderHomeImages();
     const comments = renderComments();
+    const materiales = renderMaterialImages();
     const [categories, products] = await Promise.all([
       window.ErFirebase.fetchCategories(),
       catalogRoot ? window.ErFirebase.fetchProducts() : Promise.resolve([])
     ]);
-    await Promise.all([homeImages, comments]);
+    await Promise.all([homeImages, comments, materiales]);
 
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);
     if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories);
