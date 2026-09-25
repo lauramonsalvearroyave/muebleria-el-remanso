@@ -568,6 +568,7 @@ async function loadData() {
     `Hay ${categories.length} categoría(s) y ${products.length} producto(s) guardados.`;
 
   await loadCustomers();
+  await loadOrders();
 
   if (currentUserRole === 'admin') {
     invites = await window.ErFirebase.fetchInvites();
@@ -667,13 +668,38 @@ async function loadCustomers() {
   renderCustomerForm();
 }
 
+function clientesFiltrados() {
+  const texto = document.getElementById('customerSearch').value.trim().toLowerCase();
+  if (!texto) return customers;
+  // Se busca por nombre, telefono y cedula. El telefono se compara sin
+  // espacios ni guiones para que "300 123" encuentre "3001234567".
+  const limpio = texto.replace(/[^\w]/g, '');
+  return customers.filter(c => {
+    const tel = String(c.phone || '').replace(/[^\w]/g, '');
+    return String(c.name || '').toLowerCase().includes(texto)
+        || String(c.cedula || '').toLowerCase().includes(texto)
+        || (limpio && tel.includes(limpio));
+  });
+}
+
 function renderCustomerList() {
   const list = document.getElementById('customerList');
+  const lista = clientesFiltrados();
+
+  document.getElementById('customerCount').textContent =
+    lista.length === customers.length
+      ? `${customers.length} cliente(s)`
+      : `${lista.length} de ${customers.length}`;
+
   if (!customers.length) {
     list.innerHTML = '<p class="admin-empty">Todavía no hay clientes guardados.</p>';
     return;
   }
-  list.innerHTML = customers.map(c => `
+  if (!lista.length) {
+    list.innerHTML = '<p class="admin-empty">Ningún cliente coincide con la búsqueda.</p>';
+    return;
+  }
+  list.innerHTML = lista.map(c => `
     <div class="admin-row">
       <div class="info">
         <strong>${esc(c.name)}</strong>
@@ -955,6 +981,232 @@ function applyRoleUI() {
   switchTab(isCollaborator ? 'products' : 'categories');
 }
 
+// ---------------- Pedidos ----------------
+// Dos estados independientes a proposito: un mueble puede estar entregado y
+// sin pagar, o pagado y sin entregar. Con una sola lista habria que elegir
+// cual de los dos hechos registrar, y el otro -- que suele ser el que hay que
+// perseguir -- se perderia.
+
+const ESTADOS_PEDIDO = [
+  { value: 'cotizado',   label: 'Cotizado' },
+  { value: 'en_proceso', label: 'En proceso' },
+  { value: 'listo',      label: 'Listo' },
+  { value: 'entregado',  label: 'Entregado' },
+  { value: 'cancelado',  label: 'Cancelado' }
+];
+
+const ESTADOS_PAGO = [
+  { value: 'sin_anticipo', label: 'Sin anticipo' },
+  { value: 'anticipo',     label: 'Anticipo pagado' },
+  { value: 'pagado',       label: 'Pagado completo' }
+];
+
+let orders = [];
+let editingOrderId = null;
+
+function etiquetaEstado(lista, valor) {
+  const e = lista.find(x => x.value === valor);
+  return e ? e.label : '';
+}
+
+function opcionesHtml(lista, seleccionado, todosLabel) {
+  const primera = todosLabel ? `<option value="">${esc(todosLabel)}</option>` : '';
+  return primera + lista.map(o =>
+    `<option value="${esc(o.value)}"${o.value === seleccionado ? ' selected' : ''}>${esc(o.label)}</option>`
+  ).join('');
+}
+
+function pesos(n) {
+  const v = Number(n) || 0;
+  return '$' + v.toLocaleString('es-CO');
+}
+
+// Saldo = lo que falta por cobrar. Es el numero que de verdad importa.
+function saldoDe(o) {
+  return Math.max(0, (Number(o.value) || 0) - (Number(o.deposit) || 0));
+}
+
+function renderOrderForm() {
+  const editing = orders.find(o => o.id === editingOrderId);
+  const form = document.getElementById('orderForm');
+
+  document.getElementById('ord-customer').innerHTML =
+    '<option value="">Elige un cliente</option>' +
+    customers.map(c => `<option value="${esc(c.id)}"${editing && editing.customerId === c.id ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
+
+  document.getElementById('ord-status').innerHTML =
+    opcionesHtml(ESTADOS_PEDIDO, editing ? editing.status : 'cotizado');
+  document.getElementById('ord-payment-status').innerHTML =
+    opcionesHtml(ESTADOS_PAGO, editing ? editing.paymentStatus : 'sin_anticipo');
+  document.getElementById('ord-material').innerHTML =
+    materialOptionsHtml(editing ? editing.material : '');
+
+  const campos = {
+    'ord-product': 'product', 'ord-value': 'value', 'ord-deposit': 'deposit',
+    'ord-payment-method': 'paymentMethod', 'ord-money-place': 'moneyPlace',
+    'ord-balance-date': 'balanceDate', 'ord-delivery-date': 'deliveryDate',
+    'ord-address': 'address', 'ord-notes': 'notes'
+  };
+  Object.entries(campos).forEach(([id, campo]) => {
+    document.getElementById(id).value = editing ? (editing[campo] ?? '') : '';
+  });
+
+  document.getElementById('orderFormTitle').textContent =
+    editing ? `Editar pedido: ${editing.product}` : 'Agregar pedido';
+  document.getElementById('orderCancelBtn').style.display = editing ? '' : 'none';
+  actualizarSaldoEnFormulario();
+}
+
+function actualizarSaldoEnFormulario() {
+  const total = Number(document.getElementById('ord-value').value) || 0;
+  const anticipo = Number(document.getElementById('ord-deposit').value) || 0;
+  const nota = document.getElementById('ordBalance');
+  if (!total && !anticipo) { nota.textContent = ''; return; }
+  const saldo = Math.max(0, total - anticipo);
+  nota.textContent = saldo > 0
+    ? `Saldo pendiente: ${pesos(saldo)}`
+    : 'Sin saldo pendiente.';
+  nota.className = 'balance-note' + (saldo > 0 ? ' pendiente' : ' saldado');
+}
+
+function pedidosFiltrados() {
+  const texto = document.getElementById('orderSearch').value.trim().toLowerCase();
+  const estado = document.getElementById('orderStatusFilter').value;
+  const pago = document.getElementById('orderPaymentFilter').value;
+
+  return orders.filter(o => {
+    if (estado && o.status !== estado) return false;
+    if (pago && o.paymentStatus !== pago) return false;
+    if (!texto) return true;
+    return [o.customerName, o.product, o.address].some(v =>
+      String(v || '').toLowerCase().includes(texto));
+  });
+}
+
+function renderOrderTotals(lista) {
+  const box = document.getElementById('orderTotals');
+  if (!lista.length) { box.innerHTML = ''; return; }
+
+  const activos = lista.filter(o => o.status !== 'cancelado');
+  const porCobrar = activos.reduce((a, o) => a + saldoDe(o), 0);
+  const vendido = activos.reduce((a, o) => a + (Number(o.value) || 0), 0);
+  const entregadosSinPagar = activos.filter(o => o.status === 'entregado' && o.paymentStatus !== 'pagado').length;
+
+  box.innerHTML = `
+    <div class="stage-chip"><strong>${lista.length}</strong><span>pedido(s)</span></div>
+    <div class="stage-chip"><strong>${pesos(vendido)}</strong><span>valor total</span></div>
+    <div class="stage-chip stage-no_compro"><strong>${pesos(porCobrar)}</strong><span>por cobrar</span></div>
+    ${entregadosSinPagar ? `<div class="stage-chip stage-no_compro"><strong>${entregadosSinPagar}</strong><span>entregado(s) sin pagar</span></div>` : ''}`;
+}
+
+function renderOrderList() {
+  const list = document.getElementById('orderList');
+  const lista = pedidosFiltrados();
+
+  document.getElementById('orderCount').textContent =
+    lista.length === orders.length
+      ? `${orders.length} pedido(s)`
+      : `${lista.length} de ${orders.length}`;
+
+  renderOrderTotals(lista);
+
+  if (!orders.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no hay pedidos. Agrega el primero con el formulario de arriba.</p>';
+    return;
+  }
+  if (!lista.length) {
+    list.innerHTML = '<p class="admin-empty">Ningún pedido coincide con la búsqueda.</p>';
+    return;
+  }
+
+  list.innerHTML = lista.map(o => {
+    const saldo = saldoDe(o);
+    const detalle = [
+      o.material ? materialLabel(o.material) : '',
+      o.value ? pesos(o.value) : '',
+      o.deliveryDate ? 'entrega ' + o.deliveryDate : ''
+    ].filter(Boolean).join(' · ');
+
+    const alerta = o.status === 'entregado' && o.paymentStatus !== 'pagado' && saldo > 0
+      ? `<span class="tag-pill tag-alerta">debe ${pesos(saldo)}</span>` : '';
+
+    return `
+      <div class="admin-row">
+        <div class="info">
+          <strong>${esc(o.product || '(sin pieza)')}</strong>
+          <span>${esc(o.customerName || '(sin cliente)')}${detalle ? ' · ' + esc(detalle) : ''}</span>
+          ${saldo > 0 ? `<span>Saldo: ${pesos(saldo)}${o.balanceDate ? ' · pago acordado ' + esc(o.balanceDate) : ''}</span>` : ''}
+        </div>
+        <div class="pills">
+          <span class="tag-pill estado-${esc(o.status || '')}">${esc(etiquetaEstado(ESTADOS_PEDIDO, o.status))}</span>
+          <span class="tag-pill pago-${esc(o.paymentStatus || '')}">${esc(etiquetaEstado(ESTADOS_PAGO, o.paymentStatus))}</span>
+          ${alerta}
+        </div>
+        <div class="actions">
+          <button class="btn btn-outline btn-sm" data-edit-order="${esc(o.id)}" type="button">Editar</button>
+          ${currentUserRole === 'admin' ? `<button class="btn btn-light btn-sm" data-delete-order="${esc(o.id)}" type="button">Eliminar</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function saveOrderFromForm(e) {
+  e.preventDefault();
+  const customerId = document.getElementById('ord-customer').value;
+  const product = document.getElementById('ord-product').value.trim();
+  if (!customerId) { alert('Elige a qué cliente pertenece el pedido.'); return; }
+  if (!product) { alert('Escribe qué pieza es.'); return; }
+
+  const cliente = customers.find(c => c.id === customerId);
+  const btn = document.getElementById('orderSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  try {
+    await window.ErFirebase.saveOrder(editingOrderId, {
+      customerId,
+      // Se guarda el nombre ademas del id para poder buscar y listar sin
+      // tener que cruzar con la coleccion de clientes en cada fila.
+      customerName: cliente ? cliente.name : '',
+      product,
+      material: document.getElementById('ord-material').value,
+      value: Number(document.getElementById('ord-value').value) || 0,
+      deposit: Number(document.getElementById('ord-deposit').value) || 0,
+      paymentMethod: document.getElementById('ord-payment-method').value.trim(),
+      moneyPlace: document.getElementById('ord-money-place').value.trim(),
+      balanceDate: document.getElementById('ord-balance-date').value,
+      deliveryDate: document.getElementById('ord-delivery-date').value,
+      address: document.getElementById('ord-address').value.trim(),
+      notes: document.getElementById('ord-notes').value.trim(),
+      status: document.getElementById('ord-status').value,
+      paymentStatus: document.getElementById('ord-payment-status').value
+    });
+    editingOrderId = null;
+    await loadOrders();
+    document.getElementById('orderForm').reset();
+    renderOrderForm();
+  } catch (err) {
+    alert('No se pudo guardar el pedido: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar pedido';
+  }
+}
+
+async function loadOrders() {
+  try {
+    orders = await window.ErFirebase.fetchOrders();
+  } catch (err) {
+    // Igual que con los comentarios: que un fallo aqui no tumbe el panel.
+    console.error('No se pudieron cargar los pedidos:', err);
+    orders = [];
+    document.getElementById('orderList').innerHTML =
+      `<p class="admin-empty" style="color:#9A3B2A;">No se pudieron leer los pedidos: <strong>${esc(err.message || '')}</strong><br>Falta agregar la regla de la colección <code>orders</code> en la consola de Firebase. Está en <code>docs/firestore.rules</code>.</p>`;
+    return;
+  }
+  renderOrderList();
+  renderOrderForm();
+}
+
 // ---------------- Comentarios de clientes ----------------
 
 const STAGE_LABELS = {
@@ -1080,6 +1332,7 @@ function switchTab(tab) {
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
   document.getElementById('customersPanel').style.display = tab === 'customers' ? '' : 'none';
   document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
+  document.getElementById('ordersPanel').style.display = tab === 'orders' ? '' : 'none';
   document.getElementById('commentsPanel').style.display = tab === 'comments' ? '' : 'none';
   document.getElementById('homePanel').style.display = tab === 'home' ? '' : 'none';
   document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
@@ -1150,6 +1403,39 @@ function wireEvents() {
   });
   document.getElementById('seedBtn').addEventListener('click', runSeed);
   document.getElementById('wipeBtn').addEventListener('click', runWipe);
+  // ----- Clientes: buscador -----
+  document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
+
+  // ----- Pedidos -----
+  document.getElementById('orderStatusFilter').innerHTML = opcionesHtml(ESTADOS_PEDIDO, '', 'Todos los estados');
+  document.getElementById('orderPaymentFilter').innerHTML = opcionesHtml(ESTADOS_PAGO, '', 'Todos los pagos');
+  document.getElementById('orderForm').addEventListener('submit', saveOrderFromForm);
+  document.getElementById('orderSearch').addEventListener('input', renderOrderList);
+  document.getElementById('orderStatusFilter').addEventListener('change', renderOrderList);
+  document.getElementById('orderPaymentFilter').addEventListener('change', renderOrderList);
+  ['ord-value', 'ord-deposit'].forEach(id =>
+    document.getElementById(id).addEventListener('input', actualizarSaldoEnFormulario));
+  document.getElementById('orderCancelBtn').addEventListener('click', () => {
+    editingOrderId = null;
+    document.getElementById('orderForm').reset();
+    renderOrderForm();
+  });
+  document.getElementById('orderList').addEventListener('click', async (e) => {
+    const edit = e.target.closest('[data-edit-order]');
+    if (edit) {
+      editingOrderId = edit.dataset.editOrder;
+      renderOrderForm();
+      window.scrollTo({ top: document.getElementById('orderFormCard').offsetTop - 100, behavior: 'smooth' });
+      return;
+    }
+    const del = e.target.closest('[data-delete-order]');
+    if (del) {
+      if (!confirm('¿Eliminar este pedido? No se puede deshacer.')) return;
+      await window.ErFirebase.deleteOrder(del.dataset.deleteOrder);
+      await loadOrders();
+    }
+  });
+
   bindCommentActions();
 
   document.getElementById('logoutBtn').addEventListener('click', () => window.ErFirebase.signOut());

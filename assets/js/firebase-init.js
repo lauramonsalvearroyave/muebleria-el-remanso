@@ -432,6 +432,30 @@ async function convertLeadToCustomer(lead) {
   return customerId;
 }
 
+// ---------- Pedidos ----------
+// Coleccion propia y no subcoleccion del cliente: la pestana Pedidos necesita
+// listarlos TODOS para filtrar por estado, y eso desde una subcoleccion obliga
+// a recorrer cliente por cliente. Se guarda customerName ademas de customerId
+// para poder buscar y mostrar sin ir a buscar el cliente en cada fila.
+
+async function fetchOrders() {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function saveOrder(id, data) {
+  const newId = id || doc(collection(db, "orders")).id;
+  const payload = { ...data };
+  if (!id) payload.createdAt = serverTimestamp();
+  await setDoc(doc(db, "orders", newId), payload, { merge: true });
+  return newId;
+}
+
+async function deleteOrder(id) {
+  await deleteDoc(doc(db, "orders", id));
+}
+
 // ---------- Comentarios de clientes ----------
 // Los envía cualquiera desde contacto.html y entran SIN publicar: hasta que
 // alguien del equipo los aprueba en el panel, no se ven en el sitio. El campo
@@ -528,6 +552,7 @@ window.ErFirebase = {
   fetchLeads, updateLead, deleteLead,
   fetchCustomers, saveCustomer, deleteCustomer,
   fetchPurchases, addPurchase, deletePurchase, convertLeadToCustomer,
+  fetchOrders, saveOrder, deleteOrder,
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   fetchTeamMembers, removeTeamMember,

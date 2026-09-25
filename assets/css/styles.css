@@ -373,6 +373,34 @@ section{ padding: 68px 0; }
 .form-msg.ok{ color:#2F6B4F; }
 .form-msg.error{ color:#9A3B2A; }
 
+/* Buscadores y filtros del panel */
+.search-bar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.search-bar input[type="search"]{ flex:1; min-width:220px; }
+.search-bar input, .search-bar select{
+  padding:10px 14px; border-radius:10px; border:1.5px solid var(--sand-line);
+  font-family:var(--font-body); font-size:.9rem; background:var(--white);
+}
+.search-count{ font-size:.82rem; color:var(--ink-soft); font-weight:700; white-space:nowrap; }
+
+/* Pedidos */
+.form-section{
+  margin:22px 0 12px; padding-top:16px; border-top:1px solid var(--sand-line);
+  font-size:.82rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-bronze);
+}
+.balance-note{ margin:-6px 0 14px; font-size:.88rem; font-weight:700; }
+.balance-note.pendiente{ color:#9A3B2A; }
+.balance-note.saldado{ color:#2F6B4F; }
+
+.tag-pill.estado-cotizado{ background:#EFE7D8; color:#6B6154; }
+.tag-pill.estado-en_proceso{ background:#F0B566; color:#3A2D18; }
+.tag-pill.estado-listo{ background:#CFE3D6; color:#255943; }
+.tag-pill.estado-entregado{ background:#2F6B4F; color:#fff; }
+.tag-pill.estado-cancelado{ background:#DDD8D0; color:#8A8378; text-decoration:line-through; }
+.tag-pill.pago-sin_anticipo{ background:#F6DAD2; color:#9A3B2A; }
+.tag-pill.pago-anticipo{ background:#F3E3C2; color:#8A6A1E; }
+.tag-pill.pago-pagado{ background:#CFE3D6; color:#255943; }
+.tag-pill.tag-alerta{ background:#9A3B2A; color:#fff; }
+
 /* Comentarios en el panel */
 .tab-badge{
   display:inline-flex; align-items:center; justify-content:center; margin-left:7px;

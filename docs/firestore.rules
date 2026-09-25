@@ -72,6 +72,15 @@ service cloud.firestore {
       }
     }
 
+    // Pedidos. Coleccion propia y no subcoleccion del cliente, para poder
+    // listarlos todos y filtrar por estado desde la pestana Pedidos.
+    // Nunca se leen desde el sitio publico: solo el panel.
+    match /orders/{orderId} {
+      allow read:   if isAdmin() || isColaborador();
+      allow create: if isAdmin() || isColaborador();
+      allow update, delete: if isAdmin();
+    }
+
     match /settings/{docId} {
       allow read: if true;
       allow write: if isAdmin();

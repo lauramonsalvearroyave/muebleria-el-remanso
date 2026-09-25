@@ -132,6 +132,7 @@
         <button class="admin-tab active" data-tab="categories" type="button" id="tabBtnCategories">Categorías</button>
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
         <button class="admin-tab" data-tab="customers" type="button">Clientes</button>
+        <button class="admin-tab" data-tab="orders" type="button" id="tabBtnOrders">Pedidos</button>
         <button class="admin-tab" data-tab="leads" type="button" id="tabBtnLeads">Interesados</button>
         <button class="admin-tab" data-tab="comments" type="button" id="tabBtnComments">Comentarios<span id="pendingBadge" class="tab-badge" hidden></span></button>
         <button class="admin-tab" data-tab="home" type="button" id="tabBtnHome">Ajustes</button>
@@ -353,6 +354,10 @@
         </div>
 
         <h3 style="margin-top:28px;">Clientes</h3>
+        <div class="search-bar">
+          <input type="search" id="customerSearch" placeholder="Buscar por nombre, teléfono o cédula...">
+          <span id="customerCount" class="search-count"></span>
+        </div>
         <div id="customerList" class="admin-list"></div>
       </div>
 
@@ -362,6 +367,99 @@
           <p style="margin:0;">Cada persona que escribió "Me interesa" en un producto, o llenó el formulario de contacto, aparece aquí — con su nombre, teléfono y qué le interesó, para que le puedan hacer seguimiento.</p>
         </div>
         <div id="leadList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== PEDIDOS ===== -->
+      <div id="ordersPanel" style="display:none;">
+
+        <div class="card" id="orderFormCard">
+          <h3 id="orderFormTitle" class="admin-form-title">Agregar pedido</h3>
+          <form id="orderForm">
+            <div class="field-row">
+              <div class="field">
+                <label for="ord-customer">Cliente</label>
+                <select id="ord-customer" required></select>
+              </div>
+              <div class="field">
+                <label for="ord-product">Pieza / producto</label>
+                <input type="text" id="ord-product" placeholder="Ej: Sala Prado" required>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="ord-status">Estado del pedido</label>
+                <select id="ord-status"></select>
+              </div>
+              <div class="field">
+                <label for="ord-payment-status">Estado del pago</label>
+                <select id="ord-payment-status"></select>
+              </div>
+            </div>
+
+            <h4 class="form-section">Dinero</h4>
+            <div class="field-row">
+              <div class="field">
+                <label for="ord-value">Valor total (COP)</label>
+                <input type="number" id="ord-value" min="0" step="1000">
+              </div>
+              <div class="field">
+                <label for="ord-deposit">Anticipo (COP)</label>
+                <input type="number" id="ord-deposit" min="0" step="1000">
+              </div>
+            </div>
+            <p id="ordBalance" class="balance-note"></p>
+            <div class="field-row">
+              <div class="field">
+                <label for="ord-payment-method">Forma de pago acordada</label>
+                <input type="text" id="ord-payment-method" placeholder="Ej: 50% anticipo, saldo contra entrega">
+              </div>
+              <div class="field">
+                <label for="ord-money-place">Dónde se recibió el dinero</label>
+                <input type="text" id="ord-money-place" placeholder="Ej: Nequi de Laura, Bancolombia, efectivo">
+              </div>
+            </div>
+            <div class="field">
+              <label for="ord-balance-date">Fecha de pago del saldo</label>
+              <input type="date" id="ord-balance-date">
+            </div>
+
+            <h4 class="form-section">Entrega</h4>
+            <div class="field-row">
+              <div class="field">
+                <label for="ord-delivery-date">Fecha probable de entrega</label>
+                <input type="date" id="ord-delivery-date">
+              </div>
+              <div class="field">
+                <label for="ord-material">Material</label>
+                <select id="ord-material"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="ord-address">Dirección de entrega</label>
+              <input type="text" id="ord-address" placeholder="Dirección, barrio y ciudad">
+            </div>
+            <div class="field">
+              <label for="ord-notes">Notas</label>
+              <input type="text" id="ord-notes">
+            </div>
+
+            <div class="step-actions" style="margin-top:10px;">
+              <button type="button" id="orderCancelBtn" class="btn btn-light" style="display:none;">Cancelar edición</button>
+              <button type="submit" class="btn btn-primary" id="orderSaveBtn">Guardar pedido</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="orderTotals" class="stage-stats"></div>
+
+        <div class="search-bar">
+          <input type="search" id="orderSearch" placeholder="Buscar por cliente o pieza...">
+          <select id="orderStatusFilter"></select>
+          <select id="orderPaymentFilter"></select>
+          <span id="orderCount" class="search-count"></span>
+        </div>
+        <div id="orderList" class="admin-list"></div>
       </div>
 
       <!-- ===== COMENTARIOS DE CLIENTES ===== -->
