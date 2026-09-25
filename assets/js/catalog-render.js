@@ -128,7 +128,7 @@ function publicarDatosDeProductos(categories, products) {
       ...(porId[p.categoryId] ? { category: porId[p.categoryId] } : {}),
       ...(p.material ? { material: window.ErI18n.t(MATERIAL_KEYS[p.material] || '') } : {}),
       brand: { "@type": "Brand", name: "El Remanso" },
-      url: `https://muebleriaelremanso.com/catalogo.html#${p.categoryId || ''}`
+      url: `https://muebleriaelremanso.com//catalogo#${p.categoryId || ''}`
     }
   }));
 
@@ -169,7 +169,7 @@ function renderCatalogPage(root, categories, products) {
   document.dispatchEvent(new CustomEvent('catalogRendered'));
 }
 
-// Al llegar desde el inicio con catalogo.html#sofas, el navegador procesa el
+// Al llegar desde el inicio con /catalogo#salas, el navegador procesa el
 // ancla ANTES de que este script dibuje las secciones, asi que no encuentra
 // nada y se queda arriba. Hay que hacerlo a mano cuando ya existen.
 function irALaSeccionDelEnlace(root) {
@@ -223,7 +223,7 @@ function attachCatalogInteractions(root) {
 function renderHomeCategoryTeasers(root, categories) {
   const visible = categories.filter(c => !c.flagship);
   root.innerHTML = visible.map(c => `
-    <a href="catalogo.html#${esc(c.id)}" class="card">
+    <a href="/catalogo#${esc(c.id)}" class="card">
       <h3>${esc(c.label)}</h3>
       ${c.teaser ? `<p>${esc(c.teaser)}</p>` : ''}
     </a>`).join('');
@@ -475,7 +475,7 @@ async function init() {
     if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories);
     if (flagshipLink) {
       const flagship = categories.find(c => c.flagship);
-      if (flagship) flagshipLink.setAttribute('href', `catalogo.html#${flagship.id}`);
+      if (flagship) flagshipLink.setAttribute('href', `/catalogo#${flagship.id}`);
     }
   } catch (err) {
     console.error('No se pudo cargar el catálogo:', err);

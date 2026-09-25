@@ -42,7 +42,8 @@ function medirWhatsapp() {
     if (!a || !window.ErFirebase) return;
     window.ErFirebase.track('contacto_whatsapp', {
       origen: origenDelBoton(a),
-      pagina: (location.pathname.split('/').pop() || 'index.html')
+      // Con las URLs limpias, la raiz deja la parte final vacia.
+      pagina: (location.pathname.split('/').pop() || 'inicio')
     });
   });
 }

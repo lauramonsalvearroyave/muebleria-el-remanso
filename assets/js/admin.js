@@ -191,8 +191,8 @@ async function saveCategoryFromForm(e) {
         `La dirección de esta categoría va a cambiar:
 
 ` +
-        `  catalogo.html#${editingCategoryId}
-  →  catalogo.html#${id}
+        `  /catalogo#${editingCategoryId}
+  →  /catalogo#${id}
 
 ` +
         (afectados ? `Se moverán ${afectados} producto(s) a la nueva dirección.
@@ -1381,7 +1381,7 @@ function bindCommentActions() {
   });
 
   document.getElementById('copyOpinionLink').addEventListener('click', async (e) => {
-    const url = new URL('contacto.html#comentario', location.href).href;
+    const url = new URL('/contacto#comentario', location.href).href;
     try {
       await navigator.clipboard.writeText(url);
       e.target.textContent = 'Copiado';

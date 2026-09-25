@@ -184,7 +184,7 @@ const DICT = {
     field_phone: { es: 'Teléfono', en: 'Phone' },
     placeholder_name: { es: 'Tu nombre', en: 'Your name' },
     placeholder_phone: { es: 'Ej: 300 000 0000', en: 'E.g. 300 000 0000' },
-    consent_html: { es: 'Acepto el tratamiento de mis datos personales según la <a href="ayuda-legal.html#datos" target="_blank" rel="noopener">Política de Tratamiento de Datos Personales</a>.', en: 'I agree to the processing of my personal data under the <a href="ayuda-legal.html#datos" target="_blank" rel="noopener">Personal Data Processing Policy</a>.' },
+    consent_html: { es: 'Acepto el tratamiento de mis datos personales según la <a href="/ayuda-legal#datos" target="_blank" rel="noopener">Política de Tratamiento de Datos Personales</a>.', en: 'I agree to the processing of my personal data under the <a href="/ayuda-legal#datos" target="_blank" rel="noopener">Personal Data Processing Policy</a>.' },
     btn_send: { es: 'Enviar por WhatsApp', en: 'Send via WhatsApp' },
     wa_greeting: { es: 'Hola El Remanso, me interesa esta pieza:', en: 'Hi El Remanso, I am interested in this piece:' },
     wa_product: { es: 'Producto', en: 'Product' },
@@ -319,7 +319,7 @@ const DICT = {
     placeholder_name: { es: 'Tu nombre', en: 'Your name' },
     placeholder_phone: { es: 'Ej: 300 000 0000', en: 'E.g. 300 000 0000' },
     placeholder_message: { es: 'Cuéntanos qué necesitas...', en: 'Tell us what you need...' },
-    consent_html: { es: 'Acepto el tratamiento de mis datos personales según la <a href="ayuda-legal.html#datos" target="_blank" rel="noopener">Política de Tratamiento de Datos Personales</a>.', en: 'I agree to the processing of my personal data under the <a href="ayuda-legal.html#datos" target="_blank" rel="noopener">Personal Data Processing Policy</a>.' },
+    consent_html: { es: 'Acepto el tratamiento de mis datos personales según la <a href="/ayuda-legal#datos" target="_blank" rel="noopener">Política de Tratamiento de Datos Personales</a>.', en: 'I agree to the processing of my personal data under the <a href="/ayuda-legal#datos" target="_blank" rel="noopener">Personal Data Processing Policy</a>.' },
     btn_send: { es: 'Enviar por WhatsApp', en: 'Send via WhatsApp' },
     wa_greeting: { es: 'Hola El Remanso, te escribo desde la página web:', en: 'Hi El Remanso, I am writing from the website:' }
   }
