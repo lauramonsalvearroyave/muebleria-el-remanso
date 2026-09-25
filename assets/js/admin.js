@@ -51,6 +51,7 @@ let invites = [];
 let editingCategoryId = null; // null = creando una nueva
 let editingProductId = null;
 let selectedImageFile = null;
+let preparandoImagen = false;   // evita guardar antes de que la foto termine de optimizarse
 let currentUserRole = null; // 'admin' | 'colaborador'
 let comments = [];
 let catIdTouched = false;   // si tocan el identificador a mano, deja de seguir al nombre
@@ -303,6 +304,8 @@ async function saveProductFromForm(e) {
   if (!name) { alert('El nombre del producto es obligatorio.'); return; }
   if (!categoryId) { alert('Primero crea al menos una categoría.'); return; }
 
+  if (preparandoImagen) { alert('Espera un segundo: la foto todavía se está preparando.'); return; }
+
   const saveBtn = document.getElementById('productSaveBtn');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Guardando...';
@@ -333,9 +336,18 @@ async function saveProductFromForm(e) {
 
     if (selectedImageFile) {
       const oldPath = data.imagePath;
-      const { url, path } = await window.ErFirebase.uploadProductImage(selectedImageFile, id);
-      await window.ErFirebase.saveProduct(id, { imageUrl: url, imagePath: path });
-      if (oldPath) await window.ErFirebase.deleteProductImage(oldPath);
+      try {
+        const { url, path } = await window.ErFirebase.uploadProductImage(selectedImageFile, id);
+        await window.ErFirebase.saveProduct(id, { imageUrl: url, imagePath: path });
+        if (oldPath) await window.ErFirebase.deleteProductImage(oldPath);
+      } catch (err) {
+        // El producto ya quedo guardado; lo que fallo fue solo la imagen.
+        // Decirlo con precision evita pensar que no se guardo nada.
+        console.error('Fallo la subida de la imagen:', err);
+        alert('El producto se guardó, pero la foto no se pudo subir:\n\n' +
+              (err.message || err) +
+              '\n\nVuelve a editarlo e intenta con la foto de nuevo.');
+      }
     }
 
     editingProductId = null;
@@ -363,29 +375,85 @@ async function deleteProductById(id) {
   }
 }
 
-function handleImageSelect(e) {
+// ---------------- Optimizacion de imagenes ----------------
+// Una foto de celular pesa entre 4 y 8 MB y mide unos 4000 px de ancho. En la
+// web se ve a unos 400 px. Subirla tal cual desperdicia espacio, hace lenta la
+// carga del catalogo y antes hacia que la foto se descartara por tamano.
+// Aqui se reduce en el navegador ANTES de subirla.
+
+const MAX_LADO = 1600;      // px del lado mayor: de sobra para la web
+const CALIDAD = 0.85;       // JPEG; por encima de esto casi no se nota
+
+function pesoLegible(bytes) {
+  return bytes > 1024 * 1024
+    ? (bytes / 1024 / 1024).toFixed(1) + ' MB'
+    : Math.round(bytes / 1024) + ' KB';
+}
+
+async function encogerImagen(file) {
+  if (!file || !file.type.startsWith('image/')) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const mayor = Math.max(bitmap.width, bitmap.height);
+    const escala = Math.min(1, MAX_LADO / mayor);
+
+    // Ya es chica y liviana: no vale la pena reprocesarla y perder calidad.
+    if (escala === 1 && file.size <= 900 * 1024) { bitmap.close?.(); return file; }
+
+    const w = Math.round(bitmap.width * escala);
+    const h = Math.round(bitmap.height * escala);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CALIDAD));
+    if (!blob || blob.size >= file.size) return file;   // no mejoro: se deja la original
+
+    const nombre = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+    return new File([blob], nombre, { type: 'image/jpeg' });
+  } catch (err) {
+    // Si el navegador no puede procesarla, se sube tal cual.
+    console.error('No se pudo optimizar la imagen:', err);
+    return file;
+  }
+}
+
+async function handleImageSelect(e) {
   const file = e.target.files[0];
   const warning = document.getElementById('imgWarning');
   warning.textContent = '';
   if (!file) { selectedImageFile = null; return; }
 
-  if (file.size > 5 * 1024 * 1024) {
-    warning.textContent = 'La imagen pesa más de 5MB — intenta con una más liviana.';
-    e.target.value = '';
-    selectedImageFile = null;
-    return;
+  warning.textContent = 'Preparando la foto...';
+  preparandoImagen = true;
+  const guardar = document.getElementById('productSaveBtn');
+  guardar.disabled = true;
+  let optimizada;
+  try {
+    optimizada = await encogerImagen(file);
+  } finally {
+    preparandoImagen = false;
+    guardar.disabled = false;
+  }
+  selectedImageFile = optimizada;
+
+  const avisos = [];
+  if (optimizada !== file) {
+    avisos.push(`Foto optimizada: de ${pesoLegible(file.size)} a ${pesoLegible(optimizada.size)}.`);
   }
 
-  selectedImageFile = file;
+  const objectUrl = URL.createObjectURL(optimizada);
   const img = new Image();
-  const objectUrl = URL.createObjectURL(file);
   img.onload = () => {
     document.getElementById('imgPreview').innerHTML = `<img src="${objectUrl}" alt="">`;
     const ratio = img.naturalWidth / img.naturalHeight;
     if (ratio < 1.15 || ratio > 1.55) {
-      warning.textContent = 'Esta imagen no tiene una proporción horizontal cercana a 4:3 — se puede ver recortada en las esquinas. Puedes subirla igual si te gusta como se ve.';
+      avisos.push('No tiene una proporción horizontal cercana a 4:3, así que se puede ver recortada en las esquinas. Puedes subirla igual si te gusta como se ve.');
     }
+    warning.textContent = avisos.join(' ');
   };
+  img.onerror = () => { warning.textContent = avisos.join(' '); };
   img.src = objectUrl;
 }
 
@@ -495,11 +563,12 @@ async function loadHomeSettings() {
   aboutPreview.innerHTML = homeSettings.aboutImageUrl ? `<img src="${esc(homeSettings.aboutImageUrl)}" alt="">` : '';
 }
 
-function handleHomeImageSelect(e, previewId, which) {
+async function handleHomeImageSelect(e, previewId, which) {
   const file = e.target.files[0];
   if (!file) return;
-  if (which === 'hero') selectedHomeHeroFile = file; else selectedHomeAboutFile = file;
-  const objectUrl = URL.createObjectURL(file);
+  const optimizada = await encogerImagen(file);
+  if (which === 'hero') selectedHomeHeroFile = optimizada; else selectedHomeAboutFile = optimizada;
+  const objectUrl = URL.createObjectURL(optimizada);
   document.getElementById(previewId).innerHTML = `<img src="${objectUrl}" alt="">`;
 }
 
