@@ -3,6 +3,17 @@
 // enlace #homeFlagshipLink). Los productos/categorías los administra el
 // panel admin.html; este script solo LEE (nunca escribe).
 
+// Cloudinary genera variantes al vuelo insertando parametros en la URL.
+// La tarjeta mide unos 400 px, asi que servirle la foto original de 1800 px
+// y 800 KB es desperdiciar 9 de cada 10 bytes. El archivo guardado no se
+// toca: el visor sigue abriendo el original a resolucion completa.
+function variante(url, transformacion) {
+  if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) {
+    return url;   // fotos del repositorio u otras fuentes: se dejan igual
+  }
+  return url.replace('/upload/', '/upload/' + transformacion + '/');
+}
+
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -28,7 +39,7 @@ function productCardHtml(p) {
   // Solo se puede ampliar si de verdad hay foto: el marcador de "proximamente"
   // no lleva cursor de lupa ni responde al clic.
   const media = p.imageUrl
-    ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">`
+    ? `<img src="${esc(variante(p.imageUrl, 'w_800,f_auto,q_auto'))}" data-full="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">`
     : `<span class="placeholder-note" data-i18n="catalog.photo_note">${esc(t('catalog.photo_note'))}</span>`;
   const zoomable = p.imageUrl ? ' is-zoomable' : '';
 
@@ -93,7 +104,30 @@ function renderCatalogPage(root, categories, products) {
 
   root.innerHTML = `<div class="filter-bar">${chips}</div>${blocks}`;
   attachCatalogInteractions(root);
+  irALaSeccionDelEnlace(root);
   document.dispatchEvent(new CustomEvent('catalogRendered'));
+}
+
+// Al llegar desde el inicio con catalogo.html#sofas, el navegador procesa el
+// ancla ANTES de que este script dibuje las secciones, asi que no encuentra
+// nada y se queda arriba. Hay que hacerlo a mano cuando ya existen.
+function irALaSeccionDelEnlace(root) {
+  const id = decodeURIComponent((location.hash || '').replace('#', '')).trim();
+  if (!id) return;
+
+  const bloque = root.querySelector(`.category-block[data-category="${CSS.escape(id)}"]`);
+  if (!bloque) return;
+
+  // Se activa tambien el filtro: quien hizo clic en "Sofas" viene buscando
+  // sofas, no el catalogo entero abierto por ahi.
+  const chip = root.querySelector(`.filter-chip[data-filter="${CSS.escape(id)}"]`);
+  if (chip) chip.click();
+
+  // El clic del filtro ya desplaza a la barra; si no hubo chip, se va al bloque.
+  if (!chip) {
+    const top = bloque.getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
 }
 
 function attachCatalogInteractions(root) {
@@ -274,7 +308,8 @@ function setUpLightbox() {
     const card = thumb.closest('.product-card');
     const nombre = card ? (card.querySelector('h3')?.textContent || '').trim() : '';
     const historia = card ? (card.querySelector('.product-name-story')?.textContent || '').trim() : '';
-    abrir(foto.currentSrc || foto.src, foto.alt, nombre, historia);
+    // data-full es la foto original; src es la variante liviana de la tarjeta.
+    abrir(foto.dataset.full || foto.currentSrc || foto.src, foto.alt, nombre, historia);
   });
 
   closeBtn.addEventListener('click', cerrar);
