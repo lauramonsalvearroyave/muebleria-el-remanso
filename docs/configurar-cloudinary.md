@@ -57,6 +57,24 @@ En ese mismo preset, busca estas opciones y configúralas:
 Sin esos límites, alguien que lea el código podría subir archivos a tu cuenta.
 Con ellos, lo peor que puede pasar es que suba una imagen a tu carpeta.
 
+## Estado: ya configurado
+
+```
+Cloud name:  pu28ccmt
+Preset name: el-remanso
+```
+
+Probado el 25 de septiembre de 2026 con una subida real: el preset acepta
+archivos y la URL entregada responde correctamente.
+
+**Pendiente menor:** el campo *Folder* del preset quedó vacío, así que las
+fotos caen en la raíz de la cuenta en vez de agruparse. Funciona igual, pero
+si vas a subir varias conviene ponerlo: Settings → Upload presets →
+`el-remanso` → Edit → **Folder** = `el-remanso` → Save.
+
+También quedó en la cuenta una imagen de prueba de 1×1 px llamada
+`htut1lotw0mfcqjpqdwt`. Puedes borrarla desde **Assets**.
+
 ## 5. Pasarme los dos datos
 
 Mándame:

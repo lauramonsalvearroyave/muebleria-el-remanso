@@ -368,8 +368,8 @@ async function deleteProductById(id) {
 // proteccion no esta en ocultarlos, sino en como se configura el preset en
 // Cloudinary: solo imagenes, con tamano maximo y en una carpeta fija.
 // Ver docs/configurar-cloudinary.md
-const CLOUDINARY_CLOUD_NAME = 'PENDIENTE';
-const CLOUDINARY_UPLOAD_PRESET = 'PENDIENTE';
+const CLOUDINARY_CLOUD_NAME = 'pu28ccmt';
+const CLOUDINARY_UPLOAD_PRESET = 'el-remanso';
 
 function cloudinaryListo() {
   return CLOUDINARY_CLOUD_NAME !== 'PENDIENTE' && CLOUDINARY_UPLOAD_PRESET !== 'PENDIENTE';
