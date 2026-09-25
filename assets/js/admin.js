@@ -54,6 +54,7 @@ let selectedImageFile = null;
 let currentUserRole = null; // 'admin' | 'colaborador'
 let comments = [];
 let catIdTouched = false;   // si tocan el identificador a mano, deja de seguir al nombre
+let commentsError = null;
 
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -130,10 +131,25 @@ async function saveCategoryFromForm(e) {
   const label = form.querySelector('#cat-label').value.trim();
   if (!label) { alert('El nombre de la categoría es obligatorio.'); return; }
 
-  const id = slugify(idInput || label);
-  if (!id) { alert('No se pudo generar un identificador válido para la categoría.'); return; }
-
   const existing = categories.find(c => c.id === editingCategoryId);
+
+  // De donde sale el identificador (y por tanto la URL):
+  //  - categoria nueva            -> del identificador escrito, o del nombre
+  //  - lo editaron a mano         -> se respeta tal cual
+  //  - cambio el nombre           -> la URL sigue al nombre nuevo
+  //  - el nombre quedo igual      -> la URL no se toca
+  // Lo ultimo importa: hay categorias cuyo id no coincide con su nombre a
+  // proposito (accesorios / "Accesorios y espejos"), y editar cualquier otro
+  // campo no deberia proponer un renombrado.
+  let id;
+  if (!editingCategoryId || catIdTouched) {
+    id = slugify(idInput || label);
+  } else if (existing && existing.label !== label) {
+    id = slugify(label);
+  } else {
+    id = editingCategoryId;
+  }
+  if (!id) { alert('No se pudo generar un identificador válido para la categoría.'); return; }
   const data = {
     label,
     teaser: form.querySelector('#cat-teaser').value.trim(),
@@ -433,7 +449,7 @@ async function loadData() {
 
   renderCategoryList();
   renderProductList();
-  if (currentUserRole === 'admin') await loadComments();
+  if (currentUserRole === 'admin') await loadComments();   // nunca lanza, ver loadComments
   renderCategoryForm();
   renderProductForm();
 
@@ -888,6 +904,14 @@ function renderCommentList() {
   badge.textContent = pendientes;
   badge.hidden = pendientes === 0;
 
+  if (commentsError) {
+    list.innerHTML = `<p class="admin-empty" style="color:#9A3B2A;">
+      No se pudieron leer los comentarios: <strong>${esc(commentsError.message || '')}</strong><br>
+      Falta agregar la regla de la colección <code>testimonials</code> en la consola de Firebase.
+      Está en <code>docs/reglas-firestore-comentarios.md</code>.</p>`;
+    return;
+  }
+
   if (!comments.length) {
     list.innerHTML = '<p class="admin-empty">Todavía no ha llegado ningún comentario. Manda el enlace de arriba por WhatsApp después de cada entrega.</p>';
     return;
@@ -952,8 +976,17 @@ function bindCommentActions() {
   });
 }
 
+// Si falla (tipicamente porque falta la regla de Firestore), se avisa en su
+// propio panel y no se propaga: lo demas del panel tiene que seguir cargando.
 async function loadComments() {
-  comments = await window.ErFirebase.fetchAllTestimonials();
+  try {
+    comments = await window.ErFirebase.fetchAllTestimonials();
+    commentsError = null;
+  } catch (err) {
+    comments = [];
+    commentsError = err;
+    console.error('No se pudieron cargar los comentarios:', err);
+  }
   renderCommentStats();
   renderCommentList();
 }
