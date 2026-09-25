@@ -48,8 +48,8 @@ const DICT = {
   },
 
   home: {
-    meta_title: { es: 'El Remanso | Mueblería Artesanal en Mimbre, Rattán y Yaré', en: 'El Remanso | Handcrafted Furniture in Wicker, Rattan & Yaré' },
-    meta_desc: { es: 'Muebles artesanales tejidos a mano en mimbre, yaré, rattán, calceta de plátano, sintético y piola náutica. Conoce nuestras colecciones y escríbenos por WhatsApp.', en: 'Handcrafted furniture, hand-woven in wicker, yaré, rattan, banana fiber, synthetic fiber and nautical rope. Explore our collections and reach us on WhatsApp.' },
+    meta_title: { es: 'Muebles Artesanales en Mimbre y Rattán · Medellín', en: 'Handcrafted Wicker & Rattan Furniture · Medellín' },
+    meta_desc: { es: 'Muebles artesanales tejidos a mano en mimbre, yaré, rattán y calceta de plátano. Cada pieza se hace por encargo. Medellín, Envigado y toda Antioquia.', en: 'Handcrafted furniture hand-woven in wicker, yaré, rattan and banana fiber. Every piece made to order. Medellín, Envigado and all of Antioquia.' },
 
     hero_eyebrow: { es: 'Tejido a mano · Colombia', en: 'Handwoven · Colombia' },
     hero_title:   { es: 'Muebles con el alma de la fibra natural', en: 'Furniture with the soul of natural fiber' },
@@ -149,8 +149,8 @@ const DICT = {
   },
 
   catalog: {
-    meta_title: { es: 'Catálogo | El Remanso', en: 'Catalog | El Remanso' },
-    meta_desc: { es: 'Nuestras colecciones de muebles artesanales en mimbre, yaré, rattán, calceta de plátano, sintético y piola náutica.', en: 'Our collections of handcrafted furniture in wicker, yaré, rattan, banana fiber, synthetic fiber and nautical rope.' },
+    meta_title: { es: 'Catálogo de Muebles Artesanales · Medellín | El Remanso', en: 'Handcrafted Furniture Catalog · Medellín | El Remanso' },
+    meta_desc: { es: 'Salas, comedores, sillas, mecedoras, camas nido, columpios y asoleadoras tejidos a mano. Piezas por encargo en Medellín, Envigado y Antioquia.', en: 'Sofa sets, dining sets, chairs, rockers, nest beds, swings and loungers, all hand-woven. Made to order in Medellín, Envigado and Antioquia.' },
     eyebrow: { es: 'Catálogo', en: 'Catalog' },
     title:   { es: 'Nuestras piezas, una por una', en: 'Our pieces, one by one' },
     lede: { es: 'Cada mueble tiene un nombre propio y una pequeña historia. Escríbenos si algo te enamora.', en: 'Every piece carries its own name and a small story. Write to us if something catches your heart.' },
@@ -294,8 +294,8 @@ const DICT = {
   },
 
   contact: {
-    meta_title: { es: 'Contacto | El Remanso', en: 'Contact | El Remanso' },
-    meta_desc: { es: 'Escríbenos por WhatsApp o Instagram. Encuentra nuestra ubicación y resuelve tus dudas sobre muebles artesanales en mimbre, rattán, yaré y sintético.', en: 'Message us on WhatsApp or Instagram. Find our location and get answers about our handcrafted furniture in wicker, rattan, yaré and synthetic fiber.' },
+    meta_title: { es: 'Contacto · Mueblería El Remanso, Medellín y Envigado', en: 'Contact · El Remanso, Medellín & Envigado' },
+    meta_desc: { es: 'Escríbenos por WhatsApp para hablar de tu próximo mueble. Estamos en el Km 18 vía Las Palmas, entre Medellín y Envigado.', en: 'Message us on WhatsApp about your next piece. We are at Km 18 vía Las Palmas, between Medellín and Envigado.' },
     eyebrow: { es: 'Contacto', en: 'Contact' },
     title:   { es: 'Hablemos de tu próximo mueble', en: "Let's Talk About Your Next Piece" },
     lede:    { es: 'Escríbenos por WhatsApp para la atención más rápida, o usa el formulario y te respondemos por ese mismo medio.', en: "Message us on WhatsApp for the fastest response, or use the form and we'll reply the same way." },
