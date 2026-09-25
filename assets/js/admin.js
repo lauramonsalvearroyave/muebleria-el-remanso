@@ -881,11 +881,21 @@ function renderCommentStats() {
 
 function renderCommentList() {
   const list = document.getElementById('commentList');
+
+  // El contador de la pestaña avisa sin tener que entrar a mirar.
+  const pendientes = comments.filter(c => !c.published).length;
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent = pendientes;
+  badge.hidden = pendientes === 0;
+
   if (!comments.length) {
     list.innerHTML = '<p class="admin-empty">Todavía no ha llegado ningún comentario. Manda el enlace de arriba por WhatsApp después de cada entrega.</p>';
     return;
   }
-  list.innerHTML = comments.map(c => {
+
+  // Lo que falta revisar va primero; dentro de cada grupo, lo más reciente.
+  const ordenados = [...comments].sort((a, b) => Number(!!a.published) - Number(!!b.published));
+  list.innerHTML = ordenados.map(c => {
     const when = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleString('es-CO') : '';
     const who = [c.name, c.city].filter(Boolean).join(' · ');
     const stage = STAGE_LABELS[c.stage] || STAGE_LABELS.otro;
