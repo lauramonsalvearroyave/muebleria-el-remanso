@@ -133,6 +133,17 @@
 </a>
 
 <!-- Modal "Me interesa" -->
+<!-- Visor de foto ampliada. Se abre al hacer clic en la foto de una ficha.
+     Nace oculto; lo maneja assets/js/catalog-render.js -->
+<div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" hidden>
+  <button class="lightbox-close" id="lightboxClose" type="button"
+          data-i18n-aria="aria.close" aria-label="Cerrar">&times;</button>
+  <figure class="lightbox-figure">
+    <img id="lightboxImg" src="" alt="">
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
 <div class="modal-overlay" id="interestModal">
   <div class="modal-box">
     <button class="modal-close" id="modalClose" aria-label="Cerrar" type="button">&times;</button>

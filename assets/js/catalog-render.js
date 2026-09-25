@@ -25,9 +25,12 @@ function productCardHtml(p) {
   if (p.isNew) badges.push(`<span class="product-badge new" data-i18n="catalog.badge_new">${esc(t('catalog.badge_new'))}</span>`);
   if (p.soldOut) badges.push(`<span class="product-badge soldout" data-i18n="catalog.badge_soldout">${esc(t('catalog.badge_soldout'))}</span>`);
 
+  // Solo se puede ampliar si de verdad hay foto: el marcador de "proximamente"
+  // no lleva cursor de lupa ni responde al clic.
   const media = p.imageUrl
     ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">`
     : `<span class="placeholder-note" data-i18n="catalog.photo_note">${esc(t('catalog.photo_note'))}</span>`;
+  const zoomable = p.imageUrl ? ' is-zoomable' : '';
 
   const materialKey = MATERIAL_KEYS[p.material];
   const materialTag = materialKey
@@ -46,7 +49,7 @@ function productCardHtml(p) {
 
   return `
     <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}">
-      <div class="product-thumb">
+      <div class="product-thumb${zoomable}">
         <div class="product-badges">${badges.join('')}</div>
         ${media}
       </div>
@@ -233,6 +236,57 @@ async function renderComments() {
   setUpCarousel(section, track, document.getElementById('commentsDots'));
 }
 
+// ---------- Visor de foto ampliada ----------
+
+function setUpLightbox() {
+  const box = document.getElementById('photoLightbox');
+  if (!box) return;
+
+  const img = document.getElementById('lightboxImg');
+  const caption = document.getElementById('lightboxCaption');
+  const closeBtn = document.getElementById('lightboxClose');
+  let ultimoFoco = null;
+
+  function abrir(src, alt, nombre, historia) {
+    ultimoFoco = document.activeElement;
+    img.src = src;
+    img.alt = alt || nombre || '';
+    caption.innerHTML = esc(nombre || '') + (historia ? `<span>${esc(historia)}</span>` : '');
+    box.hidden = false;
+    // Sin esto la pagina de atras sigue desplazandose bajo el visor.
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function cerrar() {
+    box.hidden = true;
+    img.src = '';
+    document.body.style.overflow = '';
+    if (ultimoFoco) ultimoFoco.focus();
+  }
+
+  // Delegacion: las fichas se dibujan despues de leer Firestore.
+  document.addEventListener('click', (e) => {
+    const thumb = e.target.closest('.product-thumb.is-zoomable');
+    if (!thumb) return;
+    const foto = thumb.querySelector('img');
+    if (!foto) return;
+    const card = thumb.closest('.product-card');
+    const nombre = card ? (card.querySelector('h3')?.textContent || '').trim() : '';
+    const historia = card ? (card.querySelector('.product-name-story')?.textContent || '').trim() : '';
+    abrir(foto.currentSrc || foto.src, foto.alt, nombre, historia);
+  });
+
+  closeBtn.addEventListener('click', cerrar);
+  // Clic en el fondo cierra; clic sobre la foto, no.
+  box.addEventListener('click', (e) => {
+    if (!e.target.closest('.lightbox-figure') && !e.target.closest('.lightbox-close')) cerrar();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) cerrar();
+  });
+}
+
 async function init() {
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
@@ -241,6 +295,10 @@ async function init() {
   const aboutSlot = document.getElementById('aboutImageSlot');
   const commentsSection = document.getElementById('commentsSection');
   if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot && !commentsSection) return;
+
+  // No depende de Firestore: se engancha antes, para que siga funcionando
+  // aunque la carga del catalogo falle.
+  setUpLightbox();
 
   if (!window.ErFirebase) {
     console.error('Firebase no está disponible todavía.');
