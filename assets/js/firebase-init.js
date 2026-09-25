@@ -61,57 +61,15 @@ function loadAuth() {
   return authPromise;
 }
 
-// Analytics no hace falta para dibujar nada, asi que se carga cuando el
-// navegador esta libre. Lo que se intente medir antes queda en cola.
-let analytics = null;
-let logEventFn = null;
-const pendingEvents = [];
-
-async function startAnalytics() {
-  try {
-    const m = await import(`${SDK}/firebase-analytics.js`);
-    if (!(await m.isSupported())) {
-      pendingEvents.length = 0;   // no va a haber quien los reciba
-      return;
-    }
-    analytics = m.getAnalytics(app);
-    logEventFn = m.logEvent;
-    for (const [name, params] of pendingEvents) logEventFn(analytics, name, params);
-    pendingEvents.length = 0;
-  } catch (err) {
-    // Tipicamente un bloqueador de anuncios. No es un fallo del sitio.
-    console.error("No se pudo iniciar Analytics:", err);
-    pendingEvents.length = 0;
-  }
-}
-
-if ("requestIdleCallback" in window) {
-  requestIdleCallback(startAnalytics, { timeout: 5000 });
-} else {
-  window.addEventListener("load", () => setTimeout(startAnalytics, 1500), { once: true });
-}
-
-async function saveLead(data) {
-  try {
-    await addDoc(collection(db, "leads"), {
-      ...data,
-      page: location.pathname,
-      createdAt: serverTimestamp()
-    });
-  } catch (err) {
-    // No bloquea el envío por WhatsApp si Firebase falla (ej. sin internet)
-    console.error("No se pudo guardar el registro en Firebase:", err);
-  }
-}
+// Analytics se carga con la etiqueta estandar de GA4 puesta en el HTML de
+// cada pagina. Aqui solo se envian los eventos. gtag() existe desde el primer
+// instante -- el fragmento del HTML lo define de forma sincrona y encola en
+// dataLayer -- asi que no hace falta cola propia.
 
 function track(eventName, params) {
-  if (analytics && logEventFn) {
-    logEventFn(analytics, eventName, params);
-    return;
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, params || {});
   }
-  // Cola acotada: si Analytics nunca llega a cargar, esto no puede crecer
-  // sin limite durante la sesion.
-  if (pendingEvents.length < 50) pendingEvents.push([eventName, params]);
 }
 
 // ---------- Leads: lectura/edición para el panel admin ----------

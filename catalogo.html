@@ -28,6 +28,17 @@
 <meta name="twitter:description" content="Nuestras piezas, una por una: salas, comedores, sillas y mecedoras, camas nido, columpios y asoleadoras. Todas hechas por encargo.">
 <meta name="twitter:image" content="https://res.cloudinary.com/pu28ccmt/image/upload/c_fill,w_1200,h_630,g_auto,f_jpg,q_auto/v1790303169/tqeisrcpto0t4teu8o4a.png">
 
+<!-- Google Analytics (GA4). Va en el HTML y no cargado a mano desde JavaScript
+     porque los detectores automaticos -- Google Ads, verificadores de SEO --
+     leen el HTML y no ejecutan nada. Con async no bloquea el dibujado. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3PKHJ3M6CF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-3PKHJ3M6CF');
+</script>
+
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
