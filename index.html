@@ -235,27 +235,25 @@
     </div>
   </section>
 
-  <!-- COMENTARIOS -->
-  <section>
+  <!-- COMENTARIOS
+       Nace oculta a propósito: solo aparece si hay comentarios reales
+       aprobados en el panel. Ver assets/js/catalog-render.js. -->
+  <section id="commentsSection" hidden>
     <div class="container">
       <div class="text-center mb-lg">
         <span class="eyebrow" data-i18n="home.comments_eyebrow">Comentarios</span>
         <h2 data-i18n="home.comments_title">Lo que cuentan quienes ya tienen su Remanso</h2>
       </div>
-      <div class="testimonial-grid">
-        <div class="testimonial">
-          <p data-i18n="home.c1_quote">"Encargamos un set de terraza y quedó exactamente en los colores que elegimos."</p>
-          <p class="who" data-i18n="home.c1_who">— Cliente de El Remanso</p>
-        </div>
-        <div class="testimonial">
-          <p data-i18n="home.c2_quote">"La mecedora que compramos se volvió el rincón favorito de la casa."</p>
-          <p class="who" data-i18n="home.c2_who">— Cliente de El Remanso</p>
-        </div>
-        <div class="testimonial">
-          <p data-i18n="home.c3_quote">"Se sintió como comprarle a alguien de confianza."</p>
-          <p class="who" data-i18n="home.c3_who">— Cliente de El Remanso</p>
-        </div>
+      <div class="carousel" id="commentsCarousel">
+        <button class="carousel-arrow prev" type="button" data-i18n-aria="aria.prev" aria-label="Anterior" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="carousel-track" id="commentsTrack"></div>
+        <button class="carousel-arrow next" type="button" data-i18n-aria="aria.next" aria-label="Siguiente" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
       </div>
+      <div class="carousel-dots" id="commentsDots"></div>
     </div>
   </section>
 

@@ -13,7 +13,9 @@ const DICT = {
   },
   aria: {
     whatsapp_float: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
-    back_to_top: { es: 'Volver arriba', en: 'Back to top' }
+    back_to_top: { es: 'Volver arriba', en: 'Back to top' },
+    prev: { es: 'Anterior', en: 'Previous' },
+    next: { es: 'Siguiente', en: 'Next' }
   },
   footer: {
     tagline:        { es: 'Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in natural fibers and high-resistance materials. Pieces made by hand, with love, for your home.' },
@@ -111,17 +113,38 @@ const DICT = {
 
     comments_eyebrow: { es: 'Comentarios', en: 'Comments' },
     comments_title: { es: 'Lo que cuentan quienes ya tienen su Remanso', en: 'What people with their own Remanso say' },
-    c1_quote: { es: '"Encargamos un set de terraza y quedó exactamente en los colores que elegimos. Se nota que cada pieza se hace con calma."', en: '"We ordered a terrace set and it came out in exactly the colors we chose. You can tell every piece is made unhurried."' },
-    c1_who: { es: '— Cliente de El Remanso', en: '— El Remanso Customer' },
-    c2_quote: { es: '"La mecedora que compramos para la habitación del bebé se volvió el rincón favorito de la casa."', en: '"The rocker we bought for the baby\'s room became the favorite corner of the house."' },
-    c2_who: { es: '— Cliente de El Remanso', en: '— El Remanso Customer' },
-    c3_quote: { es: '"Se sintió como comprarle a alguien de confianza, no a una tienda más."', en: '"It felt like buying from someone we trust, not just another store."' },
-    c3_who: { es: '— Cliente de El Remanso', en: '— El Remanso Customer' },
 
     final_title: { es: '¿Conversamos sobre tu próximo mueble?', en: 'Shall we talk about your next piece?' },
     final_lede:  { es: 'Explora el catálogo o escríbenos directamente por WhatsApp.', en: 'Explore the catalog or message us directly on WhatsApp.' },
     final_cta1:  { es: 'Ver catálogo', en: 'View Catalog' },
     final_cta2:  { es: 'Escríbenos por WhatsApp', en: 'Message us on WhatsApp' }
+  },
+
+  opinion: {
+    eyebrow: { es: 'Cuéntanos', en: 'Tell us' },
+    title:   { es: '¿Cómo te fue con nosotros?', en: 'How did it go with us?' },
+    lede:    { es: 'Nos ayuda muchísimo saberlo — hayas comprado o no. Se lee todo, de verdad.', en: 'It helps us enormously to know — whether you bought or not. We read every single one.' },
+    label_name:  { es: 'Tu nombre', en: 'Your name' },
+    ph_name:     { es: 'Como quieres que aparezca', en: 'How you want it to appear' },
+    label_city:  { es: 'Ciudad', en: 'City' },
+    ph_city:     { es: 'Ej: Medellín', en: 'e.g. Medellín' },
+    optional:    { es: '(opcional)', en: '(optional)' },
+    label_stage: { es: '¿En qué quedó tu contacto con nosotros?', en: 'Where did things land with us?' },
+    stage_choose:   { es: 'Elige una opción', en: 'Pick one' },
+    stage_bought:   { es: 'Compré y ya tengo mi mueble', en: 'I bought it and already have my piece' },
+    stage_ordered:  { es: 'Ya encargué, lo estoy esperando', en: 'I ordered it and am waiting' },
+    stage_quoted:   { es: 'Pedí cotización y lo estoy pensando', en: 'I asked for a quote and am thinking it over' },
+    stage_declined: { es: 'Pregunté pero al final no compré', en: 'I asked but did not end up buying' },
+    stage_other:    { es: 'Otra cosa', en: 'Something else' },
+    label_piece: { es: '¿Qué pieza?', en: 'Which piece?' },
+    ph_piece:    { es: 'Ej: Mecedora Nana', en: 'e.g. Nana rocker' },
+    label_message: { es: 'Tu comentario', en: 'Your comment' },
+    ph_message:    { es: 'Cuéntanos cómo te fue, qué te gustó y qué podríamos hacer mejor...', en: 'Tell us how it went, what you liked and what we could do better...' },
+    consent: { es: 'Autorizo a El Remanso a publicar mi comentario y mi nombre en su página.', en: 'I authorize El Remanso to publish my comment and my name on their site.' },
+    note:    { es: 'Si prefieres que no se publique, escríbenos por WhatsApp: también queremos oírlo.', en: 'If you would rather it not be published, message us on WhatsApp: we want to hear it too.' },
+    btn_send: { es: 'Enviar mi comentario', en: 'Send my comment' },
+    sent:  { es: '¡Gracias! Lo leemos y, si nos diste permiso, lo publicamos pronto.', en: 'Thank you! We will read it and, if you gave us permission, publish it soon.' },
+    error: { es: 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.', en: 'It could not be sent. Check your connection and try again.' }
   },
 
   catalog: {

@@ -111,6 +111,57 @@
 
     </div>
   </section>
+
+  <!-- ===== CUÉNTANOS TU EXPERIENCIA =====
+       Ancla propia (#comentario) para poder mandar el enlace por WhatsApp
+       después de cada entrega. Lo que llega entra sin publicar: se aprueba
+       desde el panel antes de que se vea en el inicio. -->
+  <section class="section-alt" id="comentario">
+    <div class="container" style="max-width:640px;">
+      <div class="text-center mb-lg">
+        <span class="eyebrow" data-i18n="opinion.eyebrow">Cuéntanos</span>
+        <h2 data-i18n="opinion.title">¿Cómo te fue con nosotros?</h2>
+        <p class="lede center" data-i18n="opinion.lede">Nos ayuda muchísimo saberlo — hayas comprado o no. Se lee todo, de verdad.</p>
+      </div>
+
+      <form class="card" id="opinionForm">
+        <div class="field">
+          <label for="o-nombre" data-i18n="opinion.label_name">Tu nombre</label>
+          <input type="text" id="o-nombre" data-i18n-placeholder="opinion.ph_name" placeholder="Como quieres que aparezca" required>
+        </div>
+        <div class="field">
+          <label for="o-ciudad" data-i18n="opinion.label_city">Ciudad <span class="opt" data-i18n="opinion.optional">(opcional)</span></label>
+          <input type="text" id="o-ciudad" data-i18n-placeholder="opinion.ph_city" placeholder="Ej: Medellín">
+        </div>
+        <div class="field">
+          <label for="o-etapa" data-i18n="opinion.label_stage">¿En qué quedó tu contacto con nosotros?</label>
+          <select id="o-etapa" required>
+            <option value="" data-i18n="opinion.stage_choose">Elige una opción</option>
+            <option value="compro" data-i18n="opinion.stage_bought">Compré y ya tengo mi mueble</option>
+            <option value="encargado" data-i18n="opinion.stage_ordered">Ya encargué, lo estoy esperando</option>
+            <option value="cotizo" data-i18n="opinion.stage_quoted">Pedí cotización y lo estoy pensando</option>
+            <option value="no_compro" data-i18n="opinion.stage_declined">Pregunté pero al final no compré</option>
+            <option value="otro" data-i18n="opinion.stage_other">Otra cosa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="o-pieza" data-i18n="opinion.label_piece">¿Qué pieza? <span class="opt" data-i18n="opinion.optional">(opcional)</span></label>
+          <input type="text" id="o-pieza" data-i18n-placeholder="opinion.ph_piece" placeholder="Ej: Mecedora Nana">
+        </div>
+        <div class="field">
+          <label for="o-mensaje" data-i18n="opinion.label_message">Tu comentario</label>
+          <textarea id="o-mensaje" data-i18n-placeholder="opinion.ph_message" placeholder="Cuéntanos cómo te fue, qué te gustó y qué podríamos hacer mejor..." required></textarea>
+        </div>
+        <div class="consent-row">
+          <input type="checkbox" id="o-consent" required>
+          <label for="o-consent" data-i18n="opinion.consent">Autorizo a El Remanso a publicar mi comentario y mi nombre en su página.</label>
+        </div>
+        <p class="form-note" data-i18n="opinion.note">Si prefieres que no se publique, escríbenos por WhatsApp: también queremos oírlo.</p>
+        <p id="opinionMsg" class="form-msg"></p>
+        <button type="submit" id="opinionBtn" class="btn btn-primary btn-block" data-i18n="opinion.btn_send">Enviar mi comentario</button>
+      </form>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">

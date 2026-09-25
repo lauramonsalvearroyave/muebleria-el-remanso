@@ -171,6 +171,32 @@ async function saveCategory(id, data) {
   await setDoc(ref_, data, { merge: true });
 }
 
+// Cambiar el identificador de una categoria = cambiar la clave del documento,
+// que en Firestore no se puede editar en sitio. Hay que crear el nuevo, mover
+// los productos que apuntaban al viejo y recien ahi borrar el viejo. En ese
+// orden: si algo falla a mitad, nunca quedan productos apuntando a la nada.
+async function renameCategory(oldId, newId, data) {
+  if (oldId === newId) {
+    await setDoc(doc(db, "categories", newId), data, { merge: true });
+    return 0;
+  }
+
+  const clash = await getDoc(doc(db, "categories", newId));
+  if (clash.exists()) {
+    throw new Error(`Ya existe otra categoria con la direccion "${newId}". Elige otro nombre.`);
+  }
+
+  await setDoc(doc(db, "categories", newId), data);
+
+  const snap = await getDocs(query(collection(db, "products"), where("categoryId", "==", oldId)));
+  await Promise.all(snap.docs.map(d =>
+    setDoc(doc(db, "products", d.id), { categoryId: newId }, { merge: true })
+  ));
+
+  await deleteDoc(doc(db, "categories", oldId));
+  return snap.size;
+}
+
 async function deleteCategory(id) {
   await deleteDoc(doc(db, "categories", id));
 }
@@ -378,6 +404,44 @@ async function convertLeadToCustomer(lead) {
   return customerId;
 }
 
+// ---------- Comentarios de clientes ----------
+// Los envía cualquiera desde contacto.html y entran SIN publicar: hasta que
+// alguien del equipo los aprueba en el panel, no se ven en el sitio. El campo
+// "stage" (compro / cotizo / pensandolo) sirve para ver en que se queda la venta.
+
+async function submitTestimonial(data) {
+  await addDoc(collection(db, "testimonials"), {
+    ...data,
+    published: false,
+    createdAt: serverTimestamp()
+  });
+}
+
+// Lectura pública del inicio: solo lo aprobado. Se ordena aquí y no en la
+// consulta a propósito — un where + orderBy obligaría a crear un índice
+// compuesto en Firebase, y para unas decenas de comentarios no compensa.
+async function fetchPublishedTestimonials() {
+  const q = query(collection(db, "testimonials"), where("published", "==", true));
+  const snap = await getDocs(q);
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+async function fetchAllTestimonials() {
+  const q = query(collection(db, "testimonials"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function updateTestimonial(id, data) {
+  await setDoc(doc(db, "testimonials", id), data, { merge: true });
+}
+
+async function deleteTestimonial(id) {
+  await deleteDoc(doc(db, "testimonials", id));
+}
+
 // ---------- Vaciar el catálogo (destructivo, solo desde el panel admin) ----------
 // Borra TODOS los productos y TODAS las categorías, y de paso las fotos que
 // esos productos tuvieran en Storage (si no, quedarían colgadas sin dueño).
@@ -428,7 +492,7 @@ window.ErFirebase = {
   saveLead, track,
   fetchCategories, fetchProducts,
   fetchAllCategories, fetchAllProducts,
-  saveCategory, deleteCategory,
+  saveCategory, deleteCategory, renameCategory,
   saveProduct, deleteProduct,
   uploadProductImage, deleteProductImage,
   fetchHomeSettings, saveHomeSettings, uploadSiteImage,
@@ -439,5 +503,7 @@ window.ErFirebase = {
   onAuthChange, signIn, signOut: signOutUser,
   fetchMyRole, createInvite, fetchInvites, redeemInviteAndSignUp,
   fetchTeamMembers, removeTeamMember,
+  submitTestimonial, fetchPublishedTestimonials, fetchAllTestimonials,
+  updateTestimonial, deleteTestimonial,
   seedInitialCatalog, wipeCatalog, countCatalog
 };

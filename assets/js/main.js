@@ -87,3 +87,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ---------- Comentarios de clientes (contacto.html#comentario) ----------
+// Entra sin publicar: alguien del equipo lo aprueba en el panel antes de
+// que aparezca en el inicio. El campo "stage" dice en que quedo la venta.
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('opinionForm');
+  if (!form) return;
+
+  const msg = document.getElementById('opinionMsg');
+  const btn = document.getElementById('opinionBtn');
+  const t = (k) => (window.ErI18n ? window.ErI18n.t(k) : k);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!window.ErFirebase) return;
+
+    const data = {
+      name: document.getElementById('o-nombre').value.trim(),
+      city: document.getElementById('o-ciudad').value.trim(),
+      stage: document.getElementById('o-etapa').value,
+      piece: document.getElementById('o-pieza').value.trim(),
+      quote: document.getElementById('o-mensaje').value.trim(),
+      consent: true,
+      order: 0
+    };
+
+    msg.textContent = '';
+    msg.className = 'form-msg';
+    btn.disabled = true;
+
+    try {
+      await window.ErFirebase.submitTestimonial(data);
+      window.ErFirebase.track('submit_testimonial', { stage: data.stage });
+      form.reset();
+      msg.textContent = t('opinion.sent');
+      msg.className = 'form-msg ok';
+    } catch (err) {
+      console.error('No se pudo enviar el comentario:', err);
+      msg.textContent = t('opinion.error');
+      msg.className = 'form-msg error';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});

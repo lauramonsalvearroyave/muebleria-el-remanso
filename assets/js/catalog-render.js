@@ -143,13 +143,104 @@ async function renderHomeImages() {
   }
 }
 
+// ---------- Comentarios aprobados (carrusel del inicio) ----------
+
+function testimonialHtml(c) {
+  const who = [c.name, c.city].filter(Boolean).join(' · ');
+  return `
+    <figure class="testimonial">
+      <blockquote><p>"${esc(c.quote)}"</p></blockquote>
+      <figcaption class="who">— ${esc(who || 'Cliente de El Remanso')}</figcaption>
+    </figure>`;
+}
+
+// Flechas y puntos solo aparecen si hay mas tarjetas de las que caben.
+function setUpCarousel(section, track, dotsRoot) {
+  const prev = section.querySelector('.carousel-arrow.prev');
+  const next = section.querySelector('.carousel-arrow.next');
+  const cards = Array.from(track.children);
+
+  const perView = () => {
+    const card = cards[0];
+    if (!card) return 1;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    return Math.max(1, Math.round((track.clientWidth + gap) / (card.offsetWidth + gap)));
+  };
+
+  const pages = () => Math.max(1, Math.ceil(cards.length / perView()));
+  const currentPage = () => {
+    const card = cards[0];
+    if (!card) return 0;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    return Math.round(track.scrollLeft / ((card.offsetWidth + gap) * perView()));
+  };
+
+  function renderDots() {
+    const total = pages();
+    if (total <= 1) {
+      dotsRoot.innerHTML = '';
+      prev.hidden = next.hidden = true;
+      return;
+    }
+    prev.hidden = next.hidden = false;
+    const now = currentPage();
+    dotsRoot.innerHTML = Array.from({ length: total }, (_, i) =>
+      `<button type="button" data-page="${i}" aria-current="${i === now}" aria-label="${i + 1}"></button>`
+    ).join('');
+    prev.disabled = now === 0;
+    next.disabled = now >= total - 1;
+  }
+
+  function goTo(page) {
+    const card = cards[0];
+    if (!card) return;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    track.scrollTo({ left: page * (card.offsetWidth + gap) * perView() });
+  }
+
+  prev.addEventListener('click', () => goTo(Math.max(0, currentPage() - 1)));
+  next.addEventListener('click', () => goTo(Math.min(pages() - 1, currentPage() + 1)));
+  dotsRoot.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-page]');
+    if (b) goTo(Number(b.dataset.page));
+  });
+
+  let raf = null;
+  track.addEventListener('scroll', () => {
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(renderDots);
+  });
+  window.addEventListener('resize', renderDots);
+  renderDots();
+}
+
+async function renderComments() {
+  const section = document.getElementById('commentsSection');
+  if (!section) return;
+
+  let comments = [];
+  try {
+    comments = await window.ErFirebase.fetchPublishedTestimonials();
+  } catch (err) {
+    console.error('No se pudieron cargar los comentarios:', err);
+    return;                         // la seccion se queda oculta, que es lo correcto
+  }
+  if (!comments.length) return;     // sin comentarios reales, no se muestra nada
+
+  const track = document.getElementById('commentsTrack');
+  track.innerHTML = comments.map(testimonialHtml).join('');
+  section.hidden = false;
+  setUpCarousel(section, track, document.getElementById('commentsDots'));
+}
+
 async function init() {
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
   const flagshipLink = document.getElementById('homeFlagshipLink');
   const heroSlot = document.getElementById('heroImageSlot');
   const aboutSlot = document.getElementById('aboutImageSlot');
-  if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot) return;
+  const commentsSection = document.getElementById('commentsSection');
+  if (!catalogRoot && !homeRoot && !flagshipLink && !heroSlot && !aboutSlot && !commentsSection) return;
 
   if (!window.ErFirebase) {
     console.error('Firebase no está disponible todavía.');
@@ -160,11 +251,12 @@ async function init() {
   // de ida y vuelta encadenados, en paralelo tardan lo que tarde la mas lenta.
   try {
     const homeImages = renderHomeImages();
+    const comments = renderComments();
     const [categories, products] = await Promise.all([
       window.ErFirebase.fetchCategories(),
       catalogRoot ? window.ErFirebase.fetchProducts() : Promise.resolve([])
     ]);
-    await homeImages;
+    await Promise.all([homeImages, comments]);
 
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);
     if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories);

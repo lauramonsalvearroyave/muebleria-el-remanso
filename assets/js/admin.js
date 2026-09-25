@@ -52,6 +52,8 @@ let editingCategoryId = null; // null = creando una nueva
 let editingProductId = null;
 let selectedImageFile = null;
 let currentUserRole = null; // 'admin' | 'colaborador'
+let comments = [];
+let catIdTouched = false;   // si tocan el identificador a mano, deja de seguir al nombre
 
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -73,10 +75,11 @@ function materialLabel(value) {
 // ---------------- Categorías ----------------
 
 function renderCategoryForm() {
+  catIdTouched = false;
   const editing = categories.find(c => c.id === editingCategoryId);
   const form = document.getElementById('categoryForm');
   form.querySelector('#cat-id').value = editing ? editing.id : '';
-  form.querySelector('#cat-id').disabled = !!editing;
+  form.querySelector('#cat-id').disabled = false;   // editable: renombrar tambien cambia la URL
   form.querySelector('#cat-label').value = editing ? editing.label : '';
   form.querySelector('#cat-teaser').value = editing ? (editing.teaser || '') : '';
   form.querySelector('#cat-flagship').checked = editing ? !!editing.flagship : false;
@@ -127,7 +130,7 @@ async function saveCategoryFromForm(e) {
   const label = form.querySelector('#cat-label').value.trim();
   if (!label) { alert('El nombre de la categoría es obligatorio.'); return; }
 
-  const id = editingCategoryId || slugify(idInput || label);
+  const id = slugify(idInput || label);
   if (!id) { alert('No se pudo generar un identificador válido para la categoría.'); return; }
 
   const existing = categories.find(c => c.id === editingCategoryId);
@@ -140,7 +143,29 @@ async function saveCategoryFromForm(e) {
   };
 
   try {
-    await window.ErFirebase.saveCategory(id, data);
+    // Si al editar cambio el identificador, la direccion del catalogo tambien
+    // cambia — y hay que llevarse los productos a la nueva.
+    if (editingCategoryId && id !== editingCategoryId) {
+      const afectados = products.filter(p => p.categoryId === editingCategoryId).length;
+      const ok = confirm(
+        `La dirección de esta categoría va a cambiar:
+
+` +
+        `  catalogo.html#${editingCategoryId}
+  →  catalogo.html#${id}
+
+` +
+        (afectados ? `Se moverán ${afectados} producto(s) a la nueva dirección.
+` : '') +
+        `Los enlaces antiguos a #${editingCategoryId} dejarán de funcionar.
+
+¿Continuar?`
+      );
+      if (!ok) return;
+      await window.ErFirebase.renameCategory(editingCategoryId, id, data);
+    } else {
+      await window.ErFirebase.saveCategory(id, data);
+    }
     editingCategoryId = null;
     await loadData();
     form.reset();
@@ -408,6 +433,7 @@ async function loadData() {
 
   renderCategoryList();
   renderProductList();
+  if (currentUserRole === 'admin') await loadComments();
   renderCategoryForm();
   renderProductForm();
 
@@ -824,7 +850,102 @@ function applyRoleUI() {
   if (teamBtn) teamBtn.style.display = isCollaborator ? 'none' : '';
   if (homeBtn) homeBtn.style.display = isCollaborator ? 'none' : '';
   if (leadsBtn) leadsBtn.style.display = isCollaborator ? 'none' : '';
+  const commentsBtn = document.getElementById('tabBtnComments');
+  if (commentsBtn) commentsBtn.style.display = isCollaborator ? 'none' : '';
   switchTab(isCollaborator ? 'products' : 'categories');
+}
+
+// ---------------- Comentarios de clientes ----------------
+
+const STAGE_LABELS = {
+  compro:    'Compró',
+  encargado: 'Encargado, esperando',
+  cotizo:    'Cotizó, lo está pensando',
+  no_compro: 'No compró',
+  otro:      'Otra cosa'
+};
+
+// El conteo por etapa es lo que muestra donde se esta cayendo la venta.
+function renderCommentStats() {
+  const box = document.getElementById('commentStats');
+  if (!comments.length) { box.innerHTML = ''; return; }
+
+  const counts = {};
+  for (const c of comments) counts[c.stage || 'otro'] = (counts[c.stage || 'otro'] || 0) + 1;
+
+  box.innerHTML = Object.keys(STAGE_LABELS)
+    .filter(k => counts[k])
+    .map(k => `<div class="stage-chip stage-${k}"><strong>${counts[k]}</strong><span>${esc(STAGE_LABELS[k])}</span></div>`)
+    .join('');
+}
+
+function renderCommentList() {
+  const list = document.getElementById('commentList');
+  if (!comments.length) {
+    list.innerHTML = '<p class="admin-empty">Todavía no ha llegado ningún comentario. Manda el enlace de arriba por WhatsApp después de cada entrega.</p>';
+    return;
+  }
+  list.innerHTML = comments.map(c => {
+    const when = c.createdAt && c.createdAt.toDate ? c.createdAt.toDate().toLocaleString('es-CO') : '';
+    const who = [c.name, c.city].filter(Boolean).join(' · ');
+    const stage = STAGE_LABELS[c.stage] || STAGE_LABELS.otro;
+    return `
+      <div class="admin-row${c.published ? '' : ' is-pending'}">
+        <div class="info">
+          <strong>${esc(who || '(sin nombre)')}</strong>
+          <span>${esc(stage)}${c.piece ? ' · ' + esc(c.piece) : ''}${when ? ' · ' + when : ''}</span>
+          <span class="quote-preview">"${esc(c.quote || '')}"</span>
+        </div>
+        <div class="pills">
+          <span class="tag-pill">${c.published ? 'Publicado' : 'Sin publicar'}</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-outline btn-sm" data-toggle-comment="${esc(c.id)}" type="button">${c.published ? 'Ocultar' : 'Publicar'}</button>
+          <button class="btn btn-light btn-sm" data-delete-comment="${esc(c.id)}" type="button">Eliminar</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function bindCommentActions() {
+  const list = document.getElementById('commentList');
+
+  list.addEventListener('click', async (e) => {
+    const toggle = e.target.closest('[data-toggle-comment]');
+    if (toggle) {
+      const c = comments.find(x => x.id === toggle.dataset.toggleComment);
+      if (!c) return;
+      // Al publicar el primero le damos un orden al final de la fila.
+      const order = c.order != null ? c.order : comments.filter(x => x.published).length;
+      await window.ErFirebase.updateTestimonial(c.id, { published: !c.published, order });
+      await loadComments();
+      return;
+    }
+
+    const del = e.target.closest('[data-delete-comment]');
+    if (del) {
+      if (!confirm('¿Eliminar este comentario? No se puede deshacer.')) return;
+      await window.ErFirebase.deleteTestimonial(del.dataset.deleteComment);
+      await loadComments();
+    }
+  });
+
+  document.getElementById('copyOpinionLink').addEventListener('click', async (e) => {
+    const url = new URL('contacto.html#comentario', location.href).href;
+    try {
+      await navigator.clipboard.writeText(url);
+      e.target.textContent = 'Copiado';
+      setTimeout(() => { e.target.textContent = 'Copiar'; }, 1800);
+    } catch (err) {
+      prompt('Copia este enlace:', url);
+    }
+  });
+}
+
+async function loadComments() {
+  comments = await window.ErFirebase.fetchAllTestimonials();
+  renderCommentStats();
+  renderCommentList();
 }
 
 function switchTab(tab) {
@@ -832,6 +953,7 @@ function switchTab(tab) {
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
   document.getElementById('customersPanel').style.display = tab === 'customers' ? '' : 'none';
   document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
+  document.getElementById('commentsPanel').style.display = tab === 'comments' ? '' : 'none';
   document.getElementById('homePanel').style.display = tab === 'home' ? '' : 'none';
   document.getElementById('teamPanel').style.display = tab === 'team' ? '' : 'none';
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
@@ -843,6 +965,15 @@ function wireEvents() {
   });
 
   document.getElementById('categoryForm').addEventListener('submit', saveCategoryFromForm);
+
+  // El identificador (y por tanto la URL) sigue al nombre mientras se escribe.
+  // Si alguien lo edita a mano, se respeta y deja de seguirlo.
+  const catLabel = document.getElementById('cat-label');
+  const catId = document.getElementById('cat-id');
+  catLabel.addEventListener('input', () => {
+    if (!catIdTouched) catId.value = slugify(catLabel.value);
+  });
+  catId.addEventListener('input', () => { catIdTouched = true; });
   document.getElementById('categoryCancelBtn').addEventListener('click', () => {
     editingCategoryId = null;
     document.getElementById('categoryForm').reset();
@@ -876,6 +1007,7 @@ function wireEvents() {
   document.getElementById('prod-image').addEventListener('change', handleImageSelect);
   document.getElementById('seedBtn').addEventListener('click', runSeed);
   document.getElementById('wipeBtn').addEventListener('click', runWipe);
+  bindCommentActions();
 
   document.getElementById('logoutBtn').addEventListener('click', () => window.ErFirebase.signOut());
 

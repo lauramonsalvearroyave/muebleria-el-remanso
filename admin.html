@@ -133,6 +133,7 @@
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
         <button class="admin-tab" data-tab="customers" type="button">Clientes</button>
         <button class="admin-tab" data-tab="leads" type="button" id="tabBtnLeads">Interesados</button>
+        <button class="admin-tab" data-tab="comments" type="button" id="tabBtnComments">Comentarios</button>
         <button class="admin-tab" data-tab="home" type="button" id="tabBtnHome">Ajustes</button>
         <button class="admin-tab" data-tab="team" type="button" id="tabBtnTeam">Equipo</button>
       </div>
@@ -148,7 +149,7 @@
                 <input type="text" id="cat-label" placeholder="Ej: Sofás" required>
               </div>
               <div class="field">
-                <label for="cat-id">Identificador (URL, se genera solo)</label>
+                <label for="cat-id">Identificador (la URL, se genera solo)</label>
                 <input type="text" id="cat-id" placeholder="ej: sofas">
               </div>
             </div>
@@ -347,6 +348,16 @@
           <p style="margin:0;">Cada persona que escribió "Me interesa" en un producto, o llenó el formulario de contacto, aparece aquí — con su nombre, teléfono y qué le interesó, para que le puedan hacer seguimiento.</p>
         </div>
         <div id="leadList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== COMENTARIOS DE CLIENTES ===== -->
+      <div id="commentsPanel" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <p style="margin:0 0 12px;">Lo que la gente envía desde <strong>contacto.html#comentario</strong> llega aquí <strong>sin publicar</strong>. Revisa y dale "Publicar" para que aparezca en el inicio. Mientras no haya ninguno publicado, esa sección del inicio no se muestra.</p>
+          <p style="margin:0;"><strong>Enlace para mandar por WhatsApp:</strong> <code id="opinionLink">contacto.html#comentario</code> <button id="copyOpinionLink" class="btn btn-light btn-sm" type="button">Copiar</button></p>
+        </div>
+        <div id="commentStats" class="stage-stats"></div>
+        <div id="commentList" class="admin-list"></div>
       </div>
 
       <!-- ===== AJUSTES DEL SITIO (solo administradores) ===== -->
