@@ -375,6 +375,13 @@ section{ padding: 68px 0; }
 .form-msg.ok{ color:#2F6B4F; }
 .form-msg.error{ color:#9A3B2A; }
 
+.id-mismatch{
+  background:#FDF3F1; border:1px solid #E7C5BC; border-radius:var(--radius-s);
+  padding:14px 16px; margin:-8px 0 18px;
+}
+.id-mismatch p{ margin:0 0 10px; font-size:.86rem; color:#9A3B2A; }
+.id-mismatch code{ background:var(--white); padding:1px 6px; border-radius:5px; font-size:.9em; }
+
 /* ===== Spinner de carga =====
    Va dentro de los huecos que se llenan desde Firestore, no como capa sobre
    toda la pagina: el resto del contenido ya esta ahi y taparlo seria peor. */

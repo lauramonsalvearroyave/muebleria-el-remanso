@@ -88,6 +88,29 @@ function renderCategoryForm() {
   form.querySelector('#cat-order').value = editing ? (editing.order ?? categories.length) : categories.length;
   document.getElementById('categoryFormTitle').textContent = editing ? `Editar categoría: ${editing.label}` : 'Agregar categoría';
   document.getElementById('categoryCancelBtn').style.display = editing ? '' : 'none';
+  revisarDireccionCategoria();
+}
+
+// Si el identificador no corresponde al nombre, se avisa y se ofrece
+// corregirlo. No se hace solo: cambiar una URL rompe los enlaces que ya
+// circulan, y esa decision es de quien administra.
+function revisarDireccionCategoria() {
+  const caja = document.getElementById('catIdMismatch');
+  const texto = document.getElementById('catIdMismatchText');
+  const label = document.getElementById('cat-label').value.trim();
+  const idActual = document.getElementById('cat-id').value.trim();
+  const esperado = slugify(label);
+
+  if (!editingCategoryId || !label || !esperado || esperado === idActual) {
+    caja.style.display = 'none';
+    return;
+  }
+  const afectados = products.filter(p => p.categoryId === editingCategoryId).length;
+  texto.innerHTML =
+    `La dirección de esta categoría no corresponde a su nombre:<br>` +
+    `hoy es <code>#${esc(idActual)}</code> y por el nombre debería ser <code>#${esc(esperado)}</code>.` +
+    (afectados ? `<br>Al corregirla se moverán ${afectados} producto(s).` : '');
+  caja.style.display = '';
 }
 
 function renderCategoryList() {
@@ -1409,8 +1432,9 @@ function wireEvents() {
   const catId = document.getElementById('cat-id');
   catLabel.addEventListener('input', () => {
     if (!catIdTouched) catId.value = slugify(catLabel.value);
+    revisarDireccionCategoria();
   });
-  catId.addEventListener('input', () => { catIdTouched = true; });
+  catId.addEventListener('input', () => { catIdTouched = true; revisarDireccionCategoria(); });
   document.getElementById('categoryCancelBtn').addEventListener('click', () => {
     editingCategoryId = null;
     document.getElementById('categoryForm').reset();
@@ -1456,6 +1480,14 @@ function wireEvents() {
                    statusId: 'heroUploadStatus', previewId: 'homeHeroPreview' });
   conectarSubida({ fileId: 'home-about-file', pathId: 'home-about-path',
                    statusId: 'aboutUploadStatus', previewId: 'homeAboutPreview' });
+
+  document.getElementById('catIdFixBtn').addEventListener('click', () => {
+    const nuevo = slugify(document.getElementById('cat-label').value.trim());
+    if (!nuevo) return;
+    document.getElementById('cat-id').value = nuevo;
+    catIdTouched = true;            // asi saveCategoryFromForm hace el renombrado
+    revisarDireccionCategoria();
+  });
 
   document.getElementById('suggestPathBtn').addEventListener('click', () => {
     const nombre = document.getElementById('prod-name').value.trim();
