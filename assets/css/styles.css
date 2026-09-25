@@ -390,17 +390,27 @@ section{ padding: 68px 0; }
   width:100%; min-height:140px; padding:24px 0;
 }
 .er-loader__mark{ position:relative; }
-.er-loader__ring{
+.er-loader .er-loader__mark .er-loader__ring{
   position:absolute; inset:0; width:100%; height:100%;
   animation: er-spin 1.6s linear infinite;
 }
 .er-loader__ring circle{ fill:none; stroke-width:3; stroke-linecap:round; }
 .er-loader__ring .track{ stroke: var(--sand-line); }
 .er-loader__ring .arc{ stroke: var(--gold); stroke-dasharray: 190 363; }
-.er-loader__logo{
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+/* Selector deliberadamente especifico: dentro de .hero-art, .product-thumb y
+   .material-swatch ya hay reglas "<clase> img" que imponen inset:0 y
+   object-fit:cover. Con un solo nombre de clase perdian y el logo se iba a la
+   esquina. Dos clases + el elemento ganan en cualquiera de esos contextos. */
+.er-loader .er-loader__mark img.er-loader__logo{
+  position:absolute;
+  inset:auto;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  object-fit:contain;
+  border-radius:50%;
+  max-width:none;
   animation: er-breathe 2.4s ease-in-out infinite;
-  opacity:.9;
+  opacity:.92;
 }
 @keyframes er-spin{ to{ transform: rotate(360deg); } }
 @keyframes er-breathe{
@@ -408,8 +418,9 @@ section{ padding: 68px 0; }
   50%    { transform:translate(-50%,-50%) scale(1.05); }
 }
 @media (prefers-reduced-motion: reduce){
-  .er-loader__ring{ animation-duration: 4s; }
-  .er-loader__logo{ animation: none; }
+  /* Misma especificidad que las reglas de arriba, si no, no ganan. */
+  .er-loader .er-loader__mark .er-loader__ring{ animation-duration: 4s; }
+  .er-loader .er-loader__mark img.er-loader__logo{ animation: none; }
 }
 /* En los huecos de foto el spinner ocupa todo el alto disponible */
 .hero-art .er-loader{ position:absolute; inset:0; min-height:0; padding:0; }
