@@ -39,8 +39,15 @@ const SDK = "https://www.gstatic.com/firebasejs/10.13.2";
 let storagePromise = null;
 function loadStorage() {
   if (!storagePromise) {
-    storagePromise = import(`${SDK}/firebase-storage.js`)
-      .then(m => ({ ...m, storage: m.getStorage(app) }));
+    storagePromise = import(`${SDK}/firebase-storage.js`).then(m => {
+      const storage = m.getStorage(app);
+      // Por defecto el SDK reintenta hasta 2 minutos antes de rendirse. Si el
+      // bucket no existe o las reglas niegan, el boton se queda en "Guardando..."
+      // todo ese rato sin decir nada. 20 s basta para una foto y falla a tiempo.
+      storage.maxUploadRetryTime = 20000;
+      storage.maxOperationRetryTime = 20000;
+      return { ...m, storage };
+    });
   }
   return storagePromise;
 }
@@ -213,14 +220,31 @@ async function deleteProduct(id) {
 
 // ---------- Imágenes ----------
 
+// Traduce los errores de Storage a algo accionable. El mas comun al empezar
+// es que Storage no este activado todavia en la consola de Firebase.
+function explicarErrorStorage(err) {
+  const code = err && err.code ? String(err.code) : '';
+  if (code.includes('unauthorized')) {
+    return new Error('Las reglas de Storage no permiten subir. Revisa la pestaña Reglas de Storage en la consola de Firebase.');
+  }
+  if (code.includes('unknown') || code.includes('retry-limit') || code.includes('bucket-not-found')) {
+    return new Error('No se encontró el almacenamiento de fotos. Falta activar Storage en la consola de Firebase (Compilación → Storage → Comenzar).');
+  }
+  return err;
+}
+
 async function uploadProductImage(file, productId) {
   const { storage, ref, uploadBytes, getDownloadURL } = await loadStorage();
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
   const path = `products/${productId}/${Date.now()}-${safeName}`;
   const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  return { url, path };
+  try {
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return { url, path };
+  } catch (err) {
+    throw explicarErrorStorage(err);
+  }
 }
 
 async function deleteProductImage(path) {
@@ -249,9 +273,13 @@ async function uploadSiteImage(file, key) {
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
   const path = `site/${key}/${Date.now()}-${safeName}`;
   const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  return { url, path };
+  try {
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return { url, path };
+  } catch (err) {
+    throw explicarErrorStorage(err);
+  }
 }
 
 // ---------- Autenticación (panel admin) ----------
