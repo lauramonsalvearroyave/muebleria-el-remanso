@@ -107,6 +107,49 @@ function categoryBlockHtml(cat, products) {
     </div>`;
 }
 
+// Datos estructurados del catalogo. El contenido lo dibuja JavaScript desde
+// Firestore, asi que los nombres e historias de las piezas -- el mejor
+// material que hay para busqueda -- no estan en el HTML que llega del
+// servidor. Esto se los entrega a Google en un formato que entiende.
+// No se declara precio: se acuerda por WhatsApp segun medidas y material,
+// e inventar uno seria falso.
+function publicarDatosDeProductos(categories, products) {
+  const porId = {};
+  categories.forEach(c => { porId[c.id] = c.label; });
+
+  const lista = products.slice(0, 100).map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "Product",
+      name: p.name,
+      ...(p.story ? { description: p.story } : {}),
+      ...(p.imageUrl ? { image: variante(p.imageUrl, 'w_1200,f_auto,q_auto') } : {}),
+      ...(porId[p.categoryId] ? { category: porId[p.categoryId] } : {}),
+      ...(p.material ? { material: window.ErI18n.t(MATERIAL_KEYS[p.material] || '') } : {}),
+      brand: { "@type": "Brand", name: "El Remanso" },
+      url: `https://muebleriaelremanso.com/catalogo.html#${p.categoryId || ''}`
+    }
+  }));
+
+  const datos = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Catálogo El Remanso",
+    numberOfItems: lista.length,
+    itemListElement: lista
+  };
+
+  let tag = document.getElementById('catalogoJsonLd');
+  if (!tag) {
+    tag = document.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.id = 'catalogoJsonLd';
+    document.head.appendChild(tag);
+  }
+  tag.textContent = JSON.stringify(datos);
+}
+
 function renderCatalogPage(root, categories, products) {
   const t = window.ErI18n.t;
   const byCategory = {};
@@ -122,6 +165,7 @@ function renderCatalogPage(root, categories, products) {
   root.innerHTML = `<div class="filter-bar">${chips}</div>${blocks}`;
   attachCatalogInteractions(root);
   irALaSeccionDelEnlace(root);
+  publicarDatosDeProductos(categories, products);
   document.dispatchEvent(new CustomEvent('catalogRendered'));
 }
 

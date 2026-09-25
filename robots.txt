@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# El panel de administracion no tiene nada que buscar aqui.
+Disallow: /admin.html
+
+Sitemap: https://muebleriaelremanso.com/sitemap.xml
