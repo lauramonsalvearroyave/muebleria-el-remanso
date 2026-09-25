@@ -398,8 +398,14 @@ async function saveCustomer(id, data) {
   return newId;
 }
 
+// Firestore NO borra las subcolecciones al borrar el documento padre: quedan
+// huerfanas, invisibles pero guardadas. Tratandose de datos personales de una
+// persona que pide que la borren, eso no basta -- hay que llevarselas tambien.
 async function deleteCustomer(id) {
+  const snap = await getDocs(collection(db, "customers", id, "purchases"));
+  await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "customers", id, "purchases", d.id))));
   await deleteDoc(doc(db, "customers", id));
+  return snap.size;
 }
 
 async function fetchPurchases(customerId) {

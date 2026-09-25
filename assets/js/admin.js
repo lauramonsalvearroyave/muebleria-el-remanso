@@ -780,7 +780,16 @@ async function saveCustomerFromForm(e) {
 
 async function deleteCustomerById(id) {
   const cust = customers.find(c => c.id === id);
-  if (!confirm(`¿Eliminar a "${cust ? cust.name : ''}"? Esta acción no se puede deshacer.`)) return;
+
+  // Un cliente con pedidos no se borra de una: son registros de venta, y
+  // borrarlo dejaria pedidos apuntando a un cliente que ya no existe.
+  const suyos = orders.filter(o => o.customerId === id).length;
+  if (suyos > 0) {
+    alert(`No puedes eliminar a "${cust ? cust.name : ''}" todavía: tiene ${suyos} pedido(s) registrado(s). Elimina primero sus pedidos en la pestaña Pedidos.`);
+    return;
+  }
+
+  if (!confirm(`¿Eliminar a "${cust ? cust.name : ''}"? Se borran también sus compras antiguas. Esta acción no se puede deshacer.`)) return;
   try {
     await window.ErFirebase.deleteCustomer(id);
     if (editingCustomerId === id) editingCustomerId = null;
@@ -1143,8 +1152,9 @@ function renderOrderList() {
           ${alerta}
         </div>
         <div class="actions">
-          <button class="btn btn-outline btn-sm" data-edit-order="${esc(o.id)}" type="button">Editar</button>
-          ${currentUserRole === 'admin' ? `<button class="btn btn-light btn-sm" data-delete-order="${esc(o.id)}" type="button">Eliminar</button>` : ''}
+          ${currentUserRole === 'admin' ? `
+            <button class="btn btn-outline btn-sm" data-edit-order="${esc(o.id)}" type="button">Editar</button>
+            <button class="btn btn-light btn-sm" data-delete-order="${esc(o.id)}" type="button">Eliminar</button>` : ''}
         </div>
       </div>`;
   }).join('');
