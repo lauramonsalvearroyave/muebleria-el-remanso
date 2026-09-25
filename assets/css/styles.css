@@ -373,6 +373,15 @@ section{ padding: 68px 0; }
 .form-msg.ok{ color:#2F6B4F; }
 .form-msg.error{ color:#9A3B2A; }
 
+/* Bloque de identificacion legal */
+.legal-id{
+  background: var(--sand); border-left:3px solid var(--gold);
+  border-radius: var(--radius-s); padding:16px 20px; margin:18px 0 22px;
+}
+.legal-id p{ margin:0 0 6px; font-size:.92rem; color:var(--ink); }
+.legal-id p:last-child{ margin-bottom:0; }
+.legal-id a{ color: var(--gold-bronze); text-decoration:underline; }
+
 /* Buscadores y filtros del panel */
 .search-bar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
 .search-bar input[type="search"]{ flex:1; min-width:220px; }
