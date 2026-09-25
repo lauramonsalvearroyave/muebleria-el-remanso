@@ -70,13 +70,18 @@ const pendingEvents = [];
 async function startAnalytics() {
   try {
     const m = await import(`${SDK}/firebase-analytics.js`);
-    if (!(await m.isSupported())) return;
+    if (!(await m.isSupported())) {
+      pendingEvents.length = 0;   // no va a haber quien los reciba
+      return;
+    }
     analytics = m.getAnalytics(app);
     logEventFn = m.logEvent;
     for (const [name, params] of pendingEvents) logEventFn(analytics, name, params);
     pendingEvents.length = 0;
   } catch (err) {
+    // Tipicamente un bloqueador de anuncios. No es un fallo del sitio.
     console.error("No se pudo iniciar Analytics:", err);
+    pendingEvents.length = 0;
   }
 }
 
@@ -100,8 +105,13 @@ async function saveLead(data) {
 }
 
 function track(eventName, params) {
-  if (analytics && logEventFn) logEventFn(analytics, eventName, params);
-  else pendingEvents.push([eventName, params]);
+  if (analytics && logEventFn) {
+    logEventFn(analytics, eventName, params);
+    return;
+  }
+  // Cola acotada: si Analytics nunca llega a cargar, esto no puede crecer
+  // sin limite durante la sesion.
+  if (pendingEvents.length < 50) pendingEvents.push([eventName, params]);
 }
 
 // ---------- Leads: lectura/edición para el panel admin ----------

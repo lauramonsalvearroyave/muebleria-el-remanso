@@ -44,6 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     const card = btn.closest('.product-card');
     const name = card ? card.querySelector('h3').textContent.trim() : '';
+    // Se mide al ABRIR, no solo al enviar: la diferencia entre los dos
+    // numeros es cuanta gente se arrepiente en el formulario.
+    if (window.ErFirebase) {
+      window.ErFirebase.track('me_interesa', { pieza: name.slice(0, 100) });
+    }
     openModal(name);
   });
 

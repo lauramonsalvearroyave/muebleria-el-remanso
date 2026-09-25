@@ -21,8 +21,35 @@ function initWhatsappNumber() {
   }, 50);
 }
 
+// GA4 ya registra los clics salientes, pero todos juntos y sin distinguir
+// cual boton fue: WhatsApp, Instagram y la SIC caen en el mismo saco. Aqui
+// se manda un evento propio con el origen, que es lo que permite saber si
+// convierte mas el hero, el catalogo o el boton flotante.
+function origenDelBoton(a) {
+  if (a.classList.contains('wa-float')) return 'flotante';
+  if (a.closest('.site-footer')) return 'pie';
+  if (a.closest('.hero')) return 'hero';
+  if (a.closest('.modal-box')) return 'modal_interes';
+  const seccion = a.closest('section');
+  if (seccion && seccion.id) return seccion.id;
+  // Ultimo recurso: la pagina donde esta.
+  return (location.pathname.split('/').pop() || 'inicio').replace('.html', '');
+}
+
+function medirWhatsapp() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="https://wa.me/"]');
+    if (!a || !window.ErFirebase) return;
+    window.ErFirebase.track('contacto_whatsapp', {
+      origen: origenDelBoton(a),
+      pagina: (location.pathname.split('/').pop() || 'index.html')
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initWhatsappNumber();
+  medirWhatsapp();
 
   const toggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');

@@ -157,6 +157,12 @@ function attachCatalogInteractions(root) {
       chips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       const category = chip.dataset.filter;
+      if (window.ErFirebase) {
+        window.ErFirebase.track('filtrar_categoria', {
+          categoria: category,
+          nombre: (chip.textContent || '').trim().slice(0, 100)
+        });
+      }
       blocks.forEach(block => {
         const match = category === 'todos' || block.dataset.category === category;
         block.style.display = match ? '' : 'none';
@@ -370,6 +376,11 @@ function setUpLightbox() {
     const card = thumb.closest('.product-card');
     const nombre = card ? (card.querySelector('h3')?.textContent || '').trim() : '';
     const historia = card ? (card.querySelector('.product-name-story')?.textContent || '').trim() : '';
+    // Ampliar la foto es la senal mas honesta de interes: nadie abre a
+    // pantalla completa un mueble que no le llamo la atencion.
+    if (window.ErFirebase) {
+      window.ErFirebase.track('ver_pieza', { pieza: (nombre || '').slice(0, 100) });
+    }
     // data-full es la foto original; src es la variante liviana de la tarjeta.
     abrir(foto.dataset.full || foto.currentSrc || foto.src, foto.alt, nombre, historia);
   });

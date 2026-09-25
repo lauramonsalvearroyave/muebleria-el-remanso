@@ -379,6 +379,9 @@ function initLangToggle() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.lang === getLang()) return;
+      if (window.ErFirebase) {
+        window.ErFirebase.track('cambio_idioma', { idioma: btn.dataset.lang });
+      }
       setLang(btn.dataset.lang);
       applyTranslations();
       document.dispatchEvent(new CustomEvent('langchange'));
