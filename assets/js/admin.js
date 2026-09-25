@@ -50,7 +50,8 @@ let products = [];
 let invites = [];
 let editingCategoryId = null; // null = creando una nueva
 let editingProductId = null;
-let preparandoImagen = false;   // evita guardar antes de que la foto termine de optimizarse
+let subiendoFoto = false;   // bloquea Guardar mientras una foto se esta subiendo
+let fallóLaSubida = false;  // para avisar si se guarda sin la foto que se intento subir
 let currentUserRole = null; // 'admin' | 'colaborador'
 let comments = [];
 let catIdTouched = false;   // si tocan el identificador a mano, deja de seguir al nombre
@@ -304,7 +305,11 @@ async function saveProductFromForm(e) {
   if (!name) { alert('El nombre del producto es obligatorio.'); return; }
   if (!categoryId) { alert('Primero crea al menos una categoría.'); return; }
 
-  if (preparandoImagen) { alert('Espera un segundo: la foto todavía se está preparando.'); return; }
+  if (subiendoFoto) { alert('Espera a que termine de subir la foto antes de guardar.'); return; }
+
+  if (fallóLaSubida && !document.getElementById('prod-image-path').value.trim()) {
+    if (!confirm('La ultima foto no se pudo subir, asi que este producto va a quedar sin imagen. ¿Guardar de todos modos?')) return;
+  }
 
   const saveBtn = document.getElementById('productSaveBtn');
   saveBtn.disabled = true;
@@ -413,17 +418,28 @@ function conectarSubida({ fileId, pathId, statusId, previewId, warningId }) {
     status.textContent = 'Subiendo ' + file.name + '...';
     fileInput.disabled = true;
 
+    // Sin esto se puede guardar con la subida a medias y el campo vacio:
+    // el producto quedaria sin foto sin que se note.
+    subiendoFoto = true;
+    const botonesGuardar = ['productSaveBtn', 'homeImagesSaveBtn']
+      .map(id => document.getElementById(id)).filter(Boolean);
+    botonesGuardar.forEach(b => { b.disabled = true; });
+
     try {
       const url = await subirACloudinary(file);
       pathInput.value = url;
+      fallóLaSubida = false;
       previsualizarRuta(url, previewId, warningId || null);
       status.className = 'upload-status ok';
       status.textContent = 'Listo, foto subida.';
     } catch (err) {
       console.error('Fallo la subida a Cloudinary:', err);
+      fallóLaSubida = true;
       status.className = 'upload-status error';
       status.textContent = 'No se pudo subir: ' + err.message;
     } finally {
+      subiendoFoto = false;
+      botonesGuardar.forEach(b => { b.disabled = false; });
       fileInput.disabled = false;
       fileInput.value = '';   // permite volver a elegir el mismo archivo
     }
