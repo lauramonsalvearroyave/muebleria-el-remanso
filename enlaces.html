@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, follow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El Remanso · Muebles artesanales</title>
+<meta name="description" content="Muebles tejidos a mano en mimbre, rattán, yaré, calceta de plátano, sintético y piola náutica. Cotiza tu mueble a medida.">
+<meta property="og:title" content="El Remanso · Muebles artesanales">
+<meta property="og:description" content="Muebles tejidos a mano, hechos a la medida de tu hogar.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lino:#F6F1EA; --arena:#E9DFD0; --espresso:#2B211B; --cafe:#6B5748;
+  --oro:#E9A84A; --oro-hondo:#C8862E; --salvia:#8A9A7B;
+  --serif:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans:"Montserrat", "Helvetica Neue", Arial, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{background:var(--lino)}
+body{margin:0;background:var(--lino);color:var(--espresso);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+main{max-width:440px;margin:0 auto;padding:28px 22px 40px}
+
+/* El arco: el único gesto protagonista de la página */
+.arco{position:relative;margin:8px auto 0;width:min(100%,340px);padding:46px 28px 34px;text-align:center;
+  border:1.5px solid rgba(138,154,123,.55);border-bottom:none;border-radius:170px 170px 0 0}
+.arco::after{content:"";position:absolute;inset:10px 10px 0;border:1px solid rgba(138,154,123,.28);border-bottom:none;border-radius:160px 160px 0 0;pointer-events:none}
+.arco img{width:104px;height:104px;display:block;margin:0 auto 18px}
+h1{font-family:var(--serif);font-weight:500;font-size:2.6rem;line-height:1.05;margin:0 0 6px;letter-spacing:.005em}
+.oficio{font-size:.95rem;color:var(--cafe);margin:0 0 14px}
+.lema{font-family:var(--serif);font-style:italic;font-size:1.35rem;color:var(--oro-hondo);margin:0}
+
+/* El río que se calma: separa el arco de los enlaces */
+.rio{display:block;width:100%;height:40px;margin:-2px 0 26px}
+
+nav{display:flex;flex-direction:column;gap:12px}
+.enlace{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;text-decoration:none;color:var(--espresso);
+  background:#fff;border:1px solid var(--arena);transition:background-color .15s ease,border-color .15s ease}
+.enlace:hover{border-color:var(--oro)}
+.enlace:focus-visible{outline:3px solid var(--espresso);outline-offset:3px}
+.enlace svg{flex:none;width:30px;height:30px;stroke:var(--espresso);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.enlace strong{display:block;font-weight:600;font-size:1rem;line-height:1.3}
+.enlace span{display:block;font-size:.85rem;color:var(--cafe);line-height:1.35;margin-top:2px}
+.enlace.principal{background:var(--oro);border-color:var(--oro)}
+.enlace.principal:hover{background:#EFB765}
+.enlace.principal span{color:#4A3A2E}
+
+.materiales{margin:34px 0 0;text-align:center;font-family:var(--serif);font-size:1.15rem;line-height:1.55;color:var(--cafe)}
+footer{margin-top:28px;text-align:center;font-size:.8rem;color:var(--cafe)}
+footer a{color:inherit}
+.llegar:hover{border-color:var(--arena)}
+.apps{display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap}
+.apps a{font-size:.85rem;font-weight:600;color:var(--espresso);text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid var(--espresso)}
+.apps a:hover{background:var(--espresso);color:var(--lino)}
+.apps a:focus-visible{outline:3px solid var(--oro-hondo);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header class="arco">
+    <img src="assets/img/logo-mark.png" alt="Monograma de El Remanso" width="104" height="104">
+    <h1>El Remanso</h1>
+    <p class="oficio">Muebles tejidos a mano, hechos a la medida de tu hogar</p>
+    <p class="lema">Si lo sueñas, lo creamos</p>
+  </header>
+
+  <svg class="rio" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 12 C 40 2, 70 22, 110 14 S 170 18, 200 18 S 270 16, 300 12 S 360 4, 400 14" fill="none" stroke="#C8862E" stroke-opacity=".55" stroke-width="1.6"/>
+    <path d="M0 24 C 45 16, 80 32, 120 25 S 175 27, 200 27 S 265 25, 290 22 S 355 16, 400 26" fill="none" stroke="#8A9A7B" stroke-opacity=".6" stroke-width="1.3"/>
+    <path d="M0 34 C 50 28, 90 40, 130 35 S 180 35, 200 35 S 260 35, 280 32 S 350 28, 400 36" fill="none" stroke="#8A9A7B" stroke-opacity=".35" stroke-width="1"/>
+  </svg>
+
+  <nav aria-label="Enlaces de El Remanso">
+    <a class="enlace principal" href="https://wa.me/573104599629?text=Hola%2C%20quiero%20cotizar%20un%20mueble" target="_blank" rel="noopener">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 8.5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H13l-6 5 1.5-5H9a3 3 0 0 1-3-3z"/><path d="M11.5 13.5h.01M16 13.5h.01M20.5 13.5h.01" stroke-width="2.6"/></svg>
+      <div><strong>Cotiza por WhatsApp</strong><span>Cuéntanos tu idea y te asesoramos</span></div>
+    </a>
+    <a class="enlace" href="https://muebleriaelremanso.com/catalogo?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=enlaces" target="_blank" rel="noopener">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7.5c3.5-1.5 7.5-1.5 11 1v17c-3.5-2.5-7.5-2.5-11-1z"/><path d="M27 7.5c-3.5-1.5-7.5-1.5-11 1v17c3.5-2.5 7.5-2.5 11-1z"/></svg>
+      <div><strong>Ver el catálogo</strong><span>Salas, comedores, camas nido y más</span></div>
+    </a>
+    <div class="enlace llegar">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28s-8-8.2-8-14a8 8 0 0 1 16 0c0 5.8-8 14-8 14z"/><circle cx="16" cy="14" r="3"/></svg>
+      <div><strong>Cómo llegar</strong><span>Las Palmas, Antioquia · Todos los días, de 8:00 a.m. a 6:00 p.m.</span>
+        <p class="apps"><a href="https://maps.app.goo.gl/RziZzHvKLQECiGh19" target="_blank" rel="noopener">Google Maps</a><a href="https://waze.com/ul/hd346cqs4n" target="_blank" rel="noopener">Waze</a></p>
+      </div>
+    </div>
+    <a class="enlace" href="https://muebleriaelremanso.com/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=enlaces" target="_blank" rel="noopener">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 15 16 6l11 9"/><path d="M8 13v13h16V13"/><path d="M16 23c-3-2-4-4-2.6-5.4 1-.9 2.2-.4 2.6.4.4-.8 1.6-1.3 2.6-.4C20 19 19 21 16 23z"/></svg>
+      <div><strong>Conoce El Remanso</strong><span>Nuestra historia y nuestro oficio</span></div>
+    </a>
+  </nav>
+
+  <p class="materiales">Mimbre, rattán, yaré y calceta de plátano.<br>Sintético y piola náutica.</p>
+
+  <footer>Mueblería artesanal El Remanso · <a href="https://www.instagram.com/muebleria_elremanso/">@muebleria_elremanso</a></footer>
+</main>
+</body>
+</html>
