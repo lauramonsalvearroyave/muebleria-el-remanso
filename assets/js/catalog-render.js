@@ -31,6 +31,17 @@ function spinnerHtml(px) {
     </div>`;
 }
 
+// Todas las fotos de una pieza, en orden: la portada primero. Se separan asi
+// -- portada en imageUrl, resto en images -- para que una pieza de una sola
+// foto siga guardandose y leyendose igual que siempre.
+function fotosDe(p) {
+  const todas = [p.imageUrl, ...(Array.isArray(p.images) ? p.images : [])];
+  const vistas = new Set();
+  return todas
+    .map(u => (u || '').trim())
+    .filter(u => u && !vistas.has(u) && vistas.add(u));
+}
+
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -53,12 +64,22 @@ function productCardHtml(p) {
   if (p.isNew) badges.push(`<span class="product-badge new" data-i18n="catalog.badge_new">${esc(t('catalog.badge_new'))}</span>`);
   if (p.soldOut) badges.push(`<span class="product-badge soldout" data-i18n="catalog.badge_soldout">${esc(t('catalog.badge_soldout'))}</span>`);
 
+  // Una pieza puede tener varias fotos. La portada vive en imageUrl y las
+  // demas en images; la cuadricula muestra solo la portada, para que no se
+  // mueva sola, y el resto aparece al ampliarla.
+  const galeria = fotosDe(p);
   // Solo se puede ampliar si de verdad hay foto: el marcador de "proximamente"
   // no lleva cursor de lupa ni responde al clic.
-  const media = p.imageUrl
-    ? `<img src="${esc(variante(p.imageUrl, 'w_800,f_auto,q_auto'))}" data-full="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">`
+  const media = galeria.length
+    ? `<img src="${esc(variante(galeria[0], 'w_800,f_auto,q_auto'))}" data-full="${esc(galeria[0])}" alt="${esc(p.name)}" loading="lazy">`
     : `<span class="placeholder-note" data-i18n="catalog.photo_note">${esc(t('catalog.photo_note'))}</span>`;
-  const zoomable = p.imageUrl ? ' is-zoomable' : '';
+  const zoomable = galeria.length ? ' is-zoomable' : '';
+  // La senal de que hay mas fotos. Discreta a proposito: la cuadricula es para
+  // mirar muebles, no para contar archivos.
+  const contador = galeria.length > 1
+    ? `<span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>${galeria.length}</span>`
+    : '';
+  const datosGaleria = galeria.length > 1 ? ` data-gallery="${esc(JSON.stringify(galeria))}"` : '';
 
   const materialKey = MATERIAL_KEYS[p.material];
   const materialTag = materialKey
@@ -77,9 +98,10 @@ function productCardHtml(p) {
 
   return `
     <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}">
-      <div class="product-thumb${zoomable}">
+      <div class="product-thumb${zoomable}"${datosGaleria}>
         <div class="product-badges">${badges.join('')}</div>
         ${media}
+        ${contador}
       </div>
       <div class="product-body">
         <div class="product-tags">${materialTag}${customTag}</div>
@@ -124,7 +146,7 @@ function publicarDatosDeProductos(categories, products) {
       "@type": "Product",
       name: p.name,
       ...(p.story ? { description: p.story } : {}),
-      ...(p.imageUrl ? { image: variante(p.imageUrl, 'w_1200,f_auto,q_auto') } : {}),
+      ...(fotosDe(p).length ? { image: fotosDe(p).map(u => variante(u, 'w_1200,f_auto,q_auto')) } : {}),
       ...(porId[p.categoryId] ? { category: porId[p.categoryId] } : {}),
       ...(p.material ? { material: window.ErI18n.t(MATERIAL_KEYS[p.material] || '') } : {}),
       brand: { "@type": "Brand", name: "El Remanso" },
@@ -391,13 +413,33 @@ function setUpLightbox() {
   const img = document.getElementById('lightboxImg');
   const caption = document.getElementById('lightboxCaption');
   const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
+  const contador = document.getElementById('lightboxCount');
   let ultimoFoco = null;
+  let fotos = [];
+  let actual = 0;
 
-  function abrir(src, alt, nombre, historia) {
+  function mostrar(i) {
+    if (!fotos.length) return;
+    // Da la vuelta: despues de la ultima viene la primera.
+    actual = (i + fotos.length) % fotos.length;
+    img.src = fotos[actual];
+    if (contador) contador.textContent = fotos.length > 1 ? `${actual + 1} / ${fotos.length}` : '';
+    const varias = fotos.length > 1;
+    if (prevBtn) prevBtn.hidden = !varias;
+    if (nextBtn) nextBtn.hidden = !varias;
+    // La siguiente se va cargando mientras se mira esta, para que el cambio
+    // sea inmediato y no un parpadeo en blanco.
+    if (varias) new Image().src = fotos[(actual + 1) % fotos.length];
+  }
+
+  function abrir(galeria, alt, nombre, historia) {
     ultimoFoco = document.activeElement;
-    img.src = src;
+    fotos = galeria;
     img.alt = alt || nombre || '';
     caption.innerHTML = esc(nombre || '') + (historia ? `<span>${esc(historia)}</span>` : '');
+    mostrar(0);
     box.hidden = false;
     // Sin esto la pagina de atras sigue desplazandose bajo el visor.
     document.body.style.overflow = 'hidden';
@@ -407,6 +449,7 @@ function setUpLightbox() {
   function cerrar() {
     box.hidden = true;
     img.src = '';
+    fotos = [];
     document.body.style.overflow = '';
     if (ultimoFoco) ultimoFoco.focus();
   }
@@ -426,17 +469,54 @@ function setUpLightbox() {
       window.ErFirebase.track('ver_pieza', { pieza: (nombre || '').slice(0, 100) });
     }
     // data-full es la foto original; src es la variante liviana de la tarjeta.
-    abrir(foto.dataset.full || foto.currentSrc || foto.src, foto.alt, nombre, historia);
+    const portada = foto.dataset.full || foto.currentSrc || foto.src;
+    let galeria = [portada];
+    if (thumb.dataset.gallery) {
+      // Si el dato viniera roto, mejor abrir solo la portada que no abrir nada.
+      try {
+        const lista = JSON.parse(thumb.dataset.gallery);
+        if (Array.isArray(lista) && lista.length) galeria = lista;
+      } catch (err) { /* se queda con la portada */ }
+    }
+    abrir(galeria, foto.alt, nombre, historia);
   });
 
   closeBtn.addEventListener('click', cerrar);
-  // Clic en el fondo cierra; clic sobre la foto, no.
+  if (prevBtn) prevBtn.addEventListener('click', () => mostrar(actual - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => mostrar(actual + 1));
+
+  // Clic en el fondo cierra; clic sobre la foto o los botones, no.
   box.addEventListener('click', (e) => {
-    if (!e.target.closest('.lightbox-figure') && !e.target.closest('.lightbox-close')) cerrar();
+    if (!e.target.closest('.lightbox-figure') && !e.target.closest('.lightbox-close') &&
+        !e.target.closest('.lightbox-nav')) cerrar();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !box.hidden) cerrar();
+    if (box.hidden) return;
+    if (e.key === 'Escape') cerrar();
+    if (fotos.length < 2) return;
+    if (e.key === 'ArrowRight') mostrar(actual + 1);
+    if (e.key === 'ArrowLeft') mostrar(actual - 1);
   });
+
+  // Deslizar en el celular, que es donde casi nadie busca una flecha.
+  let xInicio = null;
+  let yInicio = null;
+  box.addEventListener('touchstart', (e) => {
+    xInicio = e.changedTouches[0].clientX;
+    yInicio = e.changedTouches[0].clientY;
+  }, { passive: true });
+  box.addEventListener('touchend', (e) => {
+    if (xInicio === null || fotos.length < 2) return;
+    const dx = e.changedTouches[0].clientX - xInicio;
+    const dy = e.changedTouches[0].clientY - yInicio;
+    // Solo cuenta si fue claramente horizontal: si no, se confunde con
+    // desplazar la pagina y las fotos saltan solas.
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      mostrar(actual + (dx < 0 ? 1 : -1));
+    }
+    xInicio = null;
+    yInicio = null;
+  }, { passive: true });
 }
 
 async function init() {

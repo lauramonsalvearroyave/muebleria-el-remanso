@@ -56,7 +56,7 @@ service cloud.firestore {
       allow create, delete: if isAdmin();
       allow update: if isAdmin() || (
         isColaborador() &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['imageUrl','imagePath','soldOut','featured','isNew'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['imageUrl','images','imagePath','soldOut','featured','isNew'])
       );
     }
 

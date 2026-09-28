@@ -176,8 +176,17 @@
 <div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" hidden>
   <button class="lightbox-close" id="lightboxClose" type="button"
           data-i18n-aria="aria.close" aria-label="Cerrar">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" type="button" hidden
+          data-i18n-aria="aria.photo_prev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+  </button>
+  <button class="lightbox-nav next" id="lightboxNext" type="button" hidden
+          data-i18n-aria="aria.photo_next" aria-label="Foto siguiente">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
   <figure class="lightbox-figure">
     <img id="lightboxImg" src="" alt="">
+    <span id="lightboxCount" class="lightbox-count"></span>
     <figcaption id="lightboxCaption"></figcaption>
   </figure>
 </div>

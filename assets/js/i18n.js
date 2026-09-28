@@ -16,7 +16,9 @@ const DICT = {
     back_to_top: { es: 'Volver arriba', en: 'Back to top' },
     prev: { es: 'Anterior', en: 'Previous' },
     next: { es: 'Siguiente', en: 'Next' },
-    close: { es: 'Cerrar', en: 'Close' }
+    close: { es: 'Cerrar', en: 'Close' },
+    photo_prev: { es: 'Foto anterior', en: 'Previous photo' },
+    photo_next: { es: 'Foto siguiente', en: 'Next photo' }
   },
   footer: {
     tagline:        { es: 'Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in natural fibers and high-resistance materials. Pieces made by hand, with love, for your home.' },

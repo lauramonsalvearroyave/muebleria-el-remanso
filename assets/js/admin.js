@@ -56,6 +56,7 @@ let currentUserRole = null; // 'admin' | 'colaborador'
 let comments = [];
 let catIdTouched = false;   // si tocan el identificador a mano, deja de seguir al nombre
 let commentsError = null;
+let fotosProducto = [];   // galeria de la pieza que se esta editando; la primera es la portada
 
 function esc(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -251,16 +252,11 @@ function renderProductForm() {
   form.querySelector('#prod-soldout').checked = editing ? !!editing.soldOut : false;
   form.querySelector('#prod-featured').checked = editing ? !!editing.featured : false;
   form.querySelector('#prod-new').checked = editing ? !!editing.isNew : false;
-  const rutaActual = editing ? (editing.imageUrl || '') : '';
-  form.querySelector('#prod-image-path').value = rutaActual;
-  document.getElementById('imgWarning').textContent = '';
-
-  const preview = document.getElementById('imgPreview');
-  if (rutaActual) {
-    previsualizarRuta(rutaActual, 'imgPreview', 'imgWarning');
-  } else {
-    preview.innerHTML = '';
-  }
+  fotosProducto = editing ? galeriaDe(editing) : [];
+  form.querySelector('#prod-image-path').value = '';
+  renderGaleriaProducto();
+  document.getElementById('uploadStatus').textContent = '';
+  fallóLaSubida = false;
 
   document.getElementById('productFormTitle').textContent = editing ? `Editar producto: ${editing.name}` : 'Agregar producto';
   document.getElementById('productCancelBtn').style.display = editing ? '' : 'none';
@@ -288,6 +284,8 @@ function renderProductList() {
     const thumb = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="">` : '';
     const isHidden = p.active === false;
     const pills = [];
+    const nFotos = galeriaDe(p).length;
+    if (nFotos > 1) pills.push(`<span class="tag-pill">${nFotos} fotos</span>`);
     if (p.featured) pills.push('<span class="tag-pill">Destacado</span>');
     if (p.isNew) pills.push('<span class="tag-pill">Nuevo</span>');
     if (p.soldOut) pills.push('<span class="tag-pill">Agotado</span>');
@@ -330,7 +328,7 @@ async function saveProductFromForm(e) {
 
   if (subiendoFoto) { alert('Espera a que termine de subir la foto antes de guardar.'); return; }
 
-  if (fallóLaSubida && !document.getElementById('prod-image-path').value.trim()) {
+  if (fallóLaSubida && !fotosProducto.length) {
     if (!confirm('La ultima foto no se pudo subir, asi que este producto va a quedar sin imagen. ¿Guardar de todos modos?')) return;
   }
 
@@ -342,7 +340,15 @@ async function saveProductFromForm(e) {
     const existing = products.find(p => p.id === editingProductId);
     // Un colaborador solo puede tocar imagen y promociones — las reglas de
     // seguridad de Firestore exigen esto también, esto es solo para la UI.
+    // La primera foto es la portada y se sigue guardando en imageUrl. Asi el
+    // resto del sitio -- inicio, datos para Google, piezas con una sola foto --
+    // funciona exactamente igual que antes, sin migrar nada.
+    const fotos = {
+      imageUrl: fotosProducto[0] || '',
+      images: fotosProducto.slice(1)
+    };
     const data = currentUserRole === 'colaborador' ? {
+      ...fotos,
       soldOut: form.querySelector('#prod-soldout').checked,
       featured: form.querySelector('#prod-featured').checked,
       isNew: form.querySelector('#prod-new').checked
@@ -356,7 +362,7 @@ async function saveProductFromForm(e) {
       featured: form.querySelector('#prod-featured').checked,
       isNew: form.querySelector('#prod-new').checked,
       active: existing ? existing.active !== false : true,
-      imageUrl: document.getElementById('prod-image-path').value.trim(),
+      ...fotos,
       imagePath: ''
     };
 
@@ -384,6 +390,159 @@ async function deleteProductById(id) {
   } catch (err) {
     alert('No se pudo eliminar: ' + err.message);
   }
+}
+
+// ---------------- Galeria de fotos de una pieza ----------------
+// Una pieza puede tener varias fotos: distintos angulos, colores de cojineria
+// o un detalle del tejido. La primera de la lista es la portada y es la que
+// se guarda en imageUrl; las demas van en images. Esa separacion es a
+// proposito: las piezas que solo tienen una foto siguen funcionando igual
+// que siempre, sin tocarles nada.
+
+const MAX_FOTOS = 10;
+
+function galeriaDe(p) {
+  const todas = [p.imageUrl, ...(Array.isArray(p.images) ? p.images : [])];
+  const vistas = new Set();
+  return todas
+    .map(u => (u || '').trim())
+    .filter(u => u && !vistas.has(u) && vistas.add(u));
+}
+
+// Miniatura liviana para el panel. Solo aplica a Cloudinary; una foto que vive
+// en el repositorio se muestra tal cual.
+function miniatura(url) {
+  if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+  return url.replace('/upload/', '/upload/w_320,h_214,c_fill,f_auto,q_auto/');
+}
+
+function renderGaleriaProducto() {
+  const cont = document.getElementById('prodGallery');
+  if (!cont) return;
+
+  if (!fotosProducto.length) {
+    cont.innerHTML = '<p class="foto-galeria-vacia">Esta pieza todavía no tiene fotos. El catálogo va a mostrar el aviso de “foto próximamente”.</p>';
+    document.getElementById('imgWarning').textContent = '';
+    return;
+  }
+
+  cont.innerHTML = fotosProducto.map((url, i) => `
+    <figure class="foto-item" draggable="true" data-i="${i}" title="Arrastra para cambiar el orden">
+      <img src="${esc(miniatura(url))}" alt="">
+      ${i === 0 ? '<span class="foto-portada">Portada</span>' : ''}
+      <div class="foto-acciones">
+        <button type="button" data-mover="-1" aria-label="Mover antes" ${i === 0 ? 'disabled' : ''}>◀</button>
+        <button type="button" data-mover="1" aria-label="Mover después" ${i === fotosProducto.length - 1 ? 'disabled' : ''}>▶</button>
+        <button type="button" data-quitar aria-label="Quitar esta foto">✕</button>
+      </div>
+    </figure>`).join('');
+
+  // Una ruta mal escrita es el error tipico cuando la foto vive en el
+  // repositorio: aqui se ve de una en vez de descubrirlo en el sitio publico.
+  cont.querySelectorAll('.foto-item img').forEach(img => {
+    img.addEventListener('error', () => { img.closest('.foto-item').classList.add('falta'); });
+  });
+
+  avisarProporciones();
+}
+
+// El catalogo recorta a 3:2. Avisar antes de guardar evita descubrirlo cuando
+// la foto ya esta publicada y se ve cortada.
+function avisarProporciones() {
+  const aviso = document.getElementById('imgWarning');
+  if (!aviso) return;
+  const revisadas = fotosProducto.slice();
+  const malas = [];
+  let pendientes = revisadas.length;
+  if (!pendientes) { aviso.textContent = ''; return; }
+
+  revisadas.forEach((url, i) => {
+    const img = new Image();
+    const listo = () => {
+      if (img.naturalWidth) {
+        const ratio = img.naturalWidth / img.naturalHeight;
+        if (ratio < 1.42 || ratio > 1.58) {
+          malas.push(`la ${i + 1}ª (${img.naturalWidth}×${img.naturalHeight})`);
+        }
+      }
+      if (--pendientes === 0) {
+        // Si cambiaron las fotos mientras se median, este aviso ya no aplica.
+        if (revisadas.join('|') !== fotosProducto.join('|')) return;
+        aviso.textContent = malas.length
+          ? 'Ojo con ' + malas.join(', ') + ': el catálogo usa 3:2 — lo ideal es 1800×1200 — así que se van a ver recortadas.'
+          : '';
+      }
+    };
+    img.onload = listo;
+    img.onerror = listo;
+    img.src = url;
+  });
+}
+
+function agregarFotos(urls) {
+  const nuevas = urls.map(u => (u || '').trim()).filter(Boolean);
+  let rechazadas = 0;
+  nuevas.forEach(u => {
+    if (fotosProducto.includes(u)) return;
+    if (fotosProducto.length >= MAX_FOTOS) { rechazadas++; return; }
+    fotosProducto.push(u);
+  });
+  renderGaleriaProducto();
+  if (rechazadas) alert(`Una pieza puede tener hasta ${MAX_FOTOS} fotos. Se dejaron por fuera ${rechazadas}.`);
+}
+
+function moverFoto(desde, hasta) {
+  if (desde === hasta || desde < 0 || hasta < 0) return;
+  if (desde >= fotosProducto.length || hasta >= fotosProducto.length) return;
+  const [foto] = fotosProducto.splice(desde, 1);
+  fotosProducto.splice(hasta, 0, foto);
+  renderGaleriaProducto();
+}
+
+function conectarGaleriaProducto() {
+  const cont = document.getElementById('prodGallery');
+  if (!cont) return;
+
+  cont.addEventListener('click', (e) => {
+    const item = e.target.closest('.foto-item');
+    if (!item) return;
+    const i = Number(item.dataset.i);
+    const mover = e.target.closest('[data-mover]');
+    if (mover) { moverFoto(i, i + Number(mover.dataset.mover)); return; }
+    if (e.target.closest('[data-quitar]')) {
+      // Quitarla de la lista no la borra de Cloudinary: si fue sin querer,
+      // se vuelve a poner con su direccion. Por eso no se pide confirmacion.
+      fotosProducto.splice(i, 1);
+      renderGaleriaProducto();
+    }
+  });
+
+  let arrastrando = null;
+  cont.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('.foto-item');
+    if (!item) return;
+    arrastrando = Number(item.dataset.i);
+    item.classList.add('arrastrando');
+    e.dataTransfer.effectAllowed = 'move';
+    // Firefox no inicia el arrastre si no se escribe algo aqui.
+    e.dataTransfer.setData('text/plain', String(arrastrando));
+  });
+  cont.addEventListener('dragover', (e) => {
+    if (arrastrando === null) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  });
+  cont.addEventListener('drop', (e) => {
+    const item = e.target.closest('.foto-item');
+    if (arrastrando === null || !item) return;
+    e.preventDefault();
+    moverFoto(arrastrando, Number(item.dataset.i));
+    arrastrando = null;
+  });
+  cont.addEventListener('dragend', () => {
+    arrastrando = null;
+    cont.querySelectorAll('.arrastrando').forEach(el => el.classList.remove('arrastrando'));
+  });
 }
 
 // ---------------- Subida de fotos (Cloudinary) ----------------
@@ -424,6 +583,59 @@ async function subirACloudinary(file) {
   // La foto se guarda y se entrega tal cual se subio: sin transformaciones,
   // para no alterar los 1800 x 1200 a calidad 95 del original.
   return data.secure_url;
+}
+
+// Subida de varias fotos a la vez para una pieza. Van una detras de otra y no
+// en paralelo a proposito: asi el aviso dice por cual va, y si una falla las
+// demas siguen su camino en vez de caerse todas juntas.
+function conectarSubidaMultiple() {
+  const fileInput = document.getElementById('prod-image-file');
+  const status = document.getElementById('uploadStatus');
+  if (!fileInput || !status) return;
+
+  fileInput.addEventListener('change', async () => {
+    const archivos = Array.from(fileInput.files || []);
+    if (!archivos.length) return;
+
+    // Sin esto se puede guardar con la subida a medias: el producto quedaria
+    // sin las fotos sin que se note.
+    subiendoFoto = true;
+    fileInput.disabled = true;
+    const guardar = document.getElementById('productSaveBtn');
+    if (guardar) guardar.disabled = true;
+
+    const fallos = [];
+    let subidas = 0;
+    for (let i = 0; i < archivos.length; i++) {
+      status.className = 'upload-status';
+      status.textContent = archivos.length > 1
+        ? `Subiendo ${i + 1} de ${archivos.length}: ${archivos[i].name}...`
+        : `Subiendo ${archivos[i].name}...`;
+      try {
+        const url = await subirACloudinary(archivos[i]);
+        agregarFotos([url]);        // aparece en la galeria apenas sube
+        subidas++;
+      } catch (err) {
+        console.error('Fallo la subida a Cloudinary:', err);
+        fallos.push(archivos[i].name);
+      }
+    }
+
+    fallóLaSubida = fallos.length > 0;
+    if (!fallos.length) {
+      status.className = 'upload-status ok';
+      status.textContent = subidas === 1 ? 'Listo, foto subida.' : `Listo, ${subidas} fotos subidas.`;
+    } else {
+      status.className = 'upload-status error';
+      status.textContent = `No se pudieron subir ${fallos.length} de ${archivos.length}: ${fallos.join(', ')}.` +
+        (subidas ? ' Las demás sí quedaron.' : '');
+    }
+
+    subiendoFoto = false;
+    if (guardar) guardar.disabled = false;
+    fileInput.disabled = false;
+    fileInput.value = '';   // permite volver a elegir el mismo archivo
+  });
 }
 
 // Conecta un boton de archivo con un campo de ruta y su previsualizacion.
@@ -1465,11 +1677,19 @@ function wireEvents() {
   });
   document.getElementById('productFilter').addEventListener('change', renderProductList);
   const rutaInput = document.getElementById('prod-image-path');
-  rutaInput.addEventListener('input', () => {
-    previsualizarRuta(rutaInput.value.trim(), 'imgPreview', 'imgWarning');
+  conectarGaleriaProducto();
+  conectarSubidaMultiple();
+  const agregarRuta = () => {
+    const ruta = rutaInput.value.trim();
+    if (!ruta) return;
+    agregarFotos([ruta]);
+    rutaInput.value = '';
+  };
+  document.getElementById('addPathBtn').addEventListener('click', agregarRuta);
+  rutaInput.addEventListener('keydown', (e) => {
+    // Enter aqui agregaria la foto y enviaria el formulario a la vez.
+    if (e.key === 'Enter') { e.preventDefault(); agregarRuta(); }
   });
-  conectarSubida({ fileId: 'prod-image-file', pathId: 'prod-image-path',
-                   statusId: 'uploadStatus', previewId: 'imgPreview', warningId: 'imgWarning' });
   document.getElementById('materialImagesForm').addEventListener('submit', saveMaterialImagesFromForm);
   MATERIALES_FOTO.forEach(k => {
     conectarSubida({ fileId: `mat-${k}-file`, pathId: `mat-${k}-path`,
@@ -1494,7 +1714,6 @@ function wireEvents() {
     const ruta = rutaSugerida(nombre);
     if (!ruta) { alert('Escribe primero el nombre de la pieza.'); return; }
     rutaInput.value = ruta;
-    previsualizarRuta(ruta, 'imgPreview', 'imgWarning');
   });
   document.getElementById('seedBtn').addEventListener('click', runSeed);
   document.getElementById('wipeBtn').addEventListener('click', runWipe);
