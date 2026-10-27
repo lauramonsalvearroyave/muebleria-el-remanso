@@ -1,13 +1,80 @@
 /* GENERADO por tools/generar-paginas.mjs desde el panel (pestaña Páginas). No editar a mano: se sobrescribe. */
 window.ER_PAGINAS = {
-  "publicadas": [],
+  "publicadas": [
+    {
+      "id": "columpios",
+      "slug": "columpios",
+      "tipo": "categoria",
+      "menu": {
+        "es": "Columpios y camas nido",
+        "en": "Swings & nest beds"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 3
+    },
+    {
+      "id": "comedores",
+      "slug": "comedores",
+      "tipo": "categoria",
+      "menu": {
+        "es": "Comedores",
+        "en": "Dining sets"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 4
+    },
+    {
+      "id": "como-trabajamos",
+      "slug": "como-trabajamos",
+      "tipo": "proceso",
+      "menu": {
+        "es": "Cómo trabajamos",
+        "en": "How we work"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 6
+    },
+    {
+      "id": "exterior",
+      "slug": "exterior",
+      "tipo": "categoria",
+      "menu": {
+        "es": "Exterior",
+        "en": "Outdoor"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 2
+    },
+    {
+      "id": "materiales",
+      "slug": "materiales",
+      "tipo": "materiales",
+      "menu": {
+        "es": "Materiales",
+        "en": "Materials"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 5
+    },
+    {
+      "id": "salas",
+      "slug": "salas",
+      "tipo": "categoria",
+      "menu": {
+        "es": "Salas",
+        "en": "Living room sets"
+      },
+      "enMenu": true,
+      "enPie": true,
+      "orden": 1
+    }
+  ],
   "apagadas": [
-    "salas",
-    "exterior",
-    "columpios",
-    "materiales",
-    "comedores",
-    "como-trabajamos",
     "clientes",
     "hoteles"
   ],

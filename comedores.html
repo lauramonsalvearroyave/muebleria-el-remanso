@@ -3,14 +3,441 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, follow">
-<title>El Remanso</title>
-<link rel="canonical" href="https://muebleriaelremanso.com/catalogo">
-<script>location.replace("/catalogo" + location.search);</script>
-<meta http-equiv="refresh" content="0; url=/catalogo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-en="Hand-woven dining sets, made to order | El Remanso">Comedores tejidos a mano por encargo | El Remanso</title>
+<meta name="description" content="Comedores con sillas tejidas a mano y mesa en fibra o en madera: piñón de oreja, samán, teca o roble. Por encargo en Medellín y Antioquia." data-content-en="Dining sets with hand-woven chairs and a table in fiber or wood: piñón de oreja, samán, teak or oak. Made to order in Medellín and Antioquia.">
+<link rel="canonical" href="https://muebleriaelremanso.com/comedores">
+
+<!-- Vista previa al compartir el enlace (WhatsApp, Instagram, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="El Remanso">
+<meta property="og:locale" content="es_CO">
+<meta property="og:url" content="https://muebleriaelremanso.com/comedores">
+<meta property="og:title" content="Comedores tejidos a mano por encargo | El Remanso">
+<meta property="og:description" content="Comedores con sillas tejidas a mano y mesa en fibra o en madera: piñón de oreja, samán, teca o roble. Por encargo en Medellín y Antioquia.">
+<meta property="og:image" content="https://res.cloudinary.com/pu28ccmt/image/upload/c_fill,w_1200,h_630,g_auto,f_jpg,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Comedor para seis personas con mesa de madera de samán y sillas tejidas a mano en mimbre">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Comedores tejidos a mano por encargo | El Remanso">
+<meta name="twitter:description" content="Comedores con sillas tejidas a mano y mesa en fibra o en madera: piñón de oreja, samán, teca o roble. Por encargo en Medellín y Antioquia.">
+<meta name="twitter:image" content="https://res.cloudinary.com/pu28ccmt/image/upload/c_fill,w_1200,h_630,g_auto,f_jpg,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "https://muebleriaelremanso.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Catálogo",
+      "item": "https://muebleriaelremanso.com/catalogo"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Comedores",
+      "item": "https://muebleriaelremanso.com/comedores"
+    }
+  ]
+}
+</script>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js">
+
+
+<!-- Google Analytics (GA4). Va en el HTML y no cargado a mano desde JavaScript
+     porque los detectores automaticos -- Google Ads, verificadores de SEO --
+     leen el HTML y no ejecutan nada. Con async no bloquea el dibujado. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3PKHJ3M6CF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-3PKHJ3M6CF');
+</script>
+<!-- Paginas encendidas, menu y etiqueta de Google Ads. Lo escribe solo
+     tools/generar-paginas.mjs desde el administrador. Va despues de gtag. -->
+<script src="assets/data/paginas.js"></script>
+
+<link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
-<p><a href="/catalogo">Continuar a El Remanso</a></p>
+<body data-pagina="comedores">
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:46px;width:46px;">
+      <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+    </a>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/" data-i18n="nav.home">Inicio</a></li>
+        <li><a href="/catalogo" class="active" data-i18n="nav.catalog">Catálogo</a></li>
+        <li><a href="/contacto" data-i18n="nav.contact">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-outline" data-i18n="header.cta_talk">Hablar con el equipo</a>
+      <button class="nav-toggle" data-i18n-aria="header.open_menu" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero pagina-hero">
+    <div class="container">
+      <div>
+        
+      <nav class="migas" aria-label="Ruta">
+        <a href="/" data-i18n="nav.home">Inicio</a>
+        <span aria-hidden="true">/</span><a href="/catalogo" data-i18n="nav.catalog">Catálogo</a>
+        <span aria-hidden="true">/</span><span aria-current="page" data-en="Dining sets">Comedores</span>
+      </nav>
+        <h1 data-en="Hand-woven dining sets">Comedores tejidos a mano</h1>
+        <div class="lede" data-en="&lt;p&gt;Tables and chairs for family meals, woven by hand and made to order. The table can match the chairs in the same fiber or come in wood: piñón de oreja, samán, teak or oak. You choose the size, the number of seats and the upholstery; we make it, unhurried.&lt;/p&gt;"><p>Mesas y sillas para comer en familia, tejidas a mano y por encargo. La mesa puede ir en la misma fibra de las sillas o en madera: piñón de oreja, samán, teca o roble. Tú eliges las medidas, los puestos y la cojinería; nosotros lo hacemos sin afán.</p></div>
+        <div class="hero-cta">
+          <a href="https://wa.me/573104599629" class="btn btn-whatsapp" target="_blank" rel="noopener" data-en="Message us on WhatsApp">Escríbenos por WhatsApp</a>
+          <a href="/catalogo" class="btn btn-outline" data-en="View the full catalog">Ver todo el catálogo</a>
+        </div>
+      </div>
+      <div class="hero-art"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_1200,c_limit,f_auto,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png" srcset="https://res.cloudinary.com/pu28ccmt/image/upload/w_480,c_limit,f_auto,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png 480w, https://res.cloudinary.com/pu28ccmt/image/upload/w_800,c_limit,f_auto,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png 800w, https://res.cloudinary.com/pu28ccmt/image/upload/w_1200,c_limit,f_auto,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png 1200w, https://res.cloudinary.com/pu28ccmt/image/upload/w_1600,c_limit,f_auto,q_auto/v1793112072/sjuujstorzs7uz4zj0jc.png 1600w" sizes="(max-width: 860px) 100vw, 520px" alt="Comedor para seis personas con mesa de madera de samán y sillas tejidas a mano en mimbre" data-alt-en="Six-seat dining set with a samán wood table and hand-woven wicker chairs" fetchpriority="high"></div>
+    </div>
+  </section>
+  <section class="bloque-productos">
+    <div class="container">
+      <h2 data-en="Our dining sets">Nuestros comedores</h2>
+      
+      <div class="grid grid-4 pagina-productos">
+    <div class="product-card" data-product-id="3RIv5qLxlePPjaedaaKl">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303277/uqmf8xmtzxahjpjqqp3t.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303277/uqmf8xmtzxahjpjqqp3t.jpg" alt="Comedor Alero" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Alero</h3>
+        <p class="product-name-story">Bajo el alero de las casas viejas, siempre hay lugar para uno más.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="RrlMlGz7XzYN84ZEW5Pu">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303339/jyw1z8bexhnsfsbgqvmm.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303339/jyw1z8bexhnsfsbgqvmm.jpg" alt="Comedor Arraigo" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Arraigo</h3>
+        <p class="product-name-story">Conecta nuestras raíces con los momentos que se quedan.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="D2h6tI3lnzzuy7nj8sQk">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303302/xd8vuuagmhck04jmqak2.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303302/xd8vuuagmhck04jmqak2.jpg" alt="Comedor Brisa" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Brisa</h3>
+        <p class="product-name-story">Ligera y fresca, como el aire que entra al abrir la ventana.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="8voJ5V9R2VZIoKh4Nq8A">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303288/wy4z3y2ktzihlsttvzsk.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303288/wy4z3y2ktzihlsttvzsk.jpg" alt="Comedor Copa" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Copa</h3>
+        <p class="product-name-story">A la altura de los árboles, para brindar sin prisa.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="K6jKeA75W9xLUGaF7MWh">
+      <div class="product-thumb is-zoomable" data-gallery="[&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790303315/nqm7am5qmpgojwvbvfii.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621909/ekuzyo8pmi3yomcjzpmy.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621910/ss4ykjocgtqrq3djwnra.jpg&quot;]">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303315/nqm7am5qmpgojwvbvfii.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303315/nqm7am5qmpgojwvbvfii.jpg" alt="Comedor Encuentro" loading="lazy" decoding="async">
+        <span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>3</span>
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Encuentro</h3>
+        <p class="product-name-story">Porque alrededor de una mesa siempre nace algo para compartir.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="tzvLNoGbVlH14I82qACI">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303368/gqlpelh3iabftugvecka.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303368/gqlpelh3iabftugvecka.jpg" alt="Comedor Legado" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Legado</h3>
+        <p class="product-name-story">Hecha para guardar generaciones de historias alrededor de la mesa.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="rbrjX8hy5c7u0KlOV0Pk">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303356/ynkwdcr8fejqovnq3umd.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303356/ynkwdcr8fejqovnq3umd.jpg" alt="Comedor Mirador" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Mirador</h3>
+        <p class="product-name-story">Una mesa pequeña con la ciudad entera de invitada.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="wpacFWzhN25D9AkMDTqJ">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303383/qpoqy28ug47imp6m5djy.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303383/qpoqy28ug47imp6m5djy.jpg" alt="Comedor Sobremesa" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Sobremesa</h3>
+        <p class="product-name-story">El minuto extra que se convierte en horas.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="KdATWb9c6pjFrOSpqUPc">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790303330/m5wmjbspmpzjmy4o6aow.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790303330/m5wmjbspmpzjmy4o6aow.jpg" alt="Comedor Vínculo" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Comedor Vínculo</h3>
+        <p class="product-name-story">Une manos, historias y miradas en cada comida.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div></div>
+    </div>
+  </section>
+  <section class="section-alt bloque-materiales">
+    <div class="container">
+      <h2 data-en="Fibers for the chairs">Fibras para las sillas</h2>
+      <div class="lede" data-en="&lt;p&gt;Indoors, any of our natural fibers; if the dining area is outdoors, synthetic fiber or nautical rope. The table, in the same fiber or in wood.&lt;/p&gt;"><p>Bajo techo, cualquiera de nuestras fibras naturales; si el comedor está afuera, sintético o piola náutica. La mesa, en la misma fibra o en madera.</p></div>
+      <div class="grid grid-4 materiales-recomendados">
+        <div class="card material-card">
+          <div class="material-swatch swatch-mimbre" data-material="mimbre"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352629/auexddgcomdbzwluc7gg.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_mimbre">Mimbre</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-yare" data-material="yare"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352634/fquqklijvtncdiwmht7z.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_yare">Yaré</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-rattan" data-material="rattan"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352637/h3ywhc58rx49xtcx6nts.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_rattan">Rattán</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-sintetico" data-material="sintetico"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352645/fgtmxphfua7mru65sa7t.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_sintetico">Sintético</h3>
+        </div></div>
+      <p class="pagina-enlace" data-requiere-pagina="materiales">
+        <a href="/materiales" class="btn btn-outline" data-i18n="pagina.ver_materiales">Conocer todos los materiales</a>
+      </p>
+    </div>
+  </section>
+  <section class="section-tight bloque-encargo">
+    <div class="container">
+      <div class="custom-note pagina-encargo">
+        <strong data-en="Every piece is made to order.">Cada pieza se hace por encargo.</strong>
+        <div data-en="&lt;p&gt;You decide the size, the number of seats, the fiber, the tone of the weave, the wood for the table and the upholstery. We show you real samples before we start.&lt;/p&gt;"><p>Tú decides las medidas, el número de puestos, la fibra, el color del tejido, la madera de la mesa y la cojinería. Te mostramos muestras reales antes de empezar.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section-alt bloque-cta">
+    <div class="container">
+      <div class="text-center">
+        <h2 data-en="How many seats are you picturing?">¿Para cuántos puestos lo imaginas?</h2>
+        <div class="lede center" data-en="&lt;p&gt;Write to us and we will put your dining set together.&lt;/p&gt;"><p>Escríbenos y armamos tu comedor juntos.</p></div>
+        <div class="hero-cta" style="justify-content:center;">
+          <a href="https://wa.me/573104599629" class="btn btn-whatsapp" target="_blank" rel="noopener" data-en="Message us on WhatsApp">Escríbenos por WhatsApp</a>
+          <a href="/catalogo" class="btn btn-outline" data-en="View the full catalog">Ver todo el catálogo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section-tight bloque-cobertura">
+    <div class="container">
+      <div class="pagina-cobertura">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+        <div data-en="&lt;p&gt;We ship anywhere in Colombia from our workshop in Las Palmas, Antioquia.&lt;/p&gt;"><p>Hacemos envíos a toda Colombia desde nuestro taller en Las Palmas, Antioquia.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/logo-full.png" alt="El Remanso - Mueblería Artesanal" style="height:120px; margin-bottom:14px;">
+        <p data-i18n="footer.tagline">Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/muebleria_elremanso" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </a>
+          <a href="https://wa.me/573104599629" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="footer.materials_title">Materiales</h4>
+        <ul>
+          <li data-i18n="footer.mat_mimbre">Mimbre</li>
+          <li data-i18n="footer.mat_yare">Yaré</li>
+          <li data-i18n="footer.mat_rattan">Rattán</li>
+          <li data-i18n="footer.mat_calceta">Calceta de plátano</li>
+          <li data-i18n="footer.mat_sintetico">Sintético</li>
+          <li data-i18n="footer.mat_piola">Piola náutica</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.legal_title">Información legal</h4>
+        <ul>
+          <li><a href="/ayuda-legal#terminos" data-i18n="footer.legal_terms">Términos y Condiciones</a></li>
+          <li><a href="/ayuda-legal#envios" data-i18n="footer.legal_shipping">Política de Entrega</a></li>
+          <li><a href="/ayuda-legal#reembolso" data-i18n="footer.legal_refund">Política de Reembolso</a></li>
+          <li><a href="/ayuda-legal#datos" data-i18n="footer.legal_privacy">Política de Privacidad</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.legal_sic">Superintendencia de Industria y Comercio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.help_title">Ayuda al cliente</h4>
+        <ul>
+          <li><a href="/ayuda-legal#faq" data-i18n="footer.help_faq">Preguntas Frecuentes</a></li>
+          <li><a href="/ayuda-legal#garantias" data-i18n="footer.help_warranty">Garantías</a></li>
+          <li><a href="/ayuda-legal#solicitud-garantia" data-i18n="footer.help_warranty_request">Solicitud de Garantía</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.help_sic">Superintendencia de Industria y Comercio</a></li>
+          <li><a href="/ayuda-legal#pqr" data-i18n="footer.help_pqr">PQR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n-html="footer.bottom_left">© <span data-year></span> El Remanso — Mueblería Artesanal</span>
+      <span data-i18n="footer.bottom_right">Manos con talento, que hacen tus sueños realidad.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="top-float" id="backToTop" type="button" data-i18n-aria="aria.back_to_top" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<a class="wa-float" href="https://wa.me/573104599629" target="_blank" rel="noopener" data-i18n-aria="aria.whatsapp_float" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
+
+<!-- Modal "Me interesa" -->
+<!-- Visor de foto ampliada. Se abre al hacer clic en la foto de una ficha.
+     Nace oculto; lo maneja assets/js/catalog-render.js -->
+<div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" hidden>
+  <button class="lightbox-close" id="lightboxClose" type="button"
+          data-i18n-aria="aria.close" aria-label="Cerrar">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" type="button" hidden
+          data-i18n-aria="aria.photo_prev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+  </button>
+  <button class="lightbox-nav next" id="lightboxNext" type="button" hidden
+          data-i18n-aria="aria.photo_next" aria-label="Foto siguiente">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
+  <figure class="lightbox-figure">
+    <img id="lightboxImg" src="" alt="">
+    <span id="lightboxCount" class="lightbox-count"></span>
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<div class="modal-overlay" id="interestModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar" type="button">&times;</button>
+    <span class="eyebrow" data-i18n="interest.eyebrow">Me interesa</span>
+    <p class="modal-product-name" id="modalProductName">Producto</p>
+    <p data-i18n="interest.lede">Déjanos tus datos y te escribimos por WhatsApp para contarte todo sobre esta pieza.</p>
+    <div class="field">
+      <label data-i18n="interest.field_name">Nombre</label>
+      <input type="text" id="interestName" data-i18n-placeholder="interest.placeholder_name" placeholder="Tu nombre">
+    </div>
+    <div class="field">
+      <label data-i18n="interest.field_phone">Teléfono</label>
+      <input type="tel" id="interestPhone" data-i18n-placeholder="interest.placeholder_phone" placeholder="Ej: 300 000 0000">
+    </div>
+    <div class="consent-row">
+      <input type="checkbox" id="interestConsent">
+      <label for="interestConsent" data-i18n-html="interest.consent_html">Acepto el tratamiento de mis datos personales.</label>
+    </div>
+    <button class="btn btn-whatsapp btn-block" id="interestSend" disabled data-i18n="interest.btn_send">Enviar por WhatsApp</button>
+  </div>
+</div>
+
+<script type="module" src="assets/js/firebase-init.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/interes.js"></script>
+<script src="assets/js/catalog-render.js"></script>
 </body>
 </html>

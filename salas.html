@@ -3,14 +3,489 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, follow">
-<title>El Remanso</title>
-<link rel="canonical" href="https://muebleriaelremanso.com/catalogo">
-<script>location.replace("/catalogo" + location.search);</script>
-<meta http-equiv="refresh" content="0; url=/catalogo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title data-en="Hand-woven living room sets, made to order | El Remanso">Salas tejidas a mano por encargo | El Remanso</title>
+<meta name="description" content="Salas en mimbre, yaré, rattán y fibra sintética tejidas a mano, por encargo y a tu medida. Medellín, Envigado y toda Antioquia." data-content-en="Living room sets hand-woven in wicker, yaré, rattan and synthetic fiber, made to order. Medellín, Envigado and all of Antioquia.">
+<link rel="canonical" href="https://muebleriaelremanso.com/salas">
+
+<!-- Vista previa al compartir el enlace (WhatsApp, Instagram, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="El Remanso">
+<meta property="og:locale" content="es_CO">
+<meta property="og:url" content="https://muebleriaelremanso.com/salas">
+<meta property="og:title" content="Salas tejidas a mano por encargo | El Remanso">
+<meta property="og:description" content="Salas en mimbre, yaré, rattán y fibra sintética tejidas a mano, por encargo y a tu medida. Medellín, Envigado y toda Antioquia.">
+<meta property="og:image" content="https://res.cloudinary.com/pu28ccmt/image/upload/c_fill,w_1200,h_630,g_auto,f_jpg,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sala tejida a mano en rattán con sofá, poltronas y mesa de centro, junto a un ventanal con vista al jardín.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Salas tejidas a mano por encargo | El Remanso">
+<meta name="twitter:description" content="Salas en mimbre, yaré, rattán y fibra sintética tejidas a mano, por encargo y a tu medida. Medellín, Envigado y toda Antioquia.">
+<meta name="twitter:image" content="https://res.cloudinary.com/pu28ccmt/image/upload/c_fill,w_1200,h_630,g_auto,f_jpg,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "https://muebleriaelremanso.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Catálogo",
+      "item": "https://muebleriaelremanso.com/catalogo"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Salas",
+      "item": "https://muebleriaelremanso.com/salas"
+    }
+  ]
+}
+</script>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js">
+
+
+<!-- Google Analytics (GA4). Va en el HTML y no cargado a mano desde JavaScript
+     porque los detectores automaticos -- Google Ads, verificadores de SEO --
+     leen el HTML y no ejecutan nada. Con async no bloquea el dibujado. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3PKHJ3M6CF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-3PKHJ3M6CF');
+</script>
+<!-- Paginas encendidas, menu y etiqueta de Google Ads. Lo escribe solo
+     tools/generar-paginas.mjs desde el administrador. Va despues de gtag. -->
+<script src="assets/data/paginas.js"></script>
+
+<link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
-<p><a href="/catalogo">Continuar a El Remanso</a></p>
+<body data-pagina="salas">
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:46px;width:46px;">
+      <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+    </a>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/" data-i18n="nav.home">Inicio</a></li>
+        <li><a href="/catalogo" class="active" data-i18n="nav.catalog">Catálogo</a></li>
+        <li><a href="/contacto" data-i18n="nav.contact">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-outline" data-i18n="header.cta_talk">Hablar con el equipo</a>
+      <button class="nav-toggle" data-i18n-aria="header.open_menu" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero pagina-hero">
+    <div class="container">
+      <div>
+        
+      <nav class="migas" aria-label="Ruta">
+        <a href="/" data-i18n="nav.home">Inicio</a>
+        <span aria-hidden="true">/</span><a href="/catalogo" data-i18n="nav.catalog">Catálogo</a>
+        <span aria-hidden="true">/</span><span aria-current="page" data-en="Living room sets">Salas</span>
+      </nav>
+        <h1 data-en="Hand-woven living room sets">Salas tejidas a mano</h1>
+        <div class="lede" data-en="&lt;p&gt;Sofas, armchairs and coffee tables woven by hand, made to order and to your measurements. You choose the fiber, the tone of the weave and the cushion fabric; we take the time to do it right, unhurried, so your living room becomes the place everyone wants to stay.&lt;/p&gt;"><p>Sofás, poltronas y mesas de centro tejidos a mano, por encargo y a tu medida. Tú eliges la fibra, el color del tejido y la tela de los cojines; nosotros nos tomamos el tiempo de hacerla bien, sin afán, para que tu sala sea el lugar donde todos quieren quedarse.</p></div>
+        <div class="hero-cta">
+          <a href="https://wa.me/573104599629" class="btn btn-whatsapp" target="_blank" rel="noopener" data-en="Message us on WhatsApp">Escríbenos por WhatsApp</a>
+          <a href="/catalogo" class="btn btn-outline" data-en="View the full catalog">Ver todo el catálogo</a>
+        </div>
+      </div>
+      <div class="hero-art"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_1200,c_limit,f_auto,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png" srcset="https://res.cloudinary.com/pu28ccmt/image/upload/w_480,c_limit,f_auto,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png 480w, https://res.cloudinary.com/pu28ccmt/image/upload/w_800,c_limit,f_auto,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png 800w, https://res.cloudinary.com/pu28ccmt/image/upload/w_1200,c_limit,f_auto,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png 1200w, https://res.cloudinary.com/pu28ccmt/image/upload/w_1600,c_limit,f_auto,q_auto/v1793111540/zqh5zfwiavfez5fuzg1o.png 1600w" sizes="(max-width: 860px) 100vw, 520px" alt="Sala tejida a mano en rattán con sofá, poltronas y mesa de centro, junto a un ventanal con vista al jardín." data-alt-en="Hand-woven rattan living room set with sofa, armchairs and coffee table by a window overlooking the garden." fetchpriority="high"></div>
+    </div>
+  </section>
+  <section class="bloque-productos">
+    <div class="container">
+      <h2 data-en="Our living room sets">Nuestras salas</h2>
+      
+      <div class="grid grid-4 pagina-productos">
+    <div class="product-card" data-product-id="kNn78ulErQsEJfl57cjJ">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302858/gfhroq3lphilx3wkwdvx.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302858/gfhroq3lphilx3wkwdvx.jpg" alt="Sala Cálida" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Cálida</h3>
+        <p class="product-name-story">El abrazo que se siente al llegar a casa.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="IlfX7DRfdB602UXCEbSn">
+      <div class="product-thumb is-zoomable" data-gallery="[&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790302810/nxxtpjqe7q5767dzk98h.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621809/udxmciz8qkvcaxsnhm08.jpg&quot;]">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302810/nxxtpjqe7q5767dzk98h.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302810/nxxtpjqe7q5767dzk98h.jpg" alt="Sala Cauce" loading="lazy" decoding="async">
+        <span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>2</span>
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Cauce</h3>
+        <p class="product-name-story">Como el cauce de un río, fluye entre la naturaleza y quien la habita.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="DkSWlnkMUDxwkPGrWlKp">
+      <div class="product-thumb is-zoomable" data-gallery="[&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790302798/y7neqicsy2o4bkuukf0a.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621778/lyzgjsrcuggsrnyqwk0x.jpg&quot;]">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302798/y7neqicsy2o4bkuukf0a.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302798/y7neqicsy2o4bkuukf0a.jpg" alt="Sala Duna" loading="lazy" decoding="async">
+        <span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>2</span>
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Duna</h3>
+        <p class="product-name-story">Cálida como la arena al atardecer.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="rdcoEsGOOAwxywQu0fWD">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302908/qk35z9aieqaq0rgyolr8.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302908/qk35z9aieqaq0rgyolr8.jpg" alt="Sala Lumbre" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Lumbre</h3>
+        <p class="product-name-story">El calor que reúne a los que amamos, noche tras noche.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="sekCZsw2ll1WLh9Mcr5F">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302960/ebh0db2thxfxehovpvkz.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302960/ebh0db2thxfxehovpvkz.jpg" alt="Sala Nativa" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Nativa</h3>
+        <p class="product-name-story">Nace de la tierra y se queda en el corazón.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="4VjxO3UC87gVrq8lBByE">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302785/dluyqlnt1a7n7afvweo2.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302785/dluyqlnt1a7n7afvweo2.jpg" alt="Sala Origen" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Origen</h3>
+        <p class="product-name-story">Donde lo natural se convierte en el lugar al que siempre volvemos.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="2YreDZfLEVQsTNwPuXCc">
+      <div class="product-thumb is-zoomable" data-gallery="[&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790302773/u17andkqxifwb2piyhii.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621878/nktjegokkgmbhkj6uygm.jpg&quot;]">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302773/u17andkqxifwb2piyhii.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302773/u17andkqxifwb2piyhii.jpg" alt="Sala Prado" loading="lazy" decoding="async">
+        <span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>2</span>
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Prado</h3>
+        <p class="product-name-story">Fresca como el rocío de una mañana tranquila.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="LDhNrP78qou7PHfUiA2v">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302824/hafoywsnyduunxtuxyf8.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302824/hafoywsnyduunxtuxyf8.jpg" alt="Sala Raíz" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Raíz</h3>
+        <p class="product-name-story">Lleva en sus fibras la memoria de lo que somos.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="UdgB2lHl2gtt8mxT9WBg">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302840/z1jtlok2g7nhgvmzngux.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302840/z1jtlok2g7nhgvmzngux.jpg" alt="Sala Refugio" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Refugio</h3>
+        <p class="product-name-story">El lugar donde el mundo se detiene, junto a quien amas.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="s2S4O37pqoIq588MLQLK">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302924/vdoqkwakhixjae1jglcn.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302924/vdoqkwakhixjae1jglcn.jpg" alt="Sala Serena" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Serena</h3>
+        <p class="product-name-story">Una calma que se respira, un silencio que abraza.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="n7tYV9YngGkiTVHVgQXz">
+      <div class="product-thumb is-zoomable" data-gallery="[&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790302867/zuv77nykmydtu2ajkqma.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621830/fqgf2l2xzgcykfrcym8p.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621831/bzlrvbf9zhyagjl7vnle.jpg&quot;,&quot;https://res.cloudinary.com/pu28ccmt/image/upload/v1790621832/urohnbtgxpuxtimowzbk.jpg&quot;]">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302867/zuv77nykmydtu2ajkqma.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302867/zuv77nykmydtu2ajkqma.jpg" alt="Sala Umbral" loading="lazy" decoding="async">
+        <span class="foto-count"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"/><path d="M3 7v12a2 2 0 0 0 2 2h12"/></svg>4</span>
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Umbral</h3>
+        <p class="product-name-story">El primer paso hacia un lugar para quedarse.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="product-card" data-product-id="qS35X3Jtv0u2EK2JAUvd">
+      <div class="product-thumb is-zoomable">
+        <div class="product-badges"></div>
+        <img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_800,f_auto,q_auto/v1790302882/q6sfj0nvak0qzu9dlacx.jpg" data-full="https://res.cloudinary.com/pu28ccmt/image/upload/v1790302882/q6sfj0nvak0qzu9dlacx.jpg" alt="Sala Vela" loading="lazy" decoding="async">
+        
+      </div>
+      <div class="product-body">
+        <div class="product-tags"><span class="tag-pill tag-custom" data-i18n="catalog.tag_custom">Hecho para ti</span></div>
+        <h3>Sala Vela</h3>
+        <p class="product-name-story">Una luz tenue y fiel que acompaña cada conversación.</p>
+        <button class="btn-interest" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg>
+          <span data-i18n="catalog.interest_btn">Me interesa</span>
+        </button>
+      </div>
+    </div></div>
+    </div>
+  </section>
+  <section class="section-alt bloque-materiales">
+    <div class="container">
+      <h2 data-en="Recommended fibers for your living room">Fibras recomendadas para tu sala</h2>
+      <div class="lede" data-en="&lt;p&gt;Indoors, every one of our fibers works. If your living room is on a terrace or an open porch, we weave it in synthetic fiber so it can take the weather.&lt;/p&gt;"><p>Bajo techo funcionan todas nuestras fibras. Si la sala va en una terraza o un corredor abierto, la tejemos en sintético para que aguante el clima.</p></div>
+      <div class="grid grid-4 materiales-recomendados">
+        <div class="card material-card">
+          <div class="material-swatch swatch-mimbre" data-material="mimbre"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352629/auexddgcomdbzwluc7gg.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_mimbre">Mimbre</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-yare" data-material="yare"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352634/fquqklijvtncdiwmht7z.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_yare">Yaré</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-rattan" data-material="rattan"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352637/h3ywhc58rx49xtcx6nts.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_rattan">Rattán</h3>
+        </div>
+        <div class="card material-card">
+          <div class="material-swatch swatch-sintetico" data-material="sintetico"><img src="https://res.cloudinary.com/pu28ccmt/image/upload/w_600,f_auto,q_auto/v1790352645/fgtmxphfua7mru65sa7t.jpg" alt="" loading="lazy" decoding="async"></div>
+          <h3 data-i18n="footer.mat_sintetico">Sintético</h3>
+        </div></div>
+      <p class="pagina-enlace" data-requiere-pagina="materiales">
+        <a href="/materiales" class="btn btn-outline" data-i18n="pagina.ver_materiales">Conocer todos los materiales</a>
+      </p>
+    </div>
+  </section>
+  <section class="section-tight bloque-encargo">
+    <div class="container">
+      <div class="custom-note pagina-encargo">
+        <strong data-en="Every piece is made to order.">Cada pieza se hace por encargo.</strong>
+        <div data-en="&lt;p&gt;You decide the measurements, the fiber, the tone of the weave and the upholstery. Before we start weaving we show you real samples and tell you how long it will take.&lt;/p&gt;"><p>Tú decides las medidas, la fibra, el color del tejido y la cojinería. Antes de empezar a tejer te mostramos muestras reales y te contamos el tiempo de elaboración.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section-alt bloque-cta">
+    <div class="container">
+      <div class="text-center">
+        <h2 data-en="Shall we talk about your living room?">¿Conversamos sobre tu sala?</h2>
+        <div class="lede center" data-en="&lt;p&gt;Tell us about the space and how you picture it. We will reply on WhatsApp.&lt;/p&gt;"><p>Cuéntanos el espacio y cómo la imaginas. Te respondemos por WhatsApp.</p></div>
+        <div class="hero-cta" style="justify-content:center;">
+          <a href="https://wa.me/573104599629" class="btn btn-whatsapp" target="_blank" rel="noopener" data-en="Message us on WhatsApp">Escríbenos por WhatsApp</a>
+          <a href="/catalogo" class="btn btn-outline" data-en="View the full catalog">Ver todo el catálogo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section-tight bloque-cobertura">
+    <div class="container">
+      <div class="pagina-cobertura">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+        <div data-en="&lt;p&gt;We ship anywhere in Colombia from our workshop in Las Palmas, Antioquia.&lt;/p&gt;"><p>Hacemos envíos a toda Colombia desde nuestro taller en Las Palmas, Antioquia.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/logo-full.png" alt="El Remanso - Mueblería Artesanal" style="height:120px; margin-bottom:14px;">
+        <p data-i18n="footer.tagline">Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/muebleria_elremanso" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </a>
+          <a href="https://wa.me/573104599629" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="footer.materials_title">Materiales</h4>
+        <ul>
+          <li data-i18n="footer.mat_mimbre">Mimbre</li>
+          <li data-i18n="footer.mat_yare">Yaré</li>
+          <li data-i18n="footer.mat_rattan">Rattán</li>
+          <li data-i18n="footer.mat_calceta">Calceta de plátano</li>
+          <li data-i18n="footer.mat_sintetico">Sintético</li>
+          <li data-i18n="footer.mat_piola">Piola náutica</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.legal_title">Información legal</h4>
+        <ul>
+          <li><a href="/ayuda-legal#terminos" data-i18n="footer.legal_terms">Términos y Condiciones</a></li>
+          <li><a href="/ayuda-legal#envios" data-i18n="footer.legal_shipping">Política de Entrega</a></li>
+          <li><a href="/ayuda-legal#reembolso" data-i18n="footer.legal_refund">Política de Reembolso</a></li>
+          <li><a href="/ayuda-legal#datos" data-i18n="footer.legal_privacy">Política de Privacidad</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.legal_sic">Superintendencia de Industria y Comercio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.help_title">Ayuda al cliente</h4>
+        <ul>
+          <li><a href="/ayuda-legal#faq" data-i18n="footer.help_faq">Preguntas Frecuentes</a></li>
+          <li><a href="/ayuda-legal#garantias" data-i18n="footer.help_warranty">Garantías</a></li>
+          <li><a href="/ayuda-legal#solicitud-garantia" data-i18n="footer.help_warranty_request">Solicitud de Garantía</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.help_sic">Superintendencia de Industria y Comercio</a></li>
+          <li><a href="/ayuda-legal#pqr" data-i18n="footer.help_pqr">PQR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n-html="footer.bottom_left">© <span data-year></span> El Remanso — Mueblería Artesanal</span>
+      <span data-i18n="footer.bottom_right">Manos con talento, que hacen tus sueños realidad.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="top-float" id="backToTop" type="button" data-i18n-aria="aria.back_to_top" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<a class="wa-float" href="https://wa.me/573104599629" target="_blank" rel="noopener" data-i18n-aria="aria.whatsapp_float" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
+
+<!-- Modal "Me interesa" -->
+<!-- Visor de foto ampliada. Se abre al hacer clic en la foto de una ficha.
+     Nace oculto; lo maneja assets/js/catalog-render.js -->
+<div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" hidden>
+  <button class="lightbox-close" id="lightboxClose" type="button"
+          data-i18n-aria="aria.close" aria-label="Cerrar">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" type="button" hidden
+          data-i18n-aria="aria.photo_prev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+  </button>
+  <button class="lightbox-nav next" id="lightboxNext" type="button" hidden
+          data-i18n-aria="aria.photo_next" aria-label="Foto siguiente">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
+  <figure class="lightbox-figure">
+    <img id="lightboxImg" src="" alt="">
+    <span id="lightboxCount" class="lightbox-count"></span>
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<div class="modal-overlay" id="interestModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar" type="button">&times;</button>
+    <span class="eyebrow" data-i18n="interest.eyebrow">Me interesa</span>
+    <p class="modal-product-name" id="modalProductName">Producto</p>
+    <p data-i18n="interest.lede">Déjanos tus datos y te escribimos por WhatsApp para contarte todo sobre esta pieza.</p>
+    <div class="field">
+      <label data-i18n="interest.field_name">Nombre</label>
+      <input type="text" id="interestName" data-i18n-placeholder="interest.placeholder_name" placeholder="Tu nombre">
+    </div>
+    <div class="field">
+      <label data-i18n="interest.field_phone">Teléfono</label>
+      <input type="tel" id="interestPhone" data-i18n-placeholder="interest.placeholder_phone" placeholder="Ej: 300 000 0000">
+    </div>
+    <div class="consent-row">
+      <input type="checkbox" id="interestConsent">
+      <label for="interestConsent" data-i18n-html="interest.consent_html">Acepto el tratamiento de mis datos personales.</label>
+    </div>
+    <button class="btn btn-whatsapp btn-block" id="interestSend" disabled data-i18n="interest.btn_send">Enviar por WhatsApp</button>
+  </div>
+</div>
+
+<script type="module" src="assets/js/firebase-init.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/interes.js"></script>
+<script src="assets/js/catalog-render.js"></script>
 </body>
 </html>
