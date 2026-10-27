@@ -299,7 +299,7 @@ const DICT = {
 
   contact: {
     meta_title: { es: 'Contacto | El Remanso', en: 'Contact | El Remanso' },
-    meta_desc: { es: 'Escríbenos por WhatsApp para hablar de tu próximo mueble. Estamos en el Km 18 vía Las Palmas, entre Medellín y Envigado.', en: 'Message us on WhatsApp about your next piece. We are at Km 18 vía Las Palmas, between Medellín and Envigado.' },
+    meta_desc: { es: 'Escríbenos por WhatsApp para hablar de tu próximo mueble. Estamos en el Km 17 vía Las Palmas, entre Medellín y Envigado.', en: 'Message us on WhatsApp about your next piece. We are at Km 17 vía Las Palmas, between Medellín and Envigado.' },
     eyebrow: { es: 'Contacto', en: 'Contact' },
     title:   { es: 'Hablemos de tu próximo mueble', en: "Let's Talk About Your Next Piece" },
     lede:    { es: 'Escríbenos por WhatsApp para la atención más rápida, o usa el formulario y te respondemos por ese mismo medio.', en: "Message us on WhatsApp for the fastest response, or use the form and we'll reply the same way." },
