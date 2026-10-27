@@ -831,6 +831,12 @@ section{ padding: 68px 0; }
 @media (hover: hover) and (min-width: 881px){
   .has-submenu:hover > .submenu, .has-submenu:focus-within > .submenu{ display:flex; }
 }
+/* La flecha hace mas alto el item "Catalogo": sin esto queda mas abajo que
+   los demas enlaces. */
+@media (min-width: 881px){
+  .main-nav > ul{ align-items:center; }
+  .submenu-toggle{ padding:2px; margin-left:-2px; }
+}
 @media (max-width: 880px){
   /* En el menu del celular las categorias van siempre a la vista. */
   .main-nav .submenu{
