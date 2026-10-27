@@ -314,7 +314,8 @@ const DICT = {
     workshop_title: { es: 'Ubicación', en: 'Location' },
     workshop_line1: { es: 'Encuéntranos en el mapa.', en: 'Find us on the map.' },
     workshop_line2: { es: 'Escríbenos por WhatsApp si necesitas indicaciones para llegar.', en: 'Message us on WhatsApp if you need directions.' },
-    directions_btn: { es: 'Cómo llegar', en: 'Get Directions' },
+    directions_btn: { es: 'Abrir en Google Maps', en: 'Open in Google Maps' },
+    waze_btn:       { es: 'Abrir en Waze', en: 'Open in Waze' },
 
     form_title: { es: 'Escríbenos', en: 'Send Us a Message' },
     field_name: { es: 'Nombre', en: 'Name' },
