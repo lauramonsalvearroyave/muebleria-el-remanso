@@ -86,6 +86,7 @@ function renderCategoryForm() {
   form.querySelector('#cat-label').value = editing ? editing.label : '';
   form.querySelector('#cat-teaser').value = editing ? (editing.teaser || '') : '';
   form.querySelector('#cat-flagship').checked = editing ? !!editing.flagship : false;
+  form.querySelector('#cat-show-catalog').checked = editing ? editing.showInCatalog !== false : true;
   form.querySelector('#cat-order').value = editing ? (editing.order ?? categories.length) : categories.length;
   document.getElementById('categoryFormTitle').textContent = editing ? `Editar categoría: ${editing.label}` : 'Agregar categoría';
   document.getElementById('categoryCancelBtn').style.display = editing ? '' : 'none';
@@ -122,12 +123,14 @@ function renderCategoryList() {
   }
   list.innerHTML = categories.map(c => {
     const count = products.filter(p => p.categoryId === c.id).length;
+    const adicionales = products.filter(p => p.categoryId !== c.id && (p.categoryIds || []).includes(c.id)).length;
     const isHidden = c.active === false;
+    const soloPaginas = c.showInCatalog === false;
     return `
       <div class="admin-row">
         <div class="info">
-          <strong>${esc(c.label)} ${c.flagship ? '<span class="tag-pill">Línea insignia</span>' : ''} ${isHidden ? '<span class="tag-pill">Oculta</span>' : ''}</strong>
-          <span>ID: ${esc(c.id)} · orden ${c.order ?? 0} · ${count} producto(s)</span>
+          <strong>${esc(c.label)} ${c.flagship ? '<span class="tag-pill">Línea insignia</span>' : ''} ${isHidden ? '<span class="tag-pill">Oculta</span>' : ''} ${soloPaginas ? '<span class="tag-pill">Solo páginas</span>' : ''}</strong>
+          <span>ID: ${esc(c.id)} · orden ${c.order ?? 0} · ${count} producto(s)${adicionales ? ` · ${adicionales} más como categoría adicional` : ''}</span>
         </div>
         <div class="actions">
           <button class="btn btn-outline btn-sm" data-edit-cat="${esc(c.id)}" type="button">Editar</button>
@@ -179,6 +182,7 @@ async function saveCategoryFromForm(e) {
     label,
     teaser: form.querySelector('#cat-teaser').value.trim(),
     flagship: form.querySelector('#cat-flagship').checked,
+    showInCatalog: form.querySelector('#cat-show-catalog').checked,
     order: Number(form.querySelector('#cat-order').value) || 0,
     active: existing ? existing.active !== false : true
   };
@@ -222,6 +226,11 @@ async function deleteCategoryById(id) {
     alert(`No puedes eliminar esta categoría todavía: tiene ${count} producto(s). Muévelos a otra categoría o elimínalos primero.`);
     return;
   }
+  const paginas = window.ErPaginasAdmin ? window.ErPaginasAdmin.paginasQueUsan(id) : [];
+  if (paginas.length) {
+    alert(`No puedes eliminar esta categoría: la usa la página ${paginas.map(p => '/' + p.slug).join(', ')}. Cámbiale la categoría a esa página primero (pestaña Páginas).`);
+    return;
+  }
   if (!confirm('¿Eliminar esta categoría? Esta acción no se puede deshacer.')) return;
   try {
     await window.ErFirebase.deleteCategory(id);
@@ -241,6 +250,40 @@ function materialOptionsHtml(selected) {
   return MATERIALS.map(m => `<option value="${esc(m.value)}" ${m.value === selected ? 'selected' : ''}>${esc(m.label)}</option>`).join('');
 }
 
+// Una pieza vive en su categoria principal (su seccion de /catalogo) y puede
+// aparecer ademas en otras paginas de categoria: un juego de exterior es
+// "Salas" en el catalogo y tambien sale en /exterior.
+const CATEGORIA_EXTERIOR = 'exterior';
+const MATERIALES_INTEMPERIE = ['sintetico', 'piola'];
+
+function categoriasAdicionalesMarcadas() {
+  return Array.from(document.querySelectorAll('#prod-extra-categories input:checked')).map(i => i.value);
+}
+
+function renderCategoriasAdicionales(seleccionadas) {
+  const principal = document.getElementById('prod-category').value;
+  const cont = document.getElementById('prod-extra-categories');
+  const otras = categories.filter(c => c.id !== principal);
+  cont.innerHTML = otras.length
+    ? otras.map(c => `<label><input type="checkbox" value="${esc(c.id)}" ${seleccionadas.includes(c.id) ? 'checked' : ''}> ${esc(c.label)}</label>`).join('')
+    : '<span class="form-note" style="margin:0;">No hay otras categorías.</span>';
+  revisarExterior();
+}
+
+// Exterior solo admite lo que aguanta sol y lluvia. Se avisa, no se impide:
+// quien administra puede saber algo que el sistema no (una pieza mixta).
+function revisarExterior() {
+  const aviso = document.getElementById('prodExteriorWarning');
+  if (!aviso) return '';
+  const material = document.getElementById('prod-material').value;
+  const enExterior = document.getElementById('prod-category').value === CATEGORIA_EXTERIOR ||
+    categoriasAdicionalesMarcadas().includes(CATEGORIA_EXTERIOR);
+  aviso.textContent = enExterior && !MATERIALES_INTEMPERIE.includes(material)
+    ? 'Exterior solo admite piezas en sintético o piola náutica: las fibras naturales se dañan a la intemperie. Revisa el material.'
+    : '';
+  return aviso.textContent;
+}
+
 function renderProductForm() {
   const editing = products.find(p => p.id === editingProductId);
   const form = document.getElementById('productForm');
@@ -248,6 +291,7 @@ function renderProductForm() {
   form.querySelector('#prod-story').value = editing ? (editing.story || '') : '';
   form.querySelector('#prod-category').innerHTML = categoryOptionsHtml(editing ? editing.categoryId : (categories[0] && categories[0].id));
   form.querySelector('#prod-material').innerHTML = materialOptionsHtml(editing ? editing.material : '');
+  renderCategoriasAdicionales(editing && Array.isArray(editing.categoryIds) ? editing.categoryIds : []);
   form.querySelector('#prod-order').value = editing ? (editing.order ?? 0) : 0;
   form.querySelector('#prod-soldout').checked = editing ? !!editing.soldOut : false;
   form.querySelector('#prod-featured').checked = editing ? !!editing.featured : false;
@@ -272,7 +316,9 @@ function renderProductForm() {
 function renderProductList() {
   const list = document.getElementById('productList');
   const filterValue = document.getElementById('productFilter').value;
-  const filtered = filterValue ? products.filter(p => p.categoryId === filterValue) : products;
+  const filtered = filterValue
+    ? products.filter(p => p.categoryId === filterValue || (p.categoryIds || []).includes(filterValue))
+    : products;
 
   if (!filtered.length) {
     list.innerHTML = '<p class="admin-empty">No hay productos para mostrar.</p>';
@@ -281,6 +327,10 @@ function renderProductList() {
 
   list.innerHTML = filtered.map(p => {
     const cat = categories.find(c => c.id === p.categoryId);
+    const tambien = (p.categoryIds || [])
+      .filter(id => id !== p.categoryId)
+      .map(id => (categories.find(c => c.id === id) || {}).label)
+      .filter(Boolean);
     const thumb = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="">` : '';
     const isHidden = p.active === false;
     const pills = [];
@@ -295,7 +345,7 @@ function renderProductList() {
         <div class="thumb">${thumb}</div>
         <div class="info">
           <strong>${esc(p.name)}</strong>
-          <span>${esc(cat ? cat.label : '(sin categoría)')} ${p.material ? '· ' + esc(materialLabel(p.material)) : ''}</span>
+          <span>${esc(cat ? cat.label : '(sin categoría)')} ${p.material ? '· ' + esc(materialLabel(p.material)) : ''}${tambien.length ? ' · también en ' + esc(tambien.join(', ')) : ''}</span>
           <div class="pills">${pills.join('')}</div>
         </div>
         <div class="actions">
@@ -332,6 +382,10 @@ async function saveProductFromForm(e) {
     if (!confirm('La ultima foto no se pudo subir, asi que este producto va a quedar sin imagen. ¿Guardar de todos modos?')) return;
   }
 
+  if (currentUserRole !== 'colaborador' && revisarExterior()) {
+    if (!confirm('Esta pieza va en Exterior pero su material no es sintético ni piola náutica, y las fibras naturales se dañan a la intemperie. ¿Guardar de todos modos?')) return;
+  }
+
   const saveBtn = document.getElementById('productSaveBtn');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Guardando...';
@@ -356,6 +410,7 @@ async function saveProductFromForm(e) {
       name,
       story: form.querySelector('#prod-story').value.trim(),
       categoryId,
+      categoryIds: categoriasAdicionalesMarcadas().filter(id => id !== categoryId),
       material: form.querySelector('#prod-material').value,
       order: Number(form.querySelector('#prod-order').value) || 0,
       soldOut: form.querySelector('#prod-soldout').checked,
@@ -813,6 +868,9 @@ async function loadData() {
     await loadSiteSettings();
     await loadLeads();
     await loadTeamMembers();
+    // Modulo aparte (assets/js/admin-paginas.mjs). Nunca lanza: si las reglas
+    // de Firestore aun no permiten "pages", lo explica en su propia pestana.
+    if (window.ErPaginasAdmin) await window.ErPaginasAdmin.cargar();
   }
 }
 
@@ -910,6 +968,43 @@ async function saveMaterialImagesFromForm(e) {
 async function loadSiteSettings() {
   const settings = await window.ErFirebase.fetchSiteSettings();
   document.getElementById('whatsapp-number').value = settings.whatsappNumber || '';
+  document.getElementById('google-tag-id').value = settings.googleTagId || '';
+}
+
+// ---------------- Ajustes: etiqueta de Google Ads / Tag Manager ----------------
+// Se guarda en settings/site y el generador la pone en assets/data/paginas.js,
+// que cargan todas las paginas. GA4 sigue escrito en el HTML como siempre.
+
+async function saveGoogleTagFromForm(e) {
+  e.preventDefault();
+  const msg = document.getElementById('googleTagMsg');
+  const btn = document.getElementById('googleTagSaveBtn');
+  const input = document.getElementById('google-tag-id');
+  const id = input.value.trim().toUpperCase();
+  msg.className = 'form-msg';
+  msg.textContent = '';
+  if (id && !/^(AW|GTM|G|DC)-[A-Z0-9]+$/.test(id)) {
+    msg.className = 'form-msg error';
+    msg.textContent = 'No parece un ID de Google. Debe empezar por AW-, GTM- o G- (ej: AW-123456789).';
+    return;
+  }
+  if (id === 'G-3PKHJ3M6CF') {
+    msg.className = 'form-msg error';
+    msg.textContent = 'Ese es Google Analytics, que ya está instalado. Aquí va otra etiqueta (la de Ads o Tag Manager).';
+    return;
+  }
+  btn.disabled = true;
+  try {
+    await window.ErFirebase.saveSiteSettings({ googleTagId: id });
+    input.value = id;
+    msg.className = 'form-msg ok';
+    msg.textContent = id ? 'Guardada. Queda activa en todo el sitio en unos 15 minutos.' : 'Etiqueta quitada. El cambio se ve en unos 15 minutos.';
+  } catch (err) {
+    msg.className = 'form-msg error';
+    msg.textContent = 'No se pudo guardar: ' + err.message;
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function saveWhatsappFromForm(e) {
@@ -1269,6 +1364,8 @@ function applyRoleUI() {
   if (leadsBtn) leadsBtn.style.display = isCollaborator ? 'none' : '';
   const commentsBtn = document.getElementById('tabBtnComments');
   if (commentsBtn) commentsBtn.style.display = isCollaborator ? 'none' : '';
+  const pagesBtn = document.getElementById('tabBtnPages');
+  if (pagesBtn) pagesBtn.style.display = isCollaborator ? 'none' : '';
   switchTab(isCollaborator ? 'products' : 'categories');
 }
 
@@ -1622,6 +1719,7 @@ async function loadComments() {
 function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
+  document.getElementById('pagesPanel').style.display = tab === 'pages' ? '' : 'none';
   document.getElementById('customersPanel').style.display = tab === 'customers' ? '' : 'none';
   document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
   document.getElementById('ordersPanel').style.display = tab === 'orders' ? '' : 'none';
@@ -1676,6 +1774,10 @@ function wireEvents() {
     if (toggleBtn) toggleProductActive(toggleBtn.dataset.toggleActiveProd);
   });
   document.getElementById('productFilter').addEventListener('change', renderProductList);
+  document.getElementById('prod-category').addEventListener('change', () =>
+    renderCategoriasAdicionales(categoriasAdicionalesMarcadas()));
+  document.getElementById('prod-material').addEventListener('change', revisarExterior);
+  document.getElementById('prod-extra-categories').addEventListener('change', revisarExterior);
   const rutaInput = document.getElementById('prod-image-path');
   conectarGaleriaProducto();
   conectarSubidaMultiple();
@@ -1787,6 +1889,7 @@ function wireEvents() {
   document.getElementById('home-about-path').addEventListener('input', (e) => handleHomeImageSelect(e, 'homeAboutPreview'));
   document.getElementById('homeImagesForm').addEventListener('submit', saveHomeImagesFromForm);
   document.getElementById('whatsappForm').addEventListener('submit', saveWhatsappFromForm);
+  document.getElementById('googleTagForm').addEventListener('submit', saveGoogleTagFromForm);
 
   document.getElementById('leadList').addEventListener('click', (e) => {
     const delBtn = e.target.closest('[data-delete-lead]');

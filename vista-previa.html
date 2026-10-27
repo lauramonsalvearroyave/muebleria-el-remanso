@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- GENERADO por tools/generar-paginas.mjs desde el panel (pestaña Páginas). No editar a mano: se sobrescribe. -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vista previa | El Remanso</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js">
+
+
+<!-- Google Analytics (GA4). Va en el HTML y no cargado a mano desde JavaScript
+     porque los detectores automaticos -- Google Ads, verificadores de SEO --
+     leen el HTML y no ejecutan nada. Con async no bloquea el dibujado. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3PKHJ3M6CF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-3PKHJ3M6CF');
+</script>
+<!-- Paginas encendidas, menu y etiqueta de Google Ads. Lo escribe solo
+     tools/generar-paginas.mjs desde el administrador. Va despues de gtag. -->
+<script src="assets/data/paginas.js"></script>
+
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-pagina="vista-previa">
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <img src="assets/img/logo-mark.png" alt="El Remanso" style="height:46px;width:46px;">
+      <span class="brand-name">El Remanso<small>Mueblería Artesanal</small></span>
+    </a>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/" data-i18n="nav.home">Inicio</a></li>
+        <li><a href="/catalogo" data-i18n="nav.catalog">Catálogo</a></li>
+        <li><a href="/contacto" data-i18n="nav.contact">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-outline" data-i18n="header.cta_talk">Hablar con el equipo</a>
+      <button class="nav-toggle" data-i18n-aria="header.open_menu" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="er-loader" role="status" aria-label="Cargando" style="min-height:60vh;"><div class="er-loader__mark" style="width:140px;height:140px;"><svg class="er-loader__ring" viewBox="0 0 184 184" aria-hidden="true"><circle class="track" cx="92" cy="92" r="88"/><circle class="arc" cx="92" cy="92" r="88"/></svg><img class="er-loader__logo" src="assets/img/logo-mark.png" alt="" style="width:67px;height:67px;"></div></div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/logo-full.png" alt="El Remanso - Mueblería Artesanal" style="height:120px; margin-bottom:14px;">
+        <p data-i18n="footer.tagline">Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/muebleria_elremanso" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </a>
+          <a href="https://wa.me/573104599629" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="footer.materials_title">Materiales</h4>
+        <ul>
+          <li data-i18n="footer.mat_mimbre">Mimbre</li>
+          <li data-i18n="footer.mat_yare">Yaré</li>
+          <li data-i18n="footer.mat_rattan">Rattán</li>
+          <li data-i18n="footer.mat_calceta">Calceta de plátano</li>
+          <li data-i18n="footer.mat_sintetico">Sintético</li>
+          <li data-i18n="footer.mat_piola">Piola náutica</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.legal_title">Información legal</h4>
+        <ul>
+          <li><a href="/ayuda-legal#terminos" data-i18n="footer.legal_terms">Términos y Condiciones</a></li>
+          <li><a href="/ayuda-legal#envios" data-i18n="footer.legal_shipping">Política de Entrega</a></li>
+          <li><a href="/ayuda-legal#reembolso" data-i18n="footer.legal_refund">Política de Reembolso</a></li>
+          <li><a href="/ayuda-legal#datos" data-i18n="footer.legal_privacy">Política de Privacidad</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.legal_sic">Superintendencia de Industria y Comercio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.help_title">Ayuda al cliente</h4>
+        <ul>
+          <li><a href="/ayuda-legal#faq" data-i18n="footer.help_faq">Preguntas Frecuentes</a></li>
+          <li><a href="/ayuda-legal#garantias" data-i18n="footer.help_warranty">Garantías</a></li>
+          <li><a href="/ayuda-legal#solicitud-garantia" data-i18n="footer.help_warranty_request">Solicitud de Garantía</a></li>
+          <li><a href="https://www.sic.gov.co/" target="_blank" rel="noopener" data-i18n="footer.help_sic">Superintendencia de Industria y Comercio</a></li>
+          <li><a href="/ayuda-legal#pqr" data-i18n="footer.help_pqr">PQR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n-html="footer.bottom_left">© <span data-year></span> El Remanso — Mueblería Artesanal</span>
+      <span data-i18n="footer.bottom_right">Manos con talento, que hacen tus sueños realidad.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="top-float" id="backToTop" type="button" data-i18n-aria="aria.back_to_top" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<a class="wa-float" href="https://wa.me/573104599629" target="_blank" rel="noopener" data-i18n-aria="aria.whatsapp_float" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
+
+<!-- Modal "Me interesa" -->
+<!-- Visor de foto ampliada. Se abre al hacer clic en la foto de una ficha.
+     Nace oculto; lo maneja assets/js/catalog-render.js -->
+<div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" hidden>
+  <button class="lightbox-close" id="lightboxClose" type="button"
+          data-i18n-aria="aria.close" aria-label="Cerrar">&times;</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" type="button" hidden
+          data-i18n-aria="aria.photo_prev" aria-label="Foto anterior">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+  </button>
+  <button class="lightbox-nav next" id="lightboxNext" type="button" hidden
+          data-i18n-aria="aria.photo_next" aria-label="Foto siguiente">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
+  <figure class="lightbox-figure">
+    <img id="lightboxImg" src="" alt="">
+    <span id="lightboxCount" class="lightbox-count"></span>
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
+</div>
+
+<div class="modal-overlay" id="interestModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar" type="button">&times;</button>
+    <span class="eyebrow" data-i18n="interest.eyebrow">Me interesa</span>
+    <p class="modal-product-name" id="modalProductName">Producto</p>
+    <p data-i18n="interest.lede">Déjanos tus datos y te escribimos por WhatsApp para contarte todo sobre esta pieza.</p>
+    <div class="field">
+      <label data-i18n="interest.field_name">Nombre</label>
+      <input type="text" id="interestName" data-i18n-placeholder="interest.placeholder_name" placeholder="Tu nombre">
+    </div>
+    <div class="field">
+      <label data-i18n="interest.field_phone">Teléfono</label>
+      <input type="tel" id="interestPhone" data-i18n-placeholder="interest.placeholder_phone" placeholder="Ej: 300 000 0000">
+    </div>
+    <div class="consent-row">
+      <input type="checkbox" id="interestConsent">
+      <label for="interestConsent" data-i18n-html="interest.consent_html">Acepto el tratamiento de mis datos personales.</label>
+    </div>
+    <button class="btn btn-whatsapp btn-block" id="interestSend" disabled data-i18n="interest.btn_send">Enviar por WhatsApp</button>
+  </div>
+</div>
+
+<script type="module" src="assets/js/firebase-init.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/interes.js"></script>
+<script src="assets/js/catalog-render.js"></script>
+<script type="module" src="assets/js/vista-previa.mjs"></script>
+</body>
+</html>

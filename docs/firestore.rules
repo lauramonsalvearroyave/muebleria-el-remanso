@@ -86,6 +86,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Paginas de aterrizaje (/salas, /exterior, /materiales...).
+    // El publico -- y el generador que publica el HTML -- solo alcanza las
+    // encendidas. Los borradores y la vista previa son solo del panel.
+    match /pages/{pageId} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /team/{uid} {
       allow read: if request.auth != null;
       allow create: if request.auth.uid == uid && request.resource.data.role == 'colaborador'

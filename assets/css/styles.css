@@ -801,3 +801,170 @@ section{ padding: 68px 0; }
 .foto-acciones button:hover:not(:disabled){ background: rgba(20,16,12,.92); }
 .foto-acciones button:disabled{ opacity:.3; cursor:default; }
 .foto-acciones button:focus-visible{ outline:2px solid var(--cream); outline-offset:1px; }
+
+/* ===========================================================
+   Paginas de aterrizaje (/salas, /exterior, /materiales...)
+   y el menu/pie que se arman con las paginas encendidas.
+   =========================================================== */
+
+/* --- Submenu de "Catalogo" --- */
+.main-nav li{ position:relative; }
+.main-nav .has-submenu{ display:flex; align-items:center; gap:2px; flex-wrap:wrap; }
+.submenu-toggle{
+  background:none; border:none; cursor:pointer; padding:4px; border-radius:6px;
+  color: var(--ink); display:flex; align-items:center;
+}
+.submenu-toggle svg{ width:16px; height:16px; transition: transform .15s ease; }
+.has-submenu.open .submenu-toggle svg{ transform: rotate(180deg); }
+.submenu-toggle:focus-visible, .main-nav a:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:4px; }
+.main-nav .submenu{
+  list-style:none; margin:0; padding:8px; display:none; gap:0;
+  position:absolute; top:100%; left:-12px; min-width:230px; z-index:60;
+  flex-direction:column;
+  background: var(--cream-soft); border:1px solid var(--sand-line);
+  border-radius:12px; box-shadow: var(--shadow-soft);
+}
+.main-nav .submenu a{ display:block; padding:9px 12px; border-radius:8px; white-space:nowrap; }
+.main-nav .submenu a:hover, .main-nav .submenu a.active{ background: var(--sand); color: var(--near-black); }
+.main-nav .submenu a.active::after{ display:none; }
+.has-submenu.open > .submenu{ display:flex; }
+@media (hover: hover) and (min-width: 881px){
+  .has-submenu:hover > .submenu, .has-submenu:focus-within > .submenu{ display:flex; }
+}
+@media (max-width: 880px){
+  /* En el menu del celular las categorias van siempre a la vista. */
+  .main-nav .submenu{
+    display:flex; position:static; box-shadow:none; border:none; background:none;
+    padding:8px 0 0 14px; min-width:0; width:100%; gap:2px;
+  }
+  .main-nav .submenu a{ padding:6px 0; font-weight:600; }
+  .submenu-toggle{ display:none; }
+}
+/* Con varias paginas en el menu, el boton de la cabecera cede su espacio
+   antes de que el menu se monte encima del logo. */
+@media (max-width: 1180px) and (min-width: 881px){
+  html.menu-amplio .main-nav > ul{ gap:18px; }
+  html.menu-amplio .header-actions .btn-outline{ display:none; }
+}
+
+/* --- Columna "Explora" del pie --- */
+.footer-grid.con-paginas{ grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; }
+@media (max-width:1000px){ .footer-grid.con-paginas{ grid-template-columns: 1fr 1fr 1fr; } }
+@media (max-width:820px){ .footer-grid.con-paginas{ grid-template-columns: 1fr 1fr; } }
+@media (max-width:520px){ .footer-grid.con-paginas{ grid-template-columns: 1fr; } }
+
+/* --- Inicio: fotos sin cargar se ocultan --- */
+.hero-art[hidden]{ display:none; }
+.hero .container.sin-foto{ grid-template-columns: 1fr; }
+.hero .container.sin-foto > div:first-child{ max-width: 780px; }
+.grid-2.sin-foto{ grid-template-columns: 1fr; }
+
+/* --- Inicio: resumen de materiales y proceso cuando su pagina esta encendida --- */
+.resumen-enlace{ display:none; text-align:center; margin:30px 0 0; }
+html.pag-materiales #materiales .resumen-enlace,
+html.pag-como-trabajamos #proceso .resumen-enlace{ display:block; }
+html.pag-materiales #materiales .material-card p,
+html.pag-materiales #materiales .material-group-note,
+html.pag-como-trabajamos #proceso .step p{ display:none; }
+html.pag-materiales #materiales .material-card h3{ margin:0; }
+/* Un enlace a una pagina apagada no se muestra. Estas dos van fijas para que
+   no parpadeen; las demas las oculta assets/data/paginas.js. */
+html:not(.pag-materiales) [data-requiere-pagina="materiales"],
+html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display:none !important; }
+
+/* --- Bloques de las paginas --- */
+.pagina-hero{ padding: 40px 0 44px; }
+.pagina-hero .hero-art{ aspect-ratio: 4/3; padding:0; }
+.pagina-hero .lede{ margin-bottom: 24px; }
+.lede > p:last-child{ margin-bottom:0; }
+.migas{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  font-size:.82rem; font-weight:700; color: var(--ink-soft); margin-bottom:14px;
+}
+.migas a{ color: var(--gold-bronze); }
+.migas a:hover{ text-decoration: underline; }
+.pagina-productos, .materiales-recomendados, .pagina-galeria, .guia-materiales{ margin-top: 26px; }
+.materiales-recomendados .material-card h3{ margin:0; font-size:1.05rem; }
+.pagina-enlace{ margin: 26px 0 0; }
+.pagina-encargo{ display:block; margin:0; }
+.pagina-encargo strong{ display:block; margin-bottom:4px; font-size:1.05rem; }
+.pagina-encargo p{ margin:0; color: var(--ink); }
+.pagina-encargo p + p{ margin-top:8px; }
+.pagina-texto{ max-width: 720px; }
+.galeria-item{ margin:0; border-radius: var(--radius-m); overflow:hidden; box-shadow: var(--shadow-card); }
+.guia-lista{ list-style:none; padding:0; margin: 14px 0 0; display:flex; flex-wrap:wrap; gap:8px; }
+.guia-lista li{
+  font-size:.72rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+  background: var(--sand); color: var(--near-black); padding:5px 12px; border-radius:999px;
+}
+.pagina-cobertura{ display:flex; align-items:center; justify-content:center; gap:12px; text-align:center; flex-wrap:wrap; }
+.pagina-cobertura svg{ width:26px; height:26px; color: var(--gold); flex-shrink:0; }
+.pagina-cobertura p{ margin:0; font-weight:700; color: var(--near-black); }
+.vista-previa-aviso{
+  background: var(--near-black); color: var(--gold-soft); text-align:center;
+  padding:10px 16px; font-weight:700; font-size:.88rem;
+}
+.vista-previa-aviso a{ color: var(--cream); text-decoration: underline; }
+
+/* ===== Panel: paginas ===== */
+.tag-pill.pag-publicada{ background:#2F6B4F; color:#fff; }
+.tag-pill.pag-apagada{ background:#EFE7D8; color:#6B6154; }
+.tag-pill.pag-falta{ background:#F6DAD2; color:#9A3B2A; }
+.bilingue{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:720px){ .bilingue{ grid-template-columns:1fr; } }
+.lang-tag{
+  display:inline-block; margin-left:6px; padding:1px 7px; border-radius:999px;
+  background: var(--sand); color: var(--gold-bronze);
+  font-size:.66rem; font-weight:800; letter-spacing:.08em; vertical-align:middle;
+}
+.contador{ display:block; text-align:right; font-size:.75rem; color: var(--ink-soft); margin-top:4px; }
+.contador.excede{ color:#9A3B2A; font-weight:800; }
+.switches{ display:flex; flex-wrap:wrap; gap:14px 28px; margin: 4px 0 16px; }
+.switch{ display:inline-flex; align-items:center; gap:10px; font-weight:700; font-size:.88rem; cursor:pointer; color: var(--near-black); }
+.switch input[type="checkbox"]{
+  appearance:none; -webkit-appearance:none; margin:0; padding:0; border:none;
+  width:42px; height:24px; border-radius:999px; background: var(--sand-line);
+  position:relative; cursor:pointer; flex-shrink:0; transition: background .15s ease;
+}
+.switch input[type="checkbox"]::after{
+  content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%;
+  background:#fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .15s ease;
+}
+.switch input[type="checkbox"]:checked{ background:#2F6B4F; }
+.switch input[type="checkbox"]:checked::after{ transform: translateX(18px); }
+.switch input[type="checkbox"]:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){
+  .switch input[type="checkbox"], .switch input[type="checkbox"]::after{ transition:none; }
+}
+.faltantes{
+  background:#FDF3F1; border:1px solid #E7C5BC; border-radius: var(--radius-s);
+  padding:12px 16px; margin:0 0 16px; font-size:.86rem; color:#9A3B2A;
+}
+.faltantes ul{ margin:6px 0 0; padding-left:18px; }
+.faltantes.ok{ background:#EEF6F0; border-color:#CFE3D6; color:#255943; }
+.slug-row{ display:flex; align-items:stretch; }
+.slug-row span{
+  display:flex; align-items:center; padding:0 10px 0 14px; white-space:nowrap;
+  background: var(--sand); border:1.5px solid var(--sand-line); border-right:none;
+  border-radius: var(--radius-s) 0 0 var(--radius-s); font-size:.88rem; color: var(--ink-soft);
+}
+.field .slug-row input{ border-radius: 0 var(--radius-s) var(--radius-s) 0; }
+.bloque-editor{
+  border:1px solid var(--sand-line); border-radius:12px; padding:16px;
+  margin-bottom:14px; background: var(--cream-soft);
+}
+.bloque-editor > .switch{ margin-bottom:12px; }
+.bloque-editor.oculto .bloque-campos{ display:none; }
+.bloque-editor h5{ margin:14px 0 8px; font-family: var(--font-body); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color: var(--gold-bronze); }
+.fila-foto{ display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; padding:12px 0; border-top:1px dashed var(--sand-line); }
+.fila-foto .img-preview{ margin-top:0; flex-shrink:0; }
+.fila-foto .bilingue{ flex:1; min-width:240px; }
+.fila-foto .foto-mover{ display:flex; flex-direction:column; gap:4px; }
+.editor-acciones{
+  position:sticky; bottom:0; z-index:5; background: var(--white);
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+  padding:14px 0 4px; margin-top:12px; border-top:1px solid var(--sand-line);
+}
+.editor-mensaje{ font-size:.86rem; font-weight:700; }
+.editor-mensaje.ok{ color:#2F6B4F; }
+.editor-mensaje.error{ color:#9A3B2A; }

@@ -3,6 +3,7 @@
 # repositorio, solo dejan de servirse en muebleriaelremanso.com
 exclude:
   - docs
+  - tools
   - README.md
   - Catalogo-El-Remanso.pdf
   - Manual-de-Marca-El-Remanso.pdf

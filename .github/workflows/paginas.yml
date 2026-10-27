@@ -1,0 +1,70 @@
+# Publica las paginas de aterrizaje (/salas, /exterior, /materiales...) a
+# partir de lo que se configura en el panel (pestana Paginas).
+#
+# Corre solo cada 15 minutos. Tambien se puede lanzar a mano en GitHub:
+# pestana Actions -> "Publicar paginas" -> Run workflow.
+# No usa llaves ni contrasenas: solo lee lo que Firestore ya deja ver al
+# publico (las paginas encendidas, los productos y los ajustes).
+
+name: Publicar paginas
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/generar-paginas.mjs'
+      - 'assets/js/paginas.mjs'
+      - 'catalogo.html'
+      - '.github/workflows/paginas.yml'
+
+permissions:
+  contents: write
+  pages: write
+
+# Nunca dos a la vez: la segunda espera a que termine la primera.
+concurrency:
+  group: publicar-paginas
+  cancel-in-progress: false
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generar las paginas desde el panel
+        run: node tools/generar-paginas.mjs
+
+      - name: Publicar si algo cambio
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios: no se publica nada."
+            echo "CAMBIO=no" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          git config user.name "El Remanso (paginas)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Actualizar paginas desde el panel"
+          # Si mientras tanto alguien subio otro cambio, se pone encima.
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "CAMBIO=si" >> "$GITHUB_ENV"
+
+      # Por si GitHub Pages no se reconstruye solo con un cambio hecho desde
+      # una Action: se le pide explicitamente.
+      - name: Pedir a GitHub Pages que publique
+        if: env.CAMBIO == 'si'
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true

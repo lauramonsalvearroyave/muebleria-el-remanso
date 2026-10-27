@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     const msg = encodeURIComponent(lines.join('\n'));
     window.open(`https://wa.me/${window.ErWhatsappNumber || '573104599629'}?text=${msg}`, '_blank');
+    if (window.ErMedir) {
+      window.ErMedir('clic_whatsapp', {
+        pagina_origen: location.pathname || '/',
+        origen: 'me_interesa',
+        producto: currentProduct.slice(0, 100)
+      });
+    }
 
     if (window.ErFirebase) {
       window.ErFirebase.saveLead({

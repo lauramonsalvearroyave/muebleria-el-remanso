@@ -5,6 +5,9 @@ Allow: /
 Disallow: /admin.html
 Disallow: /admin
 
+# Vista previa de paginas apagadas: solo para el panel.
+Disallow: /vista-previa
+
 # Notas internas de configuracion: no son paginas del sitio.
 Disallow: /docs/
 

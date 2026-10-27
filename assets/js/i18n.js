@@ -4,7 +4,11 @@ const DICT = {
   nav: {
     home:    { es: 'Inicio',    en: 'Home' },
     catalog: { es: 'Catálogo',  en: 'Catalog' },
-    contact: { es: 'Contacto',  en: 'Contact' }
+    contact: { es: 'Contacto',  en: 'Contact' },
+    open_submenu: { es: 'Ver las categorías del catálogo', en: 'Show catalog categories' }
+  },
+  pagina: {
+    ver_materiales: { es: 'Conocer todos los materiales', en: 'Explore all our materials' }
   },
   header: {
     cta_catalog: { es: 'Ver catálogo',         en: 'View Catalog' },
@@ -22,6 +26,7 @@ const DICT = {
   },
   footer: {
     tagline:        { es: 'Mueblería artesanal en fibras naturales y materiales de alta resistencia. Piezas hechas a mano, con cariño, para tu hogar.', en: 'Handcrafted furniture in natural fibers and high-resistance materials. Pieces made by hand, with love, for your home.' },
+    explore_title:  { es: 'Explora', en: 'Explore' },
     materials_title:{ es: 'Materiales', en: 'Materials' },
     mat_mimbre:     { es: 'Mimbre', en: 'Wicker' },
     mat_yare:       { es: 'Yaré', en: 'Yaré' },
@@ -62,10 +67,9 @@ const DICT = {
     hero_cta_primary:   { es: 'Ver catálogo', en: 'View Catalog' },
     hero_cta_secondary: { es: 'Escríbenos por WhatsApp', en: 'Message us on WhatsApp' },
     hero_note: { es: 'Manos con talento, que hacen tus sueños realidad', en: 'Skilled hands, making your dreams come true' },
-    hero_art_line1: { es: 'Foto de producto próximamente', en: 'Product photo coming soon' },
-    hero_art_line2: { es: '(reemplazar con fotografía real del taller)', en: '(to be replaced with real workshop photography)' },
 
     materials_eyebrow: { es: 'Nuestros materiales', en: 'Our Materials' },
+    materials_more: { es: 'Conocer los materiales', en: 'Explore the materials' },
     materials_title:   { es: 'Cuatro fibras y dos materiales, un mismo oficio', en: 'Four fibers, two materials, one craft' },
     materials_lede:    { es: 'Cada material tiene su textura, su carácter y su mejor lugar en la casa. Te contamos en qué se diferencian para que elijas con confianza — o déjalo en nuestras manos.', en: "Every material has its own texture, its own character and its own best place in the home. We'll walk you through the differences so you can choose with confidence — or just leave it to us." },
 
@@ -99,6 +103,7 @@ const DICT = {
     proc_eyebrow: { es: 'Nuestro oficio', en: 'Our Craft' },
     proc_title:   { es: 'De tu idea a tu casa, en siete pasos', en: 'From your idea to your home, in seven steps' },
     proc_lede:    { es: 'Los primeros cuatro pasos los decidimos contigo; los tres últimos ocurren en el taller. Así sabes siempre en qué va tu mueble.', en: 'The first four steps we decide together; the last three happen in the workshop. That way you always know where your piece stands.' },
+    proc_more:    { es: 'Conocer cómo trabajamos', en: 'See how we work' },
     proc1_title: { es: 'Medidas', en: 'Measurements' },
     proc1_desc:  { es: 'Tomamos las medidas del espacio donde va a vivir el mueble, para que entre justo y se sienta cómodo.', en: 'We take the measurements of the space the piece will live in, so it fits just right and feels comfortable.' },
     proc2_title: { es: 'Diseño', en: 'Design' },
@@ -199,9 +204,6 @@ const DICT = {
     eyebrow: { es: 'Nuestra historia', en: 'Our Story' },
     title:   { es: 'El oficio de tejer con calma', en: 'The Craft of Weaving Calmly' },
     lede:    { es: '"Remanso" es ese lugar donde el agua se detiene y todo se vuelve quieto. Así entendemos nuestro trabajo: tomarnos el tiempo necesario para tejer cada mueble a mano, con materiales naturales y mucho cuidado por el detalle.', en: '"Remanso" means a calm pool where the water comes to rest and everything grows still. That\'s how we understand our work: taking the time needed to weave every piece by hand, with natural materials and great care for detail.' },
-
-    photo_line1: { es: 'Foto del taller', en: 'Workshop photo' },
-    photo_line2: { es: '(reemplazar con fotografía real)', en: '(to be replaced with real photography)' },
 
     h2_1: { es: 'Tradición artesanal, hecha para hoy', en: 'Artisan Tradition, Made for Today' },
     p1: { es: 'En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.', en: 'At El Remanso we work alongside weavers who have mastered wicker, yaré, rattan and banana fiber for years. We combine that traditional knowledge with synthetic fiber and nautical rope so you can also enjoy woven furniture on your terrace or garden, without worrying about the weather.' },
@@ -372,6 +374,23 @@ function applyTranslations() {
     el.setAttribute('content', interpolate(t(el.dataset.i18nContent)));
   });
 
+  // Textos escritos en el panel (paginas de aterrizaje, menu). El HTML trae
+  // el espanol y la version en ingles viaja en data-en (siempre HTML ya
+  // escapado). La primera vez se guarda el espanol para poder volver a el.
+  const ingles = getLang() === 'en';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (!('es' in el.dataset)) el.dataset.es = el.innerHTML;
+    el.innerHTML = ingles ? el.dataset.en : el.dataset.es;
+  });
+  document.querySelectorAll('[data-alt-en]').forEach(el => {
+    if (!('altEs' in el.dataset)) el.dataset.altEs = el.getAttribute('alt') || '';
+    el.setAttribute('alt', ingles ? el.dataset.altEn : el.dataset.altEs);
+  });
+  document.querySelectorAll('[data-content-en]').forEach(el => {
+    if (!('contentEs' in el.dataset)) el.dataset.contentEs = el.getAttribute('content') || '';
+    el.setAttribute('content', ingles ? el.dataset.contentEn : el.dataset.contentEs);
+  });
+
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === getLang());
   });
@@ -396,4 +415,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initLangToggle();
 });
 
-window.ErI18n = { t, interpolate, getLang, setLang };
+window.ErI18n = { t, interpolate, getLang, setLang, applyTranslations };

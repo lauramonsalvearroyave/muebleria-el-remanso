@@ -181,6 +181,18 @@ async function renameCategory(oldId, newId, data) {
     setDoc(doc(db, "products", d.id), { categoryId: newId }, { merge: true })
   ));
 
+  // Tambien las piezas que la tienen como categoria adicional y las paginas
+  // que la muestran: si no, la pagina /salas se quedaria sin productos.
+  const extra = await getDocs(query(collection(db, "products"), where("categoryIds", "array-contains", oldId)));
+  await Promise.all(extra.docs.map(d => {
+    const ids = (d.data().categoryIds || []).map(x => (x === oldId ? newId : x));
+    return setDoc(doc(db, "products", d.id), { categoryIds: ids }, { merge: true });
+  }));
+  const paginas = await getDocs(query(collection(db, "pages"), where("categoryId", "==", oldId)));
+  await Promise.all(paginas.docs.map(d =>
+    setDoc(doc(db, "pages", d.id), { categoryId: newId }, { merge: true })
+  ));
+
   await deleteDoc(doc(db, "categories", oldId));
   return snap.size;
 }
@@ -494,6 +506,61 @@ async function deleteTestimonial(id) {
   await deleteDoc(doc(db, "testimonials", id));
 }
 
+// ---------- Páginas de aterrizaje (salas, exterior, materiales...) ----------
+// El contenido vive en pages/{id}. El HTML publicado lo escribe un GitHub
+// Action (tools/generar-paginas.mjs) cada ~15 minutos; aqui solo se edita.
+// Las reglas dejan leer al publico solo las paginas encendidas.
+//
+// settings/pages guarda la direccion de TODAS las paginas, encendidas o no,
+// y sus direcciones anteriores. Es lo unico que el generador necesita saber
+// de una pagina apagada: que en esa URL va una redireccion a /catalogo.
+
+async function fetchAllPages() {
+  const snap = await getDocs(collection(db, "pages"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function fetchPage(id) {
+  const snap = await getDoc(doc(db, "pages", id));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
+// Reemplaza el documento entero (no merge): el editor siempre manda la
+// pagina completa, y asi un campo que se borra no queda vivo por debajo.
+async function savePage(id, data) {
+  const { id: _omitido, ...resto } = data;
+  await setDoc(doc(db, "pages", id), { ...resto, updatedAt: serverTimestamp() });
+}
+
+async function savePagesIndex(paginas) {
+  const indice = {};
+  paginas.forEach(p => {
+    indice[p.id] = { slug: p.slug, previousSlugs: p.previousSlugs || [] };
+  });
+  await setDoc(doc(db, "settings", "pages"), { indice });
+}
+
+// Crea las paginas iniciales que falten, sin tocar las que ya existen.
+async function seedPages(paginas, categoriaExterior) {
+  let creadas = 0;
+  for (const p of paginas) {
+    const ref_ = doc(db, "pages", p.id);
+    if ((await getDoc(ref_)).exists()) continue;
+    const { id, ...data } = p;
+    await setDoc(ref_, { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    creadas++;
+  }
+  if (categoriaExterior) {
+    const ref_ = doc(db, "categories", categoriaExterior.id);
+    if (!(await getDoc(ref_)).exists()) {
+      const { id, ...data } = categoriaExterior;
+      await setDoc(ref_, data);
+    }
+  }
+  await savePagesIndex(await fetchAllPages());
+  return creadas;
+}
+
 // ---------- Vaciar el catálogo (destructivo, solo desde el panel admin) ----------
 // Borra TODOS los productos y TODAS las categorías, y de paso las fotos que
 // esos productos tuvieran en Storage (si no, quedarían colgadas sin dueño).
@@ -559,5 +626,6 @@ window.ErFirebase = {
   fetchTeamMembers, removeTeamMember,
   submitTestimonial, fetchPublishedTestimonials, fetchAllTestimonials,
   updateTestimonial, deleteTestimonial,
+  fetchAllPages, fetchPage, savePage, savePagesIndex, seedPages,
   seedInitialCatalog, wipeCatalog, countCatalog
 };

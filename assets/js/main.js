@@ -21,6 +21,91 @@ function initWhatsappNumber() {
   }, 50);
 }
 
+// Envia un evento a Google (GA4 y, si esta configurada, la etiqueta de Ads).
+// Si el modulo de Firebase aun no termino de cargar, se va directo por gtag,
+// que existe desde el primer instante: un clic temprano no se pierde.
+function medir(evento, params) {
+  if (window.ErFirebase) window.ErFirebase.track(evento, params);
+  else if (typeof window.gtag === 'function') window.gtag('event', evento, params || {});
+}
+window.ErMedir = medir;
+
+function paginaDeOrigen() {
+  return location.pathname || '/';
+}
+
+// ---------- Menu y pie, desde las paginas encendidas ----------
+// assets/data/paginas.js (lo escribe el generador) trae las paginas
+// publicadas. Las de categoria van como submenu de "Catalogo"; las demas,
+// sueltas antes de "Contacto". Se arma apenas carga este script, antes de
+// que i18n.js traduzca, para que lo nuevo tambien quede en el idioma elegido.
+
+function escHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function enlacePagina(p, actual) {
+  const es = (p.menu && p.menu.es) || p.slug;
+  const en = p.menu && p.menu.en && p.menu.en !== es ? ` data-en="${escHtml(escHtml(p.menu.en))}"` : '';
+  const activo = actual === '/' + p.slug ? ' class="active" aria-current="page"' : '';
+  return `<a href="/${escHtml(p.slug)}"${activo}${en}>${escHtml(es)}</a>`;
+}
+
+function construirMenuYPie() {
+  const datos = window.ER_PAGINAS;
+  if (!datos || !Array.isArray(datos.publicadas) || !datos.publicadas.length) return;
+
+  const paginas = datos.publicadas.slice().sort((a, b) => (a.orden || 0) - (b.orden || 0));
+  const actual = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+
+  const lista = document.querySelector('.main-nav > ul');
+  const enMenu = paginas.filter(p => p.enMenu);
+  if (lista && enMenu.length) {
+    const categorias = enMenu.filter(p => p.tipo === 'categoria');
+    const otras = enMenu.filter(p => p.tipo !== 'categoria');
+
+    const liCatalogo = lista.querySelector('a[href="/catalogo"]')?.closest('li');
+    if (liCatalogo && categorias.length) {
+      liCatalogo.classList.add('has-submenu');
+      liCatalogo.insertAdjacentHTML('beforeend', `
+        <button class="submenu-toggle" type="button" aria-expanded="false" data-i18n-aria="nav.open_submenu" aria-label="Ver las categorías del catálogo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <ul class="submenu">${categorias.map(p => `<li>${enlacePagina(p, actual)}</li>`).join('')}</ul>`);
+      const boton = liCatalogo.querySelector('.submenu-toggle');
+      const cerrar = () => { liCatalogo.classList.remove('open'); boton.setAttribute('aria-expanded', 'false'); };
+      boton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const abierto = liCatalogo.classList.toggle('open');
+        boton.setAttribute('aria-expanded', String(abierto));
+      });
+      document.addEventListener('click', (e) => { if (!liCatalogo.contains(e.target)) cerrar(); });
+      liCatalogo.addEventListener('keydown', (e) => { if (e.key === 'Escape') { cerrar(); boton.focus(); } });
+    }
+
+    const liContacto = lista.querySelector('a[href="/contacto"]')?.closest('li') || null;
+    otras.forEach(p => {
+      const li = document.createElement('li');
+      li.innerHTML = enlacePagina(p, actual);
+      lista.insertBefore(li, liContacto);
+    });
+    if (otras.length >= 2) document.documentElement.classList.add('menu-amplio');
+  }
+
+  const grid = document.querySelector('.site-footer .footer-grid');
+  const enPie = paginas.filter(p => p.enPie);
+  if (grid && enPie.length) {
+    const col = document.createElement('div');
+    col.className = 'footer-paginas';
+    col.innerHTML = `<h4 data-i18n="footer.explore_title">Explora</h4>
+      <ul>${enPie.map(p => `<li>${enlacePagina(p, '')}</li>`).join('')}</ul>`;
+    grid.insertBefore(col, grid.children[1] || null);
+    grid.classList.add('con-paginas');
+  }
+}
+
+construirMenuYPie();
+
 // GA4 ya registra los clics salientes, pero todos juntos y sin distinguir
 // cual boton fue: WhatsApp, Instagram y la SIC caen en el mismo saco. Aqui
 // se manda un evento propio con el origen, que es lo que permite saber si
@@ -39,12 +124,16 @@ function origenDelBoton(a) {
 function medirWhatsapp() {
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="https://wa.me/"]');
-    if (!a || !window.ErFirebase) return;
-    window.ErFirebase.track('contacto_whatsapp', {
-      origen: origenDelBoton(a),
+    if (!a) return;
+    const origen = origenDelBoton(a);
+    medir('contacto_whatsapp', {
+      origen,
       // Con las URLs limpias, la raiz deja la parte final vacia.
       pagina: (location.pathname.split('/').pop() || 'inicio')
     });
+    // El evento que se importa como conversion en Google Ads: uno solo para
+    // cualquier camino a WhatsApp (enlace, "Me interesa" o formulario).
+    medir('clic_whatsapp', { pagina_origen: paginaDeOrigen(), origen });
   });
 }
 
@@ -99,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ];
       const msg = encodeURIComponent(lines.join('\n'));
       window.open(`https://wa.me/${window.ErWhatsappNumber || DEFAULT_WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+      medir('clic_whatsapp', { pagina_origen: paginaDeOrigen(), origen: 'formulario_contacto' });
 
       if (window.ErFirebase) {
         window.ErFirebase.saveLead({

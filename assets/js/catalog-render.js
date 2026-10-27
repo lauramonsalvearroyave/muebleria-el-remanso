@@ -251,6 +251,16 @@ function renderHomeCategoryTeasers(root, categories) {
     </a>`).join('');
 }
 
+// Sin foto cargada, el hueco no se muestra: un recuadro vacio o un "foto
+// proximamente" se ve a medio hacer. El texto pasa a ocupar todo el ancho.
+function ponerFotoOcultar(slot, html) {
+  if (!slot) return;
+  slot.innerHTML = html;
+  slot.hidden = !html;
+  const fila = slot.parentElement;
+  if (fila) fila.classList.toggle('sin-foto', !html);
+}
+
 async function renderHomeImages() {
   const heroSlot = document.getElementById('heroImageSlot');
   const aboutSlot = document.getElementById('aboutImageSlot');
@@ -265,20 +275,16 @@ async function renderHomeImages() {
 
     // Los huecos miden unos 500 px de ancho: pedir 900 basta de sobra a 2x.
     // La foto original se guarda intacta; esto es solo lo que se entrega.
-    if (heroSlot) {
-      heroSlot.innerHTML = settings.heroImageUrl
-        ? `<img src="${esc(variante(settings.heroImageUrl, 'w_900,f_auto,q_auto'))}" alt="" fetchpriority="high">`
-        : '';
-    }
-    if (aboutSlot) {
-      aboutSlot.innerHTML = settings.aboutImageUrl
-        ? `<img src="${esc(variante(settings.aboutImageUrl, 'w_900,f_auto,q_auto'))}" alt="" loading="lazy">`
-        : '';
-    }
+    ponerFotoOcultar(heroSlot, settings.heroImageUrl
+      ? `<img src="${esc(variante(settings.heroImageUrl, 'w_900,f_auto,q_auto'))}" alt="" fetchpriority="high">`
+      : '');
+    ponerFotoOcultar(aboutSlot, settings.aboutImageUrl
+      ? `<img src="${esc(variante(settings.aboutImageUrl, 'w_900,f_auto,q_auto'))}" alt="" loading="lazy">`
+      : '');
   } catch (err) {
     console.error('No se pudieron cargar las fotos del inicio:', err);
-    if (heroSlot) heroSlot.innerHTML = '';
-    if (aboutSlot) aboutSlot.innerHTML = '';
+    ponerFotoOcultar(heroSlot, '');
+    ponerFotoOcultar(aboutSlot, '');
   }
 }
 
@@ -520,6 +526,13 @@ function setUpLightbox() {
 }
 
 async function init() {
+  // Paginas de aterrizaje (/salas, /exterior...): el contenido ya viene en el
+  // HTML publicado. De este archivo solo necesitan el visor de fotos.
+  if (document.body.dataset.pagina) {
+    setUpLightbox();
+    return;
+  }
+
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
   if (homeRoot) homeRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
@@ -545,10 +558,13 @@ async function init() {
     const homeImages = renderHomeImages();
     const comments = renderComments();
     const materiales = renderMaterialImages();
-    const [categories, products] = await Promise.all([
+    const [todasLasCategorias, products] = await Promise.all([
       window.ErFirebase.fetchCategories(),
       catalogRoot ? window.ErFirebase.fetchProducts() : Promise.resolve([])
     ]);
+    // Hay categorias que solo agrupan piezas para una pagina (Exterior: cada
+    // pieza ya esta en su seccion). No salen como seccion del catalogo.
+    const categories = todasLasCategorias.filter(c => c.showInCatalog !== false);
     await Promise.all([homeImages, comments, materiales]);
 
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);

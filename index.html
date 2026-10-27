@@ -39,6 +39,10 @@
   gtag('config', 'G-3PKHJ3M6CF');
 </script>
 
+<!-- Paginas encendidas, menu y etiqueta de Google Ads. Lo escribe solo
+     tools/generar-paginas.mjs desde el administrador. Va despues de gtag. -->
+<script src="assets/data/paginas.js"></script>
+
 <link rel="stylesheet" href="assets/css/styles.css">
 
 <!-- Datos estructurados: asi Google entiende que esto es un negocio local
@@ -134,14 +138,17 @@
         <p class="hero-note" data-i18n="home.hero_note">Manos con talento, que hacen tus sueños realidad</p>
       </div>
 
-      <div class="hero-art" id="heroImageSlot">
-        <div class="tag"><span data-i18n="home.hero_art_line1">Foto de producto próximamente</span><br><small data-i18n="home.hero_art_line2">(reemplazar con fotografía real del taller)</small></div>
-      </div>
+      <!-- Foto principal: se administra en el panel (Ajustes). Si no hay
+           foto cargada, este hueco se oculta solo. -->
+      <div class="hero-art" id="heroImageSlot"></div>
     </div>
   </section>
 
-  <!-- MATERIALES -->
-  <section>
+  <!-- MATERIALES
+       Mientras la pagina /materiales este apagada, aqui va la seccion
+       completa. Al encenderla, se resume (solo fotos y nombres) y aparece el
+       boton hacia la pagina. Lo decide assets/data/paginas.js. -->
+  <section id="materiales">
     <div class="container">
       <div class="text-center mb-lg">
         <span class="eyebrow" data-i18n="home.materials_eyebrow">Nuestros materiales</span>
@@ -198,6 +205,9 @@
           <p data-i18n="home.mat_piola_desc">Cuerda trenzada de uso marino, suave al sentarse y muy resistente a la humedad y al roce. No se deshilacha ni se endurece con el tiempo.</p>
         </div>
       </div>
+      <p class="resumen-enlace" data-requiere-pagina="materiales">
+        <a href="/materiales" class="btn btn-outline" data-i18n="home.materials_more">Conocer los materiales</a>
+      </p>
     </div>
   </section>
 
@@ -237,14 +247,16 @@
         <p data-i18n="about.p1">En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.</p>
         <p data-i18n="about.p2">Cada pieza sale de nuestro taller revisada a mano, una por una, antes de llegar a tu casa.</p>
       </div>
-      <div class="hero-art" style="aspect-ratio:1;" id="aboutImageSlot">
-        <div class="tag"><span data-i18n="about.photo_line1">Foto del taller</span><br><small data-i18n="about.photo_line2">(reemplazar con fotografía real)</small></div>
-      </div>
+      <!-- Foto del taller: se administra en el panel (Ajustes). Si no hay
+           foto cargada, este hueco se oculta solo. -->
+      <div class="hero-art" style="aspect-ratio:1;" id="aboutImageSlot"></div>
     </div>
   </section>
 
-  <!-- PROCESO -->
-  <section>
+  <!-- PROCESO
+       Igual que materiales: con /como-trabajamos encendida se resume a los
+       siete titulos y aparece el boton hacia la pagina. -->
+  <section id="proceso">
     <div class="container">
       <div class="text-center mb-lg">
         <span class="eyebrow" data-i18n="home.proc_eyebrow">Nuestro oficio</span>
@@ -281,6 +293,9 @@
           <p data-i18n="home.proc7_desc">Coordinamos la fecha contigo y llevamos tu mueble armado hasta tu hogar.</p>
         </div>
       </div>
+      <p class="resumen-enlace" data-requiere-pagina="como-trabajamos">
+        <a href="/como-trabajamos" class="btn btn-outline" data-i18n="home.proc_more">Conocer cómo trabajamos</a>
+      </p>
     </div>
   </section>
 
