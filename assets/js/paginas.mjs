@@ -557,7 +557,7 @@ const BOTONES_DEFECTO = [
   { text: B('Escríbenos por WhatsApp', 'Message us on WhatsApp'), url: WA },
   { text: B('Ver todo el catálogo', 'View the full catalog'), url: '/catalogo' }
 ];
-const COBERTURA = { visible: true, texto: B('Llevamos tu mueble a Medellín, Envigado y toda Antioquia.', 'We deliver to Medellín, Envigado and all of Antioquia.') };
+const COBERTURA = { visible: true, texto: B('Hacemos envíos a toda Colombia desde nuestro taller en Medellín.', 'We ship anywhere in Colombia from our workshop in Medellín.') };
 const ENCARGO = (es, en) => ({
   visible: true,
   titulo: B('Cada pieza se hace por encargo.', 'Every piece is made to order.'),
