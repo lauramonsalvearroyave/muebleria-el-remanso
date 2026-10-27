@@ -1,7 +1,8 @@
 # Publica las paginas de aterrizaje (/salas, /exterior, /materiales...) a
 # partir de lo que se configura en el panel (pestana Paginas).
 #
-# Corre solo cada 15 minutos. Tambien se puede lanzar a mano en GitHub:
+# Se le pide correr cada 15 minutos, pero GitHub lo espacia a cada pocas
+# horas en repos con poco movimiento. Para publicar al instante, a mano:
 # pestana Actions -> "Publicar paginas" -> Run workflow.
 # No usa llaves ni contrasenas: solo lee lo que Firestore ya deja ver al
 # publico (las paginas encendidas, los productos y los ajustes).

@@ -508,7 +508,7 @@ async function deleteTestimonial(id) {
 
 // ---------- Páginas de aterrizaje (salas, exterior, materiales...) ----------
 // El contenido vive en pages/{id}. El HTML publicado lo escribe un GitHub
-// Action (tools/generar-paginas.mjs) cada ~15 minutos; aqui solo se edita.
+// Action (tools/generar-paginas.mjs) al pedirlo desde el panel o cada pocas horas; aqui solo se edita.
 // Las reglas dejan leer al publico solo las paginas encendidas.
 //
 // settings/pages guarda la direccion de TODAS las paginas, encendidas o no,

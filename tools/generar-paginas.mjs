@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // El Remanso — Generador de las paginas de aterrizaje.
 //
-// Lo ejecuta GitHub Actions cada ~15 minutos (.github/workflows/paginas.yml).
+// Lo ejecuta GitHub Actions (.github/workflows/paginas.yml): al instante con
+// "Run workflow" (boton "Publicar ahora" del panel), y solo cada pocas horas,
+// porque GitHub espacia mucho los procesos programados de repos con poco
+// movimiento aunque se le pidan cada 15 minutos.
 // Lee Firestore (solo lo publico: no necesita llaves ni contrasenas) y escribe:
 //
 //   <slug>.html                pagina encendida, con su SEO ya en el HTML

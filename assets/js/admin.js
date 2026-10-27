@@ -998,7 +998,7 @@ async function saveGoogleTagFromForm(e) {
     await window.ErFirebase.saveSiteSettings({ googleTagId: id });
     input.value = id;
     msg.className = 'form-msg ok';
-    msg.textContent = id ? 'Guardada. Queda activa en todo el sitio en unos 15 minutos.' : 'Etiqueta quitada. El cambio se ve en unos 15 minutos.';
+    msg.textContent = id ? 'Guardada. Para activarla ya en el sitio: Páginas → "Publicar ahora".' : 'Etiqueta quitada. Para aplicarlo ya en el sitio: Páginas → "Publicar ahora".';
   } catch (err) {
     msg.className = 'form-msg error';
     msg.textContent = 'No se pudo guardar: ' + err.message;

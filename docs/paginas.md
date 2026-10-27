@@ -18,9 +18,12 @@ Panel → pestaña **Páginas**. Solo la ven los administradores.
    Casi siempre es la **imagen principal** y su texto alternativo.
 2. **Vista previa** para revisarla tal como va a quedar (aunque esté apagada).
 3. Activar **Publicada** → **Guardar cambios**.
+4. Botón **Publicar ahora** (arriba en la pestaña Páginas) → en GitHub, **Run workflow** →
+   **Run workflow**. En 2 o 3 minutos la página aparece en el sitio, el menú, el pie y el
+   mapa del sitio (`sitemap.xml`).
 
-En **unos 15 minutos** la página aparece en el sitio, en el menú, en el pie y en el
-mapa del sitio (`sitemap.xml`). No hay que hacer nada más.
+Esto vale para cualquier cambio: encender, apagar, editar textos o fotos, o la etiqueta de
+Google. Si no se usa "Publicar ahora", GitHub lo publica solo, pero puede tardar horas.
 
 ## Apagar una página
 
@@ -53,9 +56,9 @@ los enlaces que apuntaban a ella se ocultan solos.
 
 ## Si algo no se actualiza
 
-Los cambios los publica un proceso automático en GitHub (pestaña **Actions → Publicar
-páginas**), cada 15 minutos. Para no esperar: **Run workflow**. Si un cambio no aparece
-después de 20 minutos, revisa ahí si la última ejecución quedó en rojo.
+Los cambios los publica un proceso en GitHub (pestaña **Actions → Publicar páginas**), que
+se lanza con **Publicar ahora**. Si un cambio no aparece 5 minutos después, revisa ahí si
+la última ejecución quedó en rojo.
 
 GitHub pausa los procesos automáticos tras 60 días sin cambios en el repositorio; si
 pasa, en esa misma pestaña aparece un botón para reactivarlo.

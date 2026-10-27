@@ -1,7 +1,7 @@
 // El Remanso — Panel: pestana "Paginas" (paginas de aterrizaje y Google Ads).
 //
 // Edita pages/{id} en Firestore. No publica HTML: eso lo hace el generador
-// (tools/generar-paginas.mjs) en GitHub cada ~15 minutos. La vista previa
+// (tools/generar-paginas.mjs) en GitHub (boton "Publicar ahora", o solo cada pocas horas). La vista previa
 // (/vista-previa) dibuja el borrador al instante con la misma plantilla.
 //
 // Usa lo que admin.js deja a mano: products, categories, subirACloudinary,
@@ -167,7 +167,7 @@ async function encenderOApagar(id) {
         abrirEditor(id);
         return;
       }
-      if (!confirm(`¿Encender /${p.slug}?\n\nAparecerá en el sitio, el menú, el pie y el mapa del sitio en unos 15 minutos.`)) return;
+      if (!confirm(`¿Encender /${p.slug}?\n\nDespués usa "Publicar ahora" (arriba) para que aparezca en el sitio, el menú, el pie y el mapa del sitio en 2 o 3 minutos.`)) return;
       await guardarPagina({ ...clonar(p), published: true });
     }
     if (editando && editando.id === id) cerrarEditor(true);
@@ -598,7 +598,7 @@ async function guardarEditor() {
     esNueva = false;
     renderEditor();
     mensaje(editando.published
-      ? 'Guardado. Los cambios se verán en el sitio en unos 15 minutos.'
+      ? 'Guardado. Para verlo en el sitio: "Publicar ahora" (arriba) → Run workflow.'
       : 'Guardado. La página sigue apagada; revísala con la vista previa.', 'ok');
   } catch (err) {
     mensaje('No se pudo guardar: ' + err.message, 'error');
