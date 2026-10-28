@@ -137,9 +137,36 @@ function medirWhatsapp() {
   });
 }
 
+// Clics hacia Instagram. Van SOLO a GA4 (send_to): aunque en Ajustes se
+// agregue la etiqueta de Google Ads, este evento no le llega a Ads. La
+// conversion de las campanas es WhatsApp, no Instagram.
+const GA4_ID = 'G-3PKHJ3M6CF';
+
+function origenInstagram(a) {
+  if (a.closest('.site-header')) return 'encabezado';
+  if (a.closest('.site-footer')) return 'pie';
+  if (a.classList.contains('ig-post')) return 'publicacion';
+  if (a.classList.contains('ig-mas')) return 'boton_ver_mas';
+  const seccion = a.closest('section');
+  return (seccion && seccion.id) || 'contenido';
+}
+
+function medirInstagram() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href*="instagram.com"]');
+    if (!a) return;
+    medir('clic_instagram', {
+      pagina_origen: paginaDeOrigen(),
+      origen: origenInstagram(a),
+      send_to: GA4_ID
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initWhatsappNumber();
   medirWhatsapp();
+  medirInstagram();
 
   const toggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');

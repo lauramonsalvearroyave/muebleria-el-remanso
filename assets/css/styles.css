@@ -974,3 +974,50 @@ html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display
 .editor-mensaje{ font-size:.86rem; font-weight:700; }
 .editor-mensaje.ok{ color:#2F6B4F; }
 .editor-mensaje.error{ color:#9A3B2A; }
+
+/* ===========================================================
+   Instagram: icono de la cabecera, usuario en el pie y la
+   seccion "Siguenos en Instagram". Todo en contorno y en tonos
+   neutros: no debe competir con el boton de WhatsApp.
+   =========================================================== */
+.ig-header{
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  width:38px; height:38px; border-radius:50%;
+  border:1.5px solid var(--sand-line); color: var(--near-black);
+  transition: color .15s ease, border-color .15s ease;
+}
+.ig-header svg{ width:18px; height:18px; }
+.ig-header:hover{ color: var(--gold); border-color: var(--gold); }
+.ig-header:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+.footer-social a.con-texto{
+  width:auto; padding:0 14px 0 10px; gap:8px; border-radius:999px;
+  font-size:.85rem; font-weight:700; color: rgba(251,246,236,.85);
+}
+.footer-social a.con-texto:hover{ color: var(--gold-soft); }
+
+.seccion-instagram[hidden]{ display:none; }
+.ig-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+@media (max-width: 900px){ .ig-grid{ grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px){ .ig-grid{ grid-template-columns: repeat(2, 1fr); gap:10px; } }
+/* Casilla cuadrada fija: aunque la foto tarde, la cuadricula no salta. */
+.ig-post{
+  display:block; aspect-ratio:1; overflow:hidden; border-radius: var(--radius-m);
+  background: var(--sand); box-shadow: var(--shadow-card);
+}
+.ig-post img{ width:100%; height:100%; object-fit:cover; object-position:center; transition: transform .35s ease; }
+.ig-post:hover img{ transform: scale(1.04); }
+.ig-post:focus-visible{ outline:3px solid var(--gold); outline-offset:3px; }
+@media (prefers-reduced-motion: reduce){ .ig-post img{ transition:none; } }
+.ig-mas-wrap{ text-align:center; margin:28px 0 0; }
+
+/* Panel: pestana Instagram */
+.ig-fila{ display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; padding:14px 0; border-top:1px dashed var(--sand-line); }
+.ig-previas{ display:flex; gap:10px; flex-shrink:0; }
+.ig-previa{ margin:0; text-align:center; }
+.ig-previa figcaption{ font-size:.7rem; color: var(--ink-soft); margin-top:4px; }
+.ig-previa .marco{ width:96px; height:96px; border-radius:8px; overflow:hidden; background: var(--sand); display:flex; align-items:center; justify-content:center; }
+.ig-previa .marco img{ max-width:100%; max-height:100%; }
+.ig-previa .marco.cuadrado img{ width:100%; height:100%; object-fit:cover; }
+.ig-campos{ flex:1; min-width:260px; }
+.ig-campos .field{ margin-bottom:10px; }

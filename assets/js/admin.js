@@ -871,6 +871,7 @@ async function loadData() {
     // Modulo aparte (assets/js/admin-paginas.mjs). Nunca lanza: si las reglas
     // de Firestore aun no permiten "pages", lo explica en su propia pestana.
     if (window.ErPaginasAdmin) await window.ErPaginasAdmin.cargar();
+    if (window.ErInstagramAdmin) await window.ErInstagramAdmin.cargar();
   }
 }
 
@@ -1366,6 +1367,8 @@ function applyRoleUI() {
   if (commentsBtn) commentsBtn.style.display = isCollaborator ? 'none' : '';
   const pagesBtn = document.getElementById('tabBtnPages');
   if (pagesBtn) pagesBtn.style.display = isCollaborator ? 'none' : '';
+  const instagramBtn = document.getElementById('tabBtnInstagram');
+  if (instagramBtn) instagramBtn.style.display = isCollaborator ? 'none' : '';
   switchTab(isCollaborator ? 'products' : 'categories');
 }
 
@@ -1720,6 +1723,7 @@ function switchTab(tab) {
   document.getElementById('categoriesPanel').style.display = tab === 'categories' ? '' : 'none';
   document.getElementById('productsPanel').style.display = tab === 'products' ? '' : 'none';
   document.getElementById('pagesPanel').style.display = tab === 'pages' ? '' : 'none';
+  document.getElementById('instagramPanel').style.display = tab === 'instagram' ? '' : 'none';
   document.getElementById('customersPanel').style.display = tab === 'customers' ? '' : 'none';
   document.getElementById('leadsPanel').style.display = tab === 'leads' ? '' : 'none';
   document.getElementById('ordersPanel').style.display = tab === 'orders' ? '' : 'none';

@@ -489,7 +489,15 @@ export function renderMain(pagina, ctx) {
     })
     .join('');
 
-  return encabezado + secciones;
+  // "Siguenos en Instagram": siempre al final, despues de los productos y del
+  // llamado a WhatsApp. Nace oculto; assets/js/instagram.js lo llena solo si
+  // esta encendido en el panel. Asi el HTML publicado no cambia cuando se
+  // editan las publicaciones.
+  const instagram = esCategoria
+    ? '\n  <section id="instagramSection" class="seccion-instagram" data-ubicacion="categoria" hidden></section>'
+    : '';
+
+  return encabezado + secciones + instagram;
 }
 
 function imagenCompartir(pagina) {

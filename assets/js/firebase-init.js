@@ -506,6 +506,20 @@ async function deleteTestimonial(id) {
   await deleteDoc(doc(db, "testimonials", id));
 }
 
+// ---------- Seccion "Siguenos en Instagram" ----------
+// settings/instagram: lectura publica, solo un administrador escribe (las
+// reglas de settings ya lo cubren). Si el documento no existe, la seccion
+// esta apagada.
+
+async function fetchInstagram() {
+  const snap = await getDoc(doc(db, "settings", "instagram"));
+  return snap.exists() ? snap.data() : null;
+}
+
+async function saveInstagram(data) {
+  await setDoc(doc(db, "settings", "instagram"), { ...data, updatedAt: serverTimestamp() });
+}
+
 // ---------- Páginas de aterrizaje (salas, exterior, materiales...) ----------
 // El contenido vive en pages/{id}. El HTML publicado lo escribe un GitHub
 // Action (tools/generar-paginas.mjs) al pedirlo desde el panel o cada pocas horas; aqui solo se edita.
@@ -627,5 +641,6 @@ window.ErFirebase = {
   submitTestimonial, fetchPublishedTestimonials, fetchAllTestimonials,
   updateTestimonial, deleteTestimonial,
   fetchAllPages, fetchPage, savePage, savePagesIndex, seedPages,
+  fetchInstagram, saveInstagram,
   seedInitialCatalog, wipeCatalog, countCatalog
 };

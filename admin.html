@@ -132,6 +132,7 @@
         <button class="admin-tab active" data-tab="categories" type="button" id="tabBtnCategories">Categorías</button>
         <button class="admin-tab" data-tab="products" type="button">Productos</button>
         <button class="admin-tab" data-tab="pages" type="button" id="tabBtnPages">Páginas</button>
+        <button class="admin-tab" data-tab="instagram" type="button" id="tabBtnInstagram">Instagram</button>
         <button class="admin-tab" data-tab="customers" type="button">Clientes</button>
         <button class="admin-tab" data-tab="orders" type="button" id="tabBtnOrders">Pedidos</button>
         <button class="admin-tab" data-tab="leads" type="button" id="tabBtnLeads">Interesados</button>
@@ -313,6 +314,18 @@
           <button id="newCategoryPageBtn" type="button" class="btn btn-outline btn-sm">Nueva página de categoría</button>
         </div>
         <div id="pageList" class="admin-list"></div>
+      </div>
+
+      <!-- ===== INSTAGRAM (solo administradores) =====
+           Lo maneja assets/js/admin-instagram.mjs. -->
+      <div id="instagramPanel" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+          <h3 class="mt-0">Sección "Síguenos en Instagram"</h3>
+          <p style="margin-bottom:8px;">Muestra de 6 a 8 publicaciones al final del inicio y de las páginas de categoría, siempre <strong>después</strong> de los productos y del botón de WhatsApp. Cada imagen lleva a su publicación en Instagram.</p>
+          <p style="margin-bottom:12px;">Los cambios se ven en el sitio <strong>al instante</strong> al guardar: aquí no hace falta "Publicar ahora".</p>
+          <div class="admin-spec" style="margin:0;"><strong>Imágenes:</strong> ideal cuadradas, 1080×1080, JPG. Si subes una vertical u horizontal se recorta un cuadrado al centro: revisa la vista previa <strong>"Así se verá"</strong> de cada una antes de guardar.</div>
+        </div>
+        <div id="igEditor" class="card"></div>
       </div>
 
       <!-- ===== CLIENTES / CRM (administrador y colaborador) ===== -->
@@ -678,5 +691,6 @@
 <script type="module" src="assets/js/firebase-init.js"></script>
 <script src="assets/js/admin.js"></script>
 <script type="module" src="assets/js/admin-paginas.mjs"></script>
+<script type="module" src="assets/js/admin-instagram.mjs"></script>
 </body>
 </html>

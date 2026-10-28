@@ -10,6 +10,9 @@ const DICT = {
   pagina: {
     ver_materiales: { es: 'Conocer todos los materiales', en: 'Explore all our materials' }
   },
+  instagram: {
+    ver_mas: { es: 'Ver más en @muebleria_elremanso', en: 'See more at @muebleria_elremanso' }
+  },
   header: {
     cta_catalog: { es: 'Ver catálogo',         en: 'View Catalog' },
     cta_talk:    { es: 'Hablar con el equipo', en: 'Talk to Our Team' },
@@ -17,6 +20,7 @@ const DICT = {
   },
   aria: {
     whatsapp_float: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
+    instagram: { es: 'Instagram @muebleria_elremanso (abre en una pestaña nueva)', en: 'Instagram @muebleria_elremanso (opens in a new tab)' },
     back_to_top: { es: 'Volver arriba', en: 'Back to top' },
     prev: { es: 'Anterior', en: 'Previous' },
     next: { es: 'Siguiente', en: 'Next' },

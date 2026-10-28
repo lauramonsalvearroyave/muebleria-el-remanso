@@ -59,6 +59,9 @@ async function mostrar(fb) {
 
   document.title = `Vista previa · ${tx(pagina.text && pagina.text.h1, 'es') || 'El Remanso'}`;
   if (window.ErI18n) window.ErI18n.applyTranslations();
+  // La seccion de Instagram se dibuja al cargar la pagina, antes de que
+  // exista este contenido: se le pide de nuevo.
+  if (window.ErInstagram) window.ErInstagram.render();
 }
 
 const fb = await esperarFirebase();
