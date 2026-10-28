@@ -1,0 +1,50 @@
+# Renueva la llave de Instagram (INSTAGRAM_TOKEN) antes de que venza.
+#
+# Las llaves de Instagram duran 60 dias; renovarlas cada semana da margen de
+# sobra aunque GitHub retrase o se salte alguna vuelta. La llave nueva se
+# guarda en los Secrets de GitHub y nunca aparece en el registro (el
+# repositorio es publico y sus registros tambien).
+#
+# Necesita dos Secrets (ver docs/instagram.md):
+#   INSTAGRAM_TOKEN   la llave de Instagram
+#   GH_SECRETS_TOKEN  permiso para que este proceso actualice esa llave
+
+name: Renovar conexion de Instagram
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # los lunes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  renovar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Renovar la llave de Instagram
+        env:
+          TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "Instagram aun no esta conectado (falta INSTAGRAM_TOKEN). Nada que renovar."
+            exit 0
+          fi
+          if [ -z "$GH_TOKEN" ]; then
+            echo "Falta GH_SECRETS_TOKEN: no se puede guardar la llave renovada. Ver docs/instagram.md."
+            exit 1
+          fi
+          RESP=$(curl -s "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${TOKEN}")
+          NUEVA=$(printf '%s' "$RESP" | jq -r '.access_token // empty')
+          if [ -z "$NUEVA" ]; then
+            echo "Instagram no renovo la llave: $(printf '%s' "$RESP" | jq -r '.error.message // "respuesta inesperada"')"
+            echo "Hay que reconectar Instagram: ver docs/instagram.md, paso 'Reconectar'."
+            exit 1
+          fi
+          echo "::add-mask::$NUEVA"
+          printf '%s' "$NUEVA" | gh secret set INSTAGRAM_TOKEN --repo "$REPO"
+          echo "Llave renovada. Vence en $(( $(printf '%s' "$RESP" | jq -r '.expires_in') / 86400 )) dias."

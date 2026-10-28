@@ -1010,14 +1010,3 @@ html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display
 .ig-post:focus-visible{ outline:3px solid var(--gold); outline-offset:3px; }
 @media (prefers-reduced-motion: reduce){ .ig-post img{ transition:none; } }
 .ig-mas-wrap{ text-align:center; margin:28px 0 0; }
-
-/* Panel: pestana Instagram */
-.ig-fila{ display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; padding:14px 0; border-top:1px dashed var(--sand-line); }
-.ig-previas{ display:flex; gap:10px; flex-shrink:0; }
-.ig-previa{ margin:0; text-align:center; }
-.ig-previa figcaption{ font-size:.7rem; color: var(--ink-soft); margin-top:4px; }
-.ig-previa .marco{ width:96px; height:96px; border-radius:8px; overflow:hidden; background: var(--sand); display:flex; align-items:center; justify-content:center; }
-.ig-previa .marco img{ max-width:100%; max-height:100%; }
-.ig-previa .marco.cuadrado img{ width:100%; height:100%; object-fit:cover; }
-.ig-campos{ flex:1; min-width:260px; }
-.ig-campos .field{ margin-bottom:10px; }

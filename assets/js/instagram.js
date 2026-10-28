@@ -1,17 +1,23 @@
 // El Remanso — Seccion "Siguenos en Instagram".
 //
-// La configura el panel (pestana Instagram) en settings/instagram. Sin API de
-// Instagram ni widgets: imagenes subidas a Cloudinary y el enlace a cada
-// publicacion.
+// Dos fuentes:
+//  - settings/instagram (Firestore): encendida o no, donde se muestra y los
+//    textos. Lo maneja el panel (pestana Instagram).
+//  - assets/data/instagram.json: las ultimas publicaciones. Lo escribe solo
+//    tools/instagram.mjs (GitHub Actions) con la API de Instagram. Si la
+//    conexion falla, trae ok = false y la seccion se apaga sola.
+// Sin widgets de terceros: la cuadricula es del sitio.
 //
-// La seccion nace oculta y vacia en el HTML. Solo se dibuja cuando ya se leyo
-// Firestore y esta encendida para este lugar (inicio o paginas de categoria).
-// Si esta apagada o la lectura falla, se queda oculta: nunca deja un hueco.
+// La seccion nace oculta y vacia en el HTML. Solo se dibuja cuando ya se
+// leyeron las dos fuentes y todo esta en orden. Si algo falta o falla, se
+// queda oculta: nunca deja un hueco.
 // Va siempre al final de la pagina, despues del llamado a WhatsApp, asi que
 // al aparecer no empuja nada de lo que la persona ya esta viendo.
 
 (function () {
   var PERFIL = 'https://www.instagram.com/muebleria_elremanso/';
+  // Con menos de 4 no llena ni una fila en escritorio: mejor no mostrarla.
+  var MINIMO = 4;
 
   // Recorte cuadrado y centrado: las fotos verticales pierden arriba y abajo
   // por igual. El panel muestra exactamente este mismo recorte.
@@ -54,13 +60,11 @@
     var srcset = anchos.map(function (w) {
       return esc(variante(p.image, RECORTE + ',w_' + w + ',f_auto,q_auto')) + ' ' + w + 'w';
     }).join(', ');
-    var altEs = (p.alt && p.alt.es) || '';
-    var altEn = (p.alt && p.alt.en) || '';
     return '<a class="ig-post" href="' + esc(p.link) + '" target="_blank" rel="noopener">' +
       '<img src="' + esc(variante(p.image, RECORTE + ',w_600,f_auto,q_auto')) + '" srcset="' + srcset + '"' +
       ' sizes="(max-width: 620px) 50vw, (max-width: 900px) 33vw, 280px"' +
       ' width="600" height="600" loading="lazy" decoding="async"' +
-      ' alt="' + esc(altEs) + '"' + (altEn && altEn !== altEs ? ' data-alt-en="' + esc(altEn) + '"' : '') + '>' +
+      ' alt="' + esc(p.alt || 'Publicación de El Remanso en Instagram') + '">' +
       '</a>';
   }
 
@@ -82,22 +86,31 @@
     var fb = await esperarFirebase(10000);
     if (!fb || !fb.fetchInstagram) return;
 
-    var cfg;
+    var cfg, feed;
     try {
-      cfg = await fb.fetchInstagram();
+      var resultados = await Promise.all([
+        fb.fetchInstagram(),
+        fetch('assets/data/instagram.json', { cache: 'no-cache' }).then(function (r) {
+          if (!r.ok) throw new Error('instagram.json ' + r.status);
+          return r.json();
+        })
+      ]);
+      cfg = resultados[0];
+      feed = resultados[1];
     } catch (err) {
       console.error('No se pudo leer la seccion de Instagram:', err);
       return;                                   // se queda oculta
     }
     if (!cfg || !cfg.active) return;
+    if (!feed || !feed.ok) return;              // conexion con Instagram caida: se apaga sola
     var lugar = sec.dataset.ubicacion;
     if (lugar === 'inicio' && cfg.showOnHome === false) return;
     if (lugar === 'categoria' && cfg.showOnCategories === false) return;
 
-    var posts = (Array.isArray(cfg.posts) ? cfg.posts : [])
+    var posts = (Array.isArray(feed.posts) ? feed.posts : [])
       .filter(function (p) { return p && p.image && p.link; })
       .slice(0, 8);
-    if (!posts.length) return;
+    if (posts.length < MINIMO) return;
 
     sec.innerHTML =
       '<div class="container">' +

@@ -17,6 +17,7 @@ on:
     branches: [main]
     paths:
       - 'tools/generar-paginas.mjs'
+      - 'tools/instagram.mjs'
       - 'assets/js/paginas.mjs'
       - 'catalogo.html'
       - '.github/workflows/paginas.yml'
@@ -43,6 +44,14 @@ jobs:
 
       - name: Generar las paginas desde el panel
         run: node tools/generar-paginas.mjs
+
+      # Ultimas publicaciones de Instagram para la seccion "Siguenos". Si la
+      # llave falta o vencio, la seccion se apaga sola en el sitio; nunca
+      # detiene la publicacion de las paginas.
+      - name: Traer publicaciones de Instagram
+        env:
+          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+        run: node tools/instagram.mjs
 
       - name: Publicar si algo cambio
         run: |
