@@ -68,16 +68,20 @@ async function subirACloudinary(urlOrigen) {
   return d.secure_url;
 }
 
-// La foto cuadrada que ya prepara Behold (portada en videos y carruseles).
+// La foto original, en su formato de Instagram (vertical 4:5 en la mayoria):
+// el sitio la muestra completa. En videos, la portada. Si falta, la version
+// que prepara Behold.
+const FUENTE = 'original';
 function fotoDe(p) {
   const s = p.sizes || {};
-  return (s.large && s.large.mediaUrl) || (s.medium && s.medium.mediaUrl) ||
-    (p.mediaType === 'VIDEO' ? p.thumbnailUrl : p.mediaUrl) || '';
+  const original = p.mediaType === 'VIDEO' ? p.thumbnailUrl : p.mediaUrl;
+  return original || (s.full && s.full.mediaUrl) || (s.large && s.large.mediaUrl) || '';
 }
 
 async function main() {
   const anterior = await leerAnterior();
-  const cache = new Map((anterior.posts || []).map(p => [p.id, p.image]));
+  // Solo se reutilizan las fotos ya copiadas en este mismo formato.
+  const cache = new Map((anterior.posts || []).filter(p => p.fuente === FUENTE).map(p => [p.id, p.image]));
   let nuevo;
 
   if (!FEED) {
@@ -100,7 +104,7 @@ async function main() {
             continue;
           }
         }
-        posts.push({ id: m.id, image, link: m.permalink, alt: altDesde(m.prunedCaption || m.caption) });
+        posts.push({ id: m.id, image, fuente: FUENTE, link: m.permalink, alt: altDesde(m.prunedCaption || m.caption) });
       }
       nuevo = { ok: true, motivo: '', actualizado: anterior.actualizado, posts };
     } catch (err) {

@@ -19,15 +19,15 @@
   // Con menos de 4 no llena ni una fila en escritorio: mejor no mostrarla.
   var MINIMO = 4;
 
-  // Recorte cuadrado y centrado: las fotos verticales pierden arriba y abajo
-  // por igual. El panel muestra exactamente este mismo recorte.
-  var RECORTE = 'c_fill,g_center,ar_1:1';
+  // Vertical 4:5, el formato de las publicaciones de Instagram: se ven
+  // completas, con el texto de abajo. El panel usa este mismo recorte.
+  var RECORTE = 'c_fill,g_center,ar_4:5';
 
   var TEXTOS_DEFECTO = {
     title: { es: 'Síguenos en Instagram', en: 'Follow us on Instagram' },
     text: {
-      es: 'Mira lo que estamos tejiendo esta semana y las piezas que ya llegaron a su lugar.',
-      en: "See what we're weaving this week and the pieces that have already found their place."
+      es: 'Ideas para tus espacios, consejos para cuidar tus muebles y lo nuevo que sale del taller.',
+      en: "Ideas for your spaces, tips to care for your furniture and what's new from the workshop."
     }
   };
 
@@ -63,7 +63,7 @@
     return '<a class="ig-post" href="' + esc(p.link) + '" target="_blank" rel="noopener">' +
       '<img src="' + esc(variante(p.image, RECORTE + ',w_600,f_auto,q_auto')) + '" srcset="' + srcset + '"' +
       ' sizes="(max-width: 620px) 50vw, (max-width: 900px) 33vw, 280px"' +
-      ' width="600" height="600" loading="lazy" decoding="async"' +
+      ' width="600" height="750" loading="lazy" decoding="async"' +
       ' alt="' + esc(p.alt || 'Publicación de El Remanso en Instagram') + '">' +
       '</a>';
   }

@@ -8,7 +8,7 @@
 import { esc, variante } from './paginas.mjs';
 
 const MINIMO = 4;   // el mismo de assets/js/instagram.js
-const RECORTE = 'c_fill,g_center,ar_1:1';
+const RECORTE = 'c_fill,g_center,ar_4:5';
 const GUIA = 'docs/instagram.md';
 const ACCIONES = 'https://github.com/lauramonsalvearroyave/muebleria-el-remanso/actions/workflows/paginas.yml';
 
@@ -18,8 +18,8 @@ const DEFECTO = {
   showOnCategories: true,
   title: { es: 'Síguenos en Instagram', en: 'Follow us on Instagram' },
   text: {
-    es: 'Mira lo que estamos tejiendo esta semana y las piezas que ya llegaron a su lugar.',
-    en: "See what we're weaving this week and the pieces that have already found their place."
+    es: 'Ideas para tus espacios, consejos para cuidar tus muebles y lo nuevo que sale del taller.',
+    en: "Ideas for your spaces, tips to care for your furniture and what's new from the workshop."
   }
 };
 
@@ -93,7 +93,7 @@ function render() {
   cont.innerHTML = `
     <h4 class="form-section" style="margin-top:0; padding-top:0; border-top:none;">Conexión con Instagram</h4>
     <div class="faltantes${conexion.tipo === 'ok' ? ' ok' : ''}">${conexion.html}</div>
-    ${vistaPrevia ? `<p class="form-note">Así se ven las últimas publicaciones, ya recortadas en cuadrado al centro:</p>${vistaPrevia}` : ''}
+    ${vistaPrevia ? `<p class="form-note">Así se ven las últimas publicaciones, en formato vertical, como en Instagram:</p>${vistaPrevia}` : ''}
     <p style="margin:14px 0 0;"><a href="${ACCIONES}" target="_blank" rel="noopener" class="btn btn-light btn-sm">Traer las publicaciones ahora (GitHub)</a></p>
     <p class="form-note" style="margin-top:6px;">Solo hace falta si acabas de publicar en Instagram y no quieres esperar: abre GitHub → <strong>Run workflow</strong>.</p>
 

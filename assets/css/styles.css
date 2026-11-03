@@ -1003,9 +1003,9 @@ html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display
    fotos no demasiado grandes. */
 .ig-grid--3{ grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto; gap:16px; }
 @media (max-width: 620px){ .ig-grid, .ig-grid--3{ grid-template-columns: repeat(2, 1fr); gap:10px; } }
-/* Casilla cuadrada fija: aunque la foto tarde, la cuadricula no salta. */
+/* Casilla vertical 4:5 fija (como Instagram): aunque la foto tarde, la cuadricula no salta. */
 .ig-post{
-  display:block; aspect-ratio:1; overflow:hidden; border-radius: var(--radius-m);
+  display:block; aspect-ratio:4/5; overflow:hidden; border-radius: var(--radius-m);
   background: var(--sand); box-shadow: var(--shadow-card);
 }
 .ig-post img{ width:100%; height:100%; object-fit:cover; object-position:center; transition: transform .35s ease; }
