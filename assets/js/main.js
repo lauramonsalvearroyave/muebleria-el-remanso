@@ -121,10 +121,47 @@ function origenDelBoton(a) {
   return (location.pathname.split('/').pop() || 'inicio').replace('.html', '');
 }
 
+// Que pagina se esta viendo cuando se da clic. Asi el mensaje que llega a
+// WhatsApp dice desde donde escriben aunque la persona no agregue nada.
+function mensajeAutomatico() {
+  const ingles = window.ErI18n && window.ErI18n.getLang() === 'en';
+  const ruta = (location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/');
+  const paginas = {
+    '/': ingles ? 'the home page' : 'la página de inicio',
+    '/catalogo': ingles ? 'the catalog' : 'el catálogo',
+    '/contacto': ingles ? 'the contact page' : 'la página de contacto',
+    '/ayuda-legal': ingles ? 'the help page' : 'la página de ayuda',
+    '/enlaces': ingles ? 'the Instagram links page' : 'los enlaces de Instagram'
+  };
+  let pagina = paginas[ruta];
+  if (!pagina) {
+    // Paginas de aterrizaje: su titulo principal ("Salas tejidas a mano").
+    const h1 = document.querySelector('main h1');
+    pagina = h1
+      ? (ingles ? `the page "${h1.textContent.trim()}"` : `la página "${h1.textContent.trim()}"`)
+      : (ingles ? 'the website' : 'la página web');
+  }
+  return ingles
+    ? `Hi El Remanso, I'm writing from your website. I was looking at ${pagina} and would like more information.`
+    : `Hola El Remanso, les escribo desde la página web. Estaba viendo ${pagina} y me gustaría recibir más información.`;
+}
+
+// Los enlaces que ya traen su propio mensaje (formulario, "Me interesa",
+// propuesta para hoteles) se respetan; a los demas se les agrega este.
+function prellenarWhatsapp(a) {
+  try {
+    const url = new URL(a.href);
+    if (url.searchParams.get('text')) return;
+    url.searchParams.set('text', mensajeAutomatico());
+    a.href = url.toString();
+  } catch (err) { /* si algo falla, el enlace abre igual, solo sin mensaje */ }
+}
+
 function medirWhatsapp() {
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="https://wa.me/"]');
     if (!a) return;
+    prellenarWhatsapp(a);
     const origen = origenDelBoton(a);
     medir('contacto_whatsapp', {
       origen,
