@@ -68,10 +68,10 @@ function fecha(iso) {
 function estadoConexion() {
   const posts = (feed && Array.isArray(feed.posts)) ? feed.posts : [];
   if (!feed || feed.motivo === 'sin_conexion') {
-    return { tipo: 'falta', html: `<strong>Instagram todavía no está conectado.</strong> Sigue la guía <code>${GUIA}</code> (una sola vez, unos 30 minutos). Mientras tanto la sección no se muestra en el sitio.` };
+    return { tipo: 'falta', html: `<strong>Instagram todavía no está conectado.</strong> Falta guardar la dirección del feed de Behold en GitHub como <code>BEHOLD_FEED_URL</code> (guía: <code>${GUIA}</code>). Mientras tanto la sección no se muestra en el sitio.` };
   }
   if (!feed.ok) {
-    return { tipo: 'falta', html: `<strong>La conexión con Instagram está fallando</strong>, así que la sección está oculta en el sitio (se apagó sola). Motivo: <em>${esc(feed.motivo || 'desconocido')}</em>. Si dice que la llave venció, sigue el paso "Reconectar" de <code>${GUIA}</code>.` };
+    return { tipo: 'falta', html: `<strong>La conexión con Instagram está fallando</strong>, así que la sección está oculta en el sitio (se apagó sola). Motivo: <em>${esc(feed.motivo || 'desconocido')}</em>. Revisa en behold.so → Sources que la cuenta siga conectada.` };
   }
   if (posts.length < MINIMO) {
     return { tipo: 'falta', html: `<strong>Conectado, pero llegaron solo ${posts.length} publicación(es) con foto.</strong> Hacen falta al menos ${MINIMO} para mostrar la sección.` };

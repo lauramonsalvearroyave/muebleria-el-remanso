@@ -1,65 +1,35 @@
-# Conectar Instagram al sitio (una sola vez, ~30 minutos)
+# Instagram en el sitio (con Behold)
 
-La sección "Síguenos en Instagram" muestra solas tus últimas 8 publicaciones. Para eso
-el sitio necesita una **llave** de Instagram. La llave se guarda en los *Secrets* de
-GitHub (cifrada, nunca en el código ni visible para nadie) y se renueva sola cada semana.
+La sección "Síguenos en Instagram" muestra solas las últimas publicaciones de
+@muebleria_elremanso. La conexión con Instagram la hace **Behold** (behold.so): ellos
+tienen la app aprobada por Meta, así que no hace falta cuenta de desarrollador ni renovar
+llaves. El diseño de la sección sigue siendo el del sitio: Behold solo entrega los datos.
 
-Si la conexión falla o la llave vence, la sección **se apaga sola** en el sitio y el panel
-(pestaña Instagram) lo avisa.
+Si Behold falla o la cuenta se desconecta, la sección **se apaga sola** en el sitio y el
+panel (pestaña Instagram) lo avisa.
 
-## 1. Cuenta profesional en Instagram
+## Configuración (una sola vez)
 
-App de Instagram → tu perfil → menú ☰ → **Configuración y privacidad** → **Tipo de cuenta
-y herramientas** → **Cambiar a cuenta profesional** → **Empresa**. Es gratis y no cambia
-nada de lo que ya publicaste. (Si ya es profesional, salta este paso.)
+1. **behold.so** → crear cuenta → **Sources → Add Source** → conectar @muebleria_elremanso
+   (la cuenta de Instagram debe ser profesional).
+2. **Feeds → Add Feed**: Feed name `Sitio web` · Content type **User** · Source
+   @muebleria_elremanso · Output type **JSON** → **Create Feed**.
+3. Copiar la **dirección del feed** (empieza por `https://feeds.behold.so/`).
+4. GitHub → repositorio **muebleria-el-remanso** → **Settings → Secrets and variables →
+   Actions → New repository secret** · Name `BEHOLD_FEED_URL` · Secret: la dirección.
+5. GitHub → **Actions → Publicar paginas → Run workflow**. En 2–3 minutos el panel dice
+   "Conectado a Instagram" con la vista previa. Ahí se enciende la sección y se guarda.
 
-## 2. Crear la app en Meta y sacar la llave
+## Cada cuánto se actualiza
 
-1. Entra a **developers.facebook.com** con tu cuenta de Facebook → **Mis apps** →
-   **Crear app**.
-2. Caso de uso: **"Administrar mensajes y contenido en Instagram"** (o el que mencione la
-   API de Instagram). Tipo: **Empresa**. Nombre: `El Remanso sitio web`.
-3. En el panel de la app: **Instagram** → **Configuración de la API con el inicio de
-   sesión de Instagram** → **Generar identificadores de acceso** → **Agregar cuenta** →
-   inicia sesión con **@muebleria_elremanso** y acepta.
-4. Junto a la cuenta, **Generar identificador** → copia el texto largo. Esa es la llave.
+El sitio consulta Behold cada vez que corre el proceso de publicación (cada pocas horas,
+o al dar **Run workflow**). Behold, a su vez, revisa Instagram según su plan: en el
+gratuito puede tardar hasta un día en ver una publicación nueva.
 
-La app puede quedarse en modo desarrollo: solo lee tu propia cuenta, no necesita revisión
-de Meta.
+Las fotos se copian a Cloudinary una sola vez, así el sitio no gasta las "views" del plan
+gratuito de Behold (que se cuentan cuando se consulta el feed, no por cada visitante).
 
-## 3. Guardar la llave en GitHub
+## Si se desconecta
 
-Repositorio **muebleria-el-remanso** → **Settings** → **Secrets and variables** →
-**Actions** → **New repository secret**:
-
-- **Name:** `INSTAGRAM_TOKEN`
-- **Secret:** la llave del paso anterior
-
-## 4. Permiso para renovarla sola
-
-La llave de Instagram vence a los 60 días. Un proceso semanal la renueva, y para guardar
-la llave nueva necesita este permiso:
-
-1. **github.com/settings/personal-access-tokens/new** (token *fine-grained*).
-2. **Token name:** `Renovar Instagram El Remanso` · **Expiration:** el máximo (1 año).
-3. **Repository access:** *Only select repositories* → `muebleria-el-remanso`.
-4. **Permissions → Repository permissions → Secrets:** *Read and write*.
-5. **Generate token** → cópialo → guárdalo como otro secret del repositorio (igual que el
-   paso 3) con el nombre **`GH_SECRETS_TOKEN`**.
-
-📅 Este permiso vence en un año: pon un recordatorio para generarlo de nuevo.
-
-## 5. Probar
-
-GitHub → **Actions** → **Publicar paginas** → **Run workflow**. En 2–3 minutos, el panel
-(pestaña **Instagram**) debe decir **"Conectado a Instagram"** con la vista previa. Luego
-enciende la sección ahí y guarda.
-
-(El proceso **Renovar conexión de Instagram** corre solo los lunes. No lo lances el mismo
-día que creas la llave: Instagram solo deja renovarla cuando tiene al menos 24 horas.)
-
-## Reconectar (si el panel dice que la llave venció)
-
-Repite el **paso 2** (generar un identificador nuevo) y reemplaza el secret
-`INSTAGRAM_TOKEN` en GitHub (paso 3, botón ✏️ sobre el secret). Luego
-**Publicar paginas → Run workflow**.
+Entra a Behold → **Sources**. Si la cuenta aparece como *Disconnected*, reconéctala desde
+ahí. No hay que cambiar nada en GitHub: la dirección del feed sigue siendo la misma.

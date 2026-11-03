@@ -2,18 +2,18 @@
 // El Remanso — Trae las ultimas publicaciones de Instagram para el sitio.
 //
 // Lo ejecuta GitHub Actions junto con el generador de paginas
-// (.github/workflows/paginas.yml). Usa la API de Instagram (inicio de sesion
-// de Instagram) con una llave guardada en los Secrets de GitHub:
-// INSTAGRAM_TOKEN. La llave NUNCA se escribe en archivos ni en el registro.
+// (.github/workflows/paginas.yml). Lee el feed JSON de Behold (behold.so),
+// que se conecta a Instagram por nosotros: sin cuenta de desarrollador en
+// Meta y sin llaves que renovar. La direccion del feed esta en los Secrets
+// de GitHub: BEHOLD_FEED_URL. Nunca se escribe en archivos ni en el registro.
 //
 // Escribe assets/data/instagram.json, que lee assets/js/instagram.js:
 //   { ok, motivo, actualizado, posts: [{ id, image, link, alt }] }
-// Si no hay llave o Instagram falla, ok = false y la seccion no se muestra
-// en el sitio (se apaga sola). Las publicaciones anteriores se conservan en
-// el archivo solo para no volver a subir las mismas fotos a Cloudinary.
+// Si falta la direccion o Behold falla, ok = false y la seccion no se
+// muestra en el sitio (se apaga sola).
 //
-// Las URLs de las fotos de Instagram caducan a los pocos dias: cada foto se
-// copia una sola vez a Cloudinary y se reutiliza mientras siga en la lista.
+// Cada foto se copia una sola vez a Cloudinary: asi el sitio no depende de
+// los servidores de Behold para mostrar las imagenes ni gasta sus visitas.
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SALIDA = path.join(RAIZ, 'assets/data/instagram.json');
-const TOKEN = (process.env.INSTAGRAM_TOKEN || '').trim();
+const FEED = (process.env.BEHOLD_FEED_URL || '').trim();
 const MAX_POSTS = 8;
 const CLOUDINARY = { nube: 'pu28ccmt', preset: 'el-remanso' };
 
@@ -35,28 +35,27 @@ async function leerAnterior() {
   }
 }
 
-// Texto alternativo a partir del pie de foto: sin hashtags ni menciones,
-// hasta ~125 caracteres cortando en una palabra.
-function altDesde(caption) {
-  let t = String(caption || '')
+// Texto alternativo a partir del pie de foto (Behold ya quita los hashtags
+// del final): sin menciones, sin el WhatsApp, hasta ~125 caracteres.
+function altDesde(texto) {
+  let t = String(texto || '')
     .replace(/[#@][\p{L}\p{N}_.]+/gu, '')
+    .split(/\n\s*\n/)[0]
     .replace(/\s+/g, ' ')
     .trim();
   if (t.length > 125) t = t.slice(0, 125).replace(/\s+\S*$/, '') + '…';
   return t || 'Publicación de El Remanso en Instagram';
 }
 
-async function pedirInstagram() {
-  const campos = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
-  const url = `https://graph.instagram.com/me/media?fields=${campos}&limit=20&access_token=${encodeURIComponent(TOKEN)}`;
-  const r = await fetch(url);
-  const cuerpo = await r.json().catch(() => ({}));
-  if (!r.ok || cuerpo.error) {
-    // El mensaje de Meta no incluye la llave; la URL si, por eso no se usa.
-    const msg = (cuerpo.error && cuerpo.error.message) || `Instagram respondio ${r.status}`;
-    throw new Error(msg);
+async function pedirFeed() {
+  if (!/^https:\/\/feeds\.behold\.so\//.test(FEED)) {
+    throw new Error('BEHOLD_FEED_URL no parece una direccion de Behold (https://feeds.behold.so/...)');
   }
-  return cuerpo.data || [];
+  const r = await fetch(FEED, { headers: { accept: 'application/json' } });
+  if (!r.ok) throw new Error(`Behold respondio ${r.status}`);
+  const d = await r.json();
+  if (!Array.isArray(d.posts)) throw new Error('El feed de Behold no trae publicaciones');
+  return d.posts;
 }
 
 async function subirACloudinary(urlOrigen) {
@@ -69,20 +68,28 @@ async function subirACloudinary(urlOrigen) {
   return d.secure_url;
 }
 
+// La foto cuadrada que ya prepara Behold (portada en videos y carruseles).
+function fotoDe(p) {
+  const s = p.sizes || {};
+  return (s.large && s.large.mediaUrl) || (s.medium && s.medium.mediaUrl) ||
+    (p.mediaType === 'VIDEO' ? p.thumbnailUrl : p.mediaUrl) || '';
+}
+
 async function main() {
   const anterior = await leerAnterior();
   const cache = new Map((anterior.posts || []).map(p => [p.id, p.image]));
   let nuevo;
 
-  if (!TOKEN) {
+  if (!FEED) {
     nuevo = { ...anterior, ok: false, motivo: 'sin_conexion' };
   } else {
     try {
-      const media = await pedirInstagram();
+      const media = await pedirFeed();
       const posts = [];
       for (const m of media) {
         if (posts.length >= MAX_POSTS) break;
-        const origen = m.media_type === 'VIDEO' ? m.thumbnail_url : m.media_url;
+        if (m.visibility && m.visibility !== 'visible') continue;
+        const origen = fotoDe(m);
         if (!origen || !m.permalink) continue;
         let image = cache.get(m.id);
         if (!image) {
@@ -93,11 +100,11 @@ async function main() {
             continue;
           }
         }
-        posts.push({ id: m.id, image, link: m.permalink, alt: altDesde(m.caption) });
+        posts.push({ id: m.id, image, link: m.permalink, alt: altDesde(m.prunedCaption || m.caption) });
       }
       nuevo = { ok: true, motivo: '', actualizado: anterior.actualizado, posts };
     } catch (err) {
-      console.warn(`Instagram fallo: ${err.message}`);
+      console.warn(`Instagram (Behold) fallo: ${err.message}`);
       nuevo = { ...anterior, ok: false, motivo: err.message.slice(0, 200) };
     }
   }

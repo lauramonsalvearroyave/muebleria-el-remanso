@@ -46,11 +46,11 @@ jobs:
         run: node tools/generar-paginas.mjs
 
       # Ultimas publicaciones de Instagram para la seccion "Siguenos". Si la
-      # llave falta o vencio, la seccion se apaga sola en el sitio; nunca
+      # conexion con Behold falla, la seccion se apaga sola en el sitio; nunca
       # detiene la publicacion de las paginas.
       - name: Traer publicaciones de Instagram
         env:
-          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+          BEHOLD_FEED_URL: ${{ secrets.BEHOLD_FEED_URL }}
         run: node tools/instagram.mjs
 
       - name: Publicar si algo cambio
