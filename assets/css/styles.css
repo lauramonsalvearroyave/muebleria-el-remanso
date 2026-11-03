@@ -999,7 +999,10 @@ html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display
 .seccion-instagram[hidden]{ display:none; }
 .ig-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
 @media (max-width: 900px){ .ig-grid{ grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 620px){ .ig-grid{ grid-template-columns: repeat(2, 1fr); gap:10px; } }
+/* 6 publicaciones (plan gratuito de Behold): 3 columnas, filas parejas y
+   fotos no demasiado grandes. */
+.ig-grid--3{ grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto; gap:16px; }
+@media (max-width: 620px){ .ig-grid, .ig-grid--3{ grid-template-columns: repeat(2, 1fr); gap:10px; } }
 /* Casilla cuadrada fija: aunque la foto tarde, la cuadricula no salta. */
 .ig-post{
   display:block; aspect-ratio:1; overflow:hidden; border-radius: var(--radius-m);

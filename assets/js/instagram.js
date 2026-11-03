@@ -119,7 +119,7 @@
           bi('h2', cfg.title, TEXTOS_DEFECTO.title) +
           bi('p', cfg.text, TEXTOS_DEFECTO.text, ' class="lede center"') +
         '</div>' +
-        '<div class="ig-grid">' + posts.map(publicacion).join('') + '</div>' +
+        '<div class="ig-grid' + (posts.length % 4 === 0 ? '' : ' ig-grid--3') + '">' + posts.map(publicacion).join('') + '</div>' +
         '<p class="ig-mas-wrap">' +
           '<a class="btn btn-outline ig-mas" href="' + PERFIL + '" target="_blank" rel="noopener" data-i18n="instagram.ver_mas">Ver más en @muebleria_elremanso</a>' +
         '</p>' +

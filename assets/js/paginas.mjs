@@ -471,6 +471,13 @@ export function renderMain(pagina, ctx) {
     </div>
   </section>`;
 
+  // "Siguenos en Instagram" (solo paginas de categoria): justo despues del
+  // llamado a WhatsApp, nunca antes de los productos ni de ese llamado. Nace
+  // oculto; assets/js/instagram.js lo llena solo si esta encendido en el
+  // panel. Si el llamado esta oculto, va al final.
+  const instagram = '\n  <section id="instagramSection" class="seccion-instagram" data-ubicacion="categoria" hidden></section>';
+  let instagramPuesto = !esCategoria;
+
   let alterna = true;
   const secciones = (TIPOS[pagina.type] || TIPOS.categoria).bloques
     .filter(clave => bloqueVisible(pagina, clave))
@@ -480,24 +487,21 @@ export function renderMain(pagina, ctx) {
       alterna = !alterna;
       const tight = clave === 'encargo' || clave === 'cobertura';
       const clases = [alterna ? 'section-alt' : '', tight ? 'section-tight' : '', `bloque-${clave}`].filter(Boolean).join(' ');
-      return `
+      let salida = `
   <section class="${clases}">
     <div class="container">
       ${html}
     </div>
   </section>`;
+      if (clave === 'cta' && !instagramPuesto) {
+        salida += instagram;
+        instagramPuesto = true;
+      }
+      return salida;
     })
     .join('');
 
-  // "Siguenos en Instagram": siempre al final, despues de los productos y del
-  // llamado a WhatsApp. Nace oculto; assets/js/instagram.js lo llena solo si
-  // esta encendido en el panel. Asi el HTML publicado no cambia cuando se
-  // editan las publicaciones.
-  const instagram = esCategoria
-    ? '\n  <section id="instagramSection" class="seccion-instagram" data-ubicacion="categoria" hidden></section>'
-    : '';
-
-  return encabezado + secciones + instagram;
+  return encabezado + secciones + (instagramPuesto ? '' : instagram);
 }
 
 function imagenCompartir(pagina) {
