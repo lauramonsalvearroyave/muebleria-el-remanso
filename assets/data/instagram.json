@@ -1,8 +1,15 @@
 {
   "ok": true,
   "motivo": "",
-  "actualizado": "2026-11-06T21:55:27.733Z",
+  "actualizado": "2026-11-07T18:45:45.009Z",
   "posts": [
+    {
+      "id": "18158059921499125",
+      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794077144/cnbh653fflrp9i0oh9ss.jpg",
+      "fuente": "original",
+      "link": "https://www.instagram.com/p/DfYQDBZRRun/",
+      "alt": "Cama Nido Savia: vida y calidez artesanal que fluyen entre sus fibras."
+    },
     {
       "id": "18113342987137492",
       "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794002123/enqa1oebd6xh8jcmszex.jpg",
@@ -37,13 +44,6 @@
       "fuente": "original",
       "link": "https://www.instagram.com/reel/DevBGdHsNGo/",
       "alt": "Así nace una silla trabilla 🌾"
-    },
-    {
-      "id": "18014218274970142",
-      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794002127/uqzpezaovmwncsfws0wx.jpg",
-      "fuente": "original",
-      "link": "https://www.instagram.com/p/DescSy0kRRX/",
-      "alt": "¿Por qué nuestros muebles tienen nombre? 🌿"
     }
   ]
 }
