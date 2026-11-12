@@ -99,6 +99,7 @@ const DICT = {
     flagship_title:   { es: 'Remanso: lo mejor de nuestro oficio', en: 'Remanso: the best of our craft' },
     flagship_lede:    { es: 'Así llamamos a las piezas que mejor representan nuestras manos: lo más querido de El Remanso.', en: 'This is what we call the pieces that best represent our hands — the most beloved of El Remanso.' },
     flagship_cta: { es: 'Ver la línea Remanso', en: 'See the Remanso Line' },
+    flagship_cta_wa: { es: 'Quiero una pieza Remanso', en: 'I want a Remanso piece' },
 
     cat_eyebrow: { es: 'Catálogo', en: 'Catalog' },
     cat_title:   { es: 'Nuestras colecciones', en: 'Our Collections' },

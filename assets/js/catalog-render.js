@@ -289,19 +289,37 @@ function renderHomeCategoryTeasers(root, categories, products) {
   }).join('');
 }
 
+// Linea insignia del inicio: sus piezas con foto (hasta 4), sobre la banda
+// oscura. El nombre se muestra sin el " · Línea Insignia" del final, que
+// ahi sobra. Sin piezas, queda solo el texto con sus botones.
+function renderHomeFlagship(root, categories, products) {
+  const insignia = categories.find(c => c.flagship);
+  const piezas = insignia ? products.filter(p => p.categoryId === insignia.id && fotosDe(p).length).slice(0, 4) : [];
+  if (!piezas.length) {
+    root.hidden = true;
+    return;
+  }
+  root.innerHTML = piezas.map(p => `
+    <a href="/catalogo#pieza-${esc(encodeURIComponent(p.id))}" class="pieza-insignia" data-origen="linea_remanso">
+      <img src="${esc(variante(fotosDe(p)[0], 'w_700,f_auto,q_auto'))}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+      <span>${esc(String(p.name || '').split(' · ')[0])}</span>
+    </a>`).join('');
+}
+
 // Piezas destacadas del inicio: las marcadas como "Destacado" en el panel.
 // Si hay menos de 4, se completa con una pieza con foto de cada coleccion,
 // para que siempre haya muebles a la vista: la segunda, porque la primera
-// ya es la foto de su coleccion justo debajo. Cada una lleva a su ficha del
-// catalogo, que la abre en grande.
+// ya es la foto de su coleccion mas abajo. La linea insignia no entra: tiene
+// su propia seccion. Cada una lleva a su ficha del catalogo, que la abre en
+// grande.
 const MAX_DESTACADAS = 6;
 function renderHomeFeatured(root, categories, products) {
   const conFoto = products.filter(p => fotosDe(p).length && !p.soldOut);
   let lista = conFoto.filter(p => p.featured);
   if (lista.length < 4) {
-    categories.forEach(c => {
+    categories.filter(c => !c.flagship).forEach(c => {
       const deLaColeccion = conFoto.filter(p => p.categoryId === c.id && !lista.includes(p));
-      const pieza = (!c.flagship && deLaColeccion[1]) || deLaColeccion[0];
+      const pieza = deLaColeccion[1] || deLaColeccion[0];
       if (pieza) lista.push(pieza);
     });
   }
@@ -814,6 +832,7 @@ async function init() {
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
   const featuredRoot = document.getElementById('homeFeaturedRoot');
+  const flagshipRoot = document.getElementById('homeFlagshipRoot');
   if (homeRoot) homeRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
   if (featuredRoot) featuredRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
   const flagshipLink = document.getElementById('homeFlagshipLink');
@@ -841,7 +860,7 @@ async function init() {
     const materiales = renderMaterialImages();
     const [todasLasCategorias, products] = await Promise.all([
       window.ErFirebase.fetchCategories(),
-      (catalogRoot || homeRoot || featuredRoot) ? window.ErFirebase.fetchProducts() : Promise.resolve([])
+      (catalogRoot || homeRoot || featuredRoot || flagshipRoot) ? window.ErFirebase.fetchProducts() : Promise.resolve([])
     ]);
     // Hay categorias que solo agrupan piezas para una pagina (Exterior: cada
     // pieza ya esta en su seccion). No salen como seccion del catalogo.
@@ -851,6 +870,7 @@ async function init() {
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);
     if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories, products);
     if (featuredRoot) renderHomeFeatured(featuredRoot, categories, products);
+    if (flagshipRoot) renderHomeFlagship(flagshipRoot, categories, products);
     if (flagshipLink) {
       const flagship = categories.find(c => c.flagship);
       if (flagship) flagshipLink.setAttribute('href', `/catalogo#${flagship.id}`);
@@ -859,6 +879,7 @@ async function init() {
     console.error('No se pudo cargar el catálogo:', err);
     // Mejor sin la franja que con el spinner girando para siempre.
     if (featuredRoot) featuredRoot.closest('section').hidden = true;
+    if (flagshipRoot) flagshipRoot.hidden = true;
     if (catalogRoot) {
       catalogRoot.innerHTML = `<p class="admin-empty">No se pudo cargar el catálogo. Intenta de nuevo más tarde.</p>`;
     }
