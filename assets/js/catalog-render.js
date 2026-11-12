@@ -55,6 +55,12 @@ const MATERIAL_KEYS = {
   piola: 'catalog.tag_piola'
 };
 
+// Boton de compartir de cada ficha. Mismo HTML en assets/js/paginas.mjs
+// (tarjetaProducto): si se cambia uno, cambiar el otro.
+function botonCompartirHtml(etiqueta) {
+  return `<button class="btn-compartir" type="button" aria-label="${esc(etiqueta)}" data-i18n-aria="catalog.share_btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>`;
+}
+
 function productCardHtml(p) {
   const t = window.ErI18n.t;
   const soldOutClass = p.soldOut ? ' is-soldout' : '';
@@ -97,11 +103,12 @@ function productCardHtml(p) {
     </button>`;
 
   return `
-    <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}">
+    <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}">
       <div class="product-thumb${zoomable}"${datosGaleria}>
         <div class="product-badges">${badges.join('')}</div>
         ${media}
         ${contador}
+        ${botonCompartirHtml(t('catalog.share_btn'))}
       </div>
       <div class="product-body">
         <div class="product-tags">${materialTag}${customTag}</div>
@@ -187,6 +194,7 @@ function renderCatalogPage(root, categories, products) {
   root.innerHTML = `<div class="filter-bar">${chips}</div>${blocks}`;
   attachCatalogInteractions(root);
   irALaSeccionDelEnlace(root);
+  irALaPiezaDelEnlace();
   publicarDatosDeProductos(categories, products);
   document.dispatchEvent(new CustomEvent('catalogRendered'));
 }
@@ -462,6 +470,7 @@ function setUpLightbox() {
 
   // Delegacion: las fichas se dibujan despues de leer Firestore.
   document.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-compartir')) return;   // va dentro de la foto, pero no la amplia
     const thumb = e.target.closest('.product-thumb.is-zoomable');
     if (!thumb) return;
     const foto = thumb.querySelector('img');
@@ -523,6 +532,130 @@ function setUpLightbox() {
     xInicio = null;
     yInicio = null;
   }, { passive: true });
+}
+
+// ---------- Compartir una pieza ----------
+// Cada ficha tiene su ancla (#pieza-<id>): el enlace abre la misma pagina
+// donde se compartio (/catalogo o /salas...) y baja hasta esa pieza.
+
+const ICONOS_COMPARTIR = {
+  copiar: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
+  whatsapp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l1.6-4.7A8.5 8.5 0 1 1 8 19.6Z"/></svg>',
+  correo: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
+};
+
+function enlaceDePieza(card) {
+  return `${location.origin}${location.pathname}#pieza-${encodeURIComponent(card.dataset.productId)}`;
+}
+
+async function copiarTexto(texto) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch (err) {
+    // Navegadores viejos o sin permiso: el metodo antiguo todavia funciona.
+    const area = document.createElement('textarea');
+    area.value = texto;
+    area.setAttribute('readonly', '');
+    area.style.cssText = 'position:fixed;opacity:0;';
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand('copy');
+    area.remove();
+    return ok;
+  }
+}
+
+function setUpCompartir() {
+  const t = window.ErI18n.t;
+  const menu = document.createElement('div');
+  menu.className = 'menu-compartir';
+  menu.hidden = true;
+  menu.setAttribute('role', 'dialog');
+  document.body.appendChild(menu);
+  let card = null;
+  let boton = null;
+
+  function cerrar() {
+    if (menu.hidden) return;
+    menu.hidden = true;
+    if (boton) boton.setAttribute('aria-expanded', 'false');
+    card = null;
+  }
+
+  function abrir(btn) {
+    boton = btn;
+    card = btn.closest('.product-card');
+    menu.setAttribute('aria-label', t('catalog.share_title'));
+    menu.innerHTML = `
+      <p class="menu-compartir__titulo">${esc(t('catalog.share_title'))}</p>
+      ${['copiar', 'whatsapp', 'correo'].map(medio => `
+        <button type="button" data-medio="${medio}">${ICONOS_COMPARTIR[medio]}<span>${esc(t({ copiar: 'catalog.share_copy', whatsapp: 'catalog.share_whatsapp', correo: 'catalog.share_email' }[medio]))}</span></button>`).join('')}`;
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+
+    // Debajo del boton, alineado a su derecha, sin salirse de la pantalla.
+    const r = btn.getBoundingClientRect();
+    const ancho = menu.offsetWidth;
+    const izq = Math.min(Math.max(8, r.right - ancho), document.documentElement.clientWidth - ancho - 8);
+    menu.style.left = `${izq + window.scrollX}px`;
+    menu.style.top = `${r.bottom + 8 + window.scrollY}px`;
+    menu.querySelector('button').focus();
+  }
+
+  async function compartir(medio) {
+    if (!card) return;
+    const nombre = (card.querySelector('h3')?.textContent || '').trim();
+    const url = enlaceDePieza(card);
+    if (window.ErFirebase) window.ErFirebase.track('compartir_pieza', { pieza: nombre.slice(0, 100), medio });
+
+    if (medio === 'copiar') {
+      const ok = await copiarTexto(url);
+      const etiqueta = menu.querySelector('[data-medio="copiar"] span');
+      if (ok && etiqueta) etiqueta.textContent = t('catalog.share_copied');
+      setTimeout(cerrar, 1200);
+      return;
+    }
+    const texto = `${t('catalog.share_text')} ${nombre}`;
+    if (medio === 'whatsapp') {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${texto}\n${url}`)}`, '_blank', 'noopener');
+    } else {
+      location.href = `mailto:?subject=${encodeURIComponent(`${t('catalog.share_subject')}: ${nombre}`)}&body=${encodeURIComponent(`${texto}\n\n${url}`)}`;
+    }
+    cerrar();
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-compartir');
+    if (btn) {
+      const mismo = !menu.hidden && boton === btn;
+      cerrar();
+      if (!mismo) abrir(btn);
+      return;
+    }
+    const opcion = e.target.closest('.menu-compartir [data-medio]');
+    if (opcion) { compartir(opcion.dataset.medio); return; }
+    if (!e.target.closest('.menu-compartir')) cerrar();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) { cerrar(); if (boton) boton.focus(); }
+  });
+  window.addEventListener('resize', cerrar);
+}
+
+// Quien abre un enlace compartido (#pieza-<id>) llega a esa ficha, resaltada
+// un momento para que se vea cual era. Devuelve si la encontro.
+function irALaPiezaDelEnlace() {
+  const m = /^#pieza-(.+)$/.exec(location.hash);
+  if (!m) return false;
+  const card = document.getElementById('pieza-' + decodeURIComponent(m[1]));
+  if (!card) return false;
+  const top = card.getBoundingClientRect().top + window.scrollY - 100;
+  window.scrollTo({ top, behavior: 'smooth' });
+  card.classList.remove('pieza-enlazada');
+  void card.offsetWidth;   // reinicia la animacion
+  card.classList.add('pieza-enlazada');
+  return true;
 }
 
 // ---------- Paginas de aterrizaje (/salas, /exterior...) ----------
@@ -588,8 +721,11 @@ async function init() {
   // archivo necesitan el visor, el spinner de las fotos y las piezas al dia.
   if (document.body.dataset.pagina) {
     setUpLightbox();
+    setUpCompartir();
     spinnerMientrasCargan(document);
-    actualizarProductosDeLaPagina();
+    const encontrada = irALaPiezaDelEnlace();
+    // Una pieza recien cargada solo existe despues de leer Firestore.
+    actualizarProductosDeLaPagina().then(() => { if (!encontrada) irALaPiezaDelEnlace(); });
     return;
   }
 
@@ -606,6 +742,7 @@ async function init() {
   // No depende de Firestore: se engancha antes, para que siga funcionando
   // aunque la carga del catalogo falle.
   setUpLightbox();
+  if (catalogRoot) setUpCompartir();
 
   if (!window.ErFirebase) {
     console.error('Firebase no está disponible todavía.');

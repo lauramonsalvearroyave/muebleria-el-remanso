@@ -209,11 +209,12 @@ export function tarjetaProducto(p) {
         </button>`;
 
   return `
-    <div class="product-card${p.soldOut ? ' is-soldout' : ''}" data-product-id="${esc(p.id)}">
+    <div class="product-card${p.soldOut ? ' is-soldout' : ''}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}">
       <div class="product-thumb${zoomable}"${datosGaleria}>
         <div class="product-badges">${badges.join('')}</div>
         ${media}
         ${contador}
+        <button class="btn-compartir" type="button" aria-label="Compartir esta pieza" data-i18n-aria="catalog.share_btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>
       </div>
       <div class="product-body">
         <div class="product-tags">${materialTag}${customTag}</div>

@@ -185,7 +185,16 @@ const DICT = {
     tag_rattan: { es: 'Rattán', en: 'Rattan' },
     tag_calceta: { es: 'Calceta de plátano', en: 'Banana fiber' },
     tag_sintetico: { es: 'Sintético', en: 'Synthetic' },
-    tag_piola: { es: 'Piola náutica', en: 'Nautical rope' }
+    tag_piola: { es: 'Piola náutica', en: 'Nautical rope' },
+
+    share_btn: { es: 'Compartir esta pieza', en: 'Share this piece' },
+    share_title: { es: 'Compartir', en: 'Share' },
+    share_copy: { es: 'Copiar enlace', en: 'Copy link' },
+    share_copied: { es: '¡Enlace copiado!', en: 'Link copied!' },
+    share_whatsapp: { es: 'WhatsApp', en: 'WhatsApp' },
+    share_email: { es: 'Correo', en: 'Email' },
+    share_text: { es: 'Mira esta pieza de El Remanso, tejida a mano:', en: 'Take a look at this hand-woven piece by El Remanso:' },
+    share_subject: { es: 'Una pieza de El Remanso', en: 'A piece by El Remanso' }
   },
 
   interest: {
