@@ -174,6 +174,8 @@ function paginasJs(publicadas, apagadas, etiqueta) {
       id: p.id,
       slug: p.slug,
       tipo: p.type,
+      // Las colecciones del inicio llevan a esta pagina en vez del catalogo.
+      ...(p.type === 'categoria' && p.categoryId ? { categoria: p.categoryId } : {}),
       menu: { es: P.tx(p.text && p.text.menuLabel, 'es'), en: (p.text && p.text.menuLabel && p.text.menuLabel.en) || '' },
       enMenu: p.showInMenu !== false,
       enPie: p.showInFooter !== false,

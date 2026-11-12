@@ -103,6 +103,13 @@ const DICT = {
     cat_eyebrow: { es: 'Catálogo', en: 'Catalog' },
     cat_title:   { es: 'Nuestras colecciones', en: 'Our Collections' },
     cat_lede:    { es: 'Cada pieza tiene su propio nombre — y una pequeña historia detrás.', en: 'Every piece has its own name — and a small story behind it.' },
+    cat_pieces:  { es: 'piezas', en: 'pieces' },
+    cat_piece:   { es: 'pieza', en: 'piece' },
+    cat_go:      { es: 'Ver colección', en: 'See collection' },
+
+    featured_eyebrow: { es: 'Tejidas a mano', en: 'Hand-woven' },
+    featured_title:   { es: 'Piezas que enamoran', en: 'Pieces to fall for' },
+    featured_cta:     { es: 'Ver todo el catálogo', en: 'See the full catalog' },
 
     proc_eyebrow: { es: 'Nuestro oficio', en: 'Our Craft' },
     proc_title:   { es: 'De tu idea a tu casa, en siete pasos', en: 'From your idea to your home, in seven steps' },

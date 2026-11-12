@@ -110,7 +110,7 @@
         <button class="lang-btn" data-lang="es">ES</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
-      <a href="/catalogo" class="btn btn-outline" data-i18n="header.cta_catalog">Ver catálogo</a>
+      <a href="/catalogo" class="btn btn-outline" data-origen="encabezado" data-i18n="header.cta_catalog">Ver catálogo</a>
       <button class="nav-toggle" data-i18n-aria="header.open_menu" aria-label="Abrir menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -135,7 +135,7 @@
         </div>
 
         <div class="hero-cta">
-          <a href="/catalogo" class="btn btn-primary" data-i18n="home.hero_cta_primary">Ver catálogo</a>
+          <a href="/catalogo" class="btn btn-primary" data-origen="portada" data-i18n="home.hero_cta_primary">Ver catálogo</a>
           <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="home.hero_cta_secondary">Escríbenos por WhatsApp</a>
         </div>
         <p class="hero-note" data-i18n="home.hero_note">Manos con talento, que hacen tus sueños realidad</p>
@@ -144,6 +144,55 @@
       <!-- Foto principal: se administra en el panel (Ajustes). Si no hay
            foto cargada, este hueco se oculta solo. -->
       <div class="hero-art" id="heroImageSlot"></div>
+    </div>
+  </section>
+
+  <!-- PIEZAS DESTACADAS (dibujadas desde Firestore — ver assets/js/catalog-render.js)
+       Lo primero despues de la portada: muebles de verdad, con foto. Salen
+       las marcadas como "Destacado" en el panel; si hay menos de 4, la
+       primera pieza con foto de cada coleccion. Sin piezas, se oculta. -->
+  <section class="section-alt" id="destacadasSection">
+    <div class="container">
+      <div class="text-center mb-lg">
+        <span class="eyebrow" data-i18n="home.featured_eyebrow">Tejidas a mano</span>
+        <h2 data-i18n="home.featured_title">Piezas que enamoran</h2>
+      </div>
+      <div class="destacadas" id="homeFeaturedRoot"></div>
+      <p class="text-center destacadas-cta">
+        <a href="/catalogo" class="btn btn-primary" data-origen="destacadas" data-i18n="home.featured_cta">Ver todo el catálogo</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CATEGORIAS (dibujadas desde Firestore — ver assets/js/catalog-render.js) -->
+  <section class="colecciones-inicio">
+    <div class="container">
+      <div class="text-center mb-lg">
+        <span class="eyebrow" data-i18n="home.cat_eyebrow">Catálogo</span>
+        <h2 data-i18n="home.cat_title">Nuestras colecciones</h2>
+        <p class="lede center" data-i18n="home.cat_lede">Cada pieza tiene su propio nombre — y una pequeña historia detrás.</p>
+      </div>
+      <div class="grid grid-3" id="homeCategoriesRoot"></div>
+    </div>
+  </section>
+
+  <!-- SIGUENOS EN INSTAGRAM
+       Despues de las colecciones (y del boton de WhatsApp del encabezado):
+       nunca antes. Nace oculta y vacia; assets/js/instagram.js la llena
+       solo si esta encendida en el panel. Si no, no ocupa espacio. -->
+  <section id="instagramSection" class="seccion-instagram" data-ubicacion="inicio" hidden></section>
+
+  <!-- LÍNEA REMANSO -->
+  <section class="section-alt">
+    <div class="container">
+      <div class="category-intro" style="max-width:640px; margin:0 auto 26px; text-align:center;">
+        <span class="eyebrow" data-i18n="home.flagship_eyebrow">Línea insignia</span>
+        <h2 data-i18n="home.flagship_title">Remanso: lo mejor de nuestro oficio</h2>
+        <p data-i18n="home.flagship_lede">Así llamamos a las piezas que mejor representan nuestras manos: lo más querido de El Remanso.</p>
+      </div>
+      <div class="text-center">
+        <a href="/catalogo#remanso" id="homeFlagshipLink" class="btn btn-primary" data-origen="linea_remanso" data-i18n="home.flagship_cta">Ver la línea Remanso</a>
+      </div>
     </div>
   </section>
 
@@ -213,38 +262,6 @@
       </p>
     </div>
   </section>
-
-  <!-- LÍNEA REMANSO -->
-  <section class="section-alt">
-    <div class="container">
-      <div class="category-intro" style="max-width:640px; margin:0 auto 26px; text-align:center;">
-        <span class="eyebrow" data-i18n="home.flagship_eyebrow">Línea insignia</span>
-        <h2 data-i18n="home.flagship_title">Remanso: lo mejor de nuestro oficio</h2>
-        <p data-i18n="home.flagship_lede">Así llamamos a las piezas que mejor representan nuestras manos: lo más querido de El Remanso.</p>
-      </div>
-      <div class="text-center">
-        <a href="/catalogo#remanso" id="homeFlagshipLink" class="btn btn-primary" data-i18n="home.flagship_cta">Ver la línea Remanso</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- CATEGORIAS (dibujadas desde Firestore — ver assets/js/catalog-render.js) -->
-  <section>
-    <div class="container">
-      <div class="text-center mb-lg">
-        <span class="eyebrow" data-i18n="home.cat_eyebrow">Catálogo</span>
-        <h2 data-i18n="home.cat_title">Nuestras colecciones</h2>
-        <p class="lede center" data-i18n="home.cat_lede">Cada pieza tiene su propio nombre — y una pequeña historia detrás.</p>
-      </div>
-      <div class="grid grid-3" id="homeCategoriesRoot"></div>
-    </div>
-  </section>
-
-  <!-- SIGUENOS EN INSTAGRAM
-       Despues de las colecciones (y del boton de WhatsApp del encabezado):
-       nunca antes. Nace oculta y vacia; assets/js/instagram.js la llena
-       solo si esta encendida en el panel. Si no, no ocupa espacio. -->
-  <section id="instagramSection" class="seccion-instagram" data-ubicacion="inicio" hidden></section>
 
   <!-- NUESTRA HISTORIA (antes "Nosotros") -->
   <section class="section-alt" id="nosotros">
@@ -357,7 +374,7 @@
       <h2 data-i18n="home.final_title">¿Conversamos sobre tu próximo mueble?</h2>
       <p class="lede center" data-i18n="home.final_lede">Explora el catálogo o escríbenos directamente por WhatsApp.</p>
       <div class="hero-cta" style="justify-content:center;">
-        <a href="/catalogo" class="btn btn-primary" data-i18n="home.final_cta1">Ver catálogo</a>
+        <a href="/catalogo" class="btn btn-primary" data-origen="final" data-i18n="home.final_cta1">Ver catálogo</a>
         <a href="https://wa.me/573104599629" target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="home.final_cta2">Escríbenos por WhatsApp</a>
       </div>
     </div>

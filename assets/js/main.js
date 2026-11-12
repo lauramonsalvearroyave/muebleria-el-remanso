@@ -200,10 +200,29 @@ function medirInstagram() {
   });
 }
 
+// Que camino lleva a la gente al catalogo (o a una coleccion): el boton de
+// la portada, las piezas destacadas, las colecciones, el menu... Asi se ve
+// que funciona y que sobra. Los botones del inicio llevan data-origen.
+function medirIdaAlCatalogo() {
+  const colecciones = ((window.ER_PAGINAS && window.ER_PAGINAS.publicadas) || [])
+    .filter(p => p.tipo === 'categoria').map(p => `/${p.slug}`);
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const destino = a.getAttribute('href');
+    const ruta = destino.split('#')[0];
+    if (ruta !== '/catalogo' && !colecciones.includes(ruta)) return;
+    const origen = a.dataset.origen ||
+      (a.closest('header') ? 'menu' : a.closest('footer') ? 'pie' : 'otro');
+    medir('ir_al_catalogo', { origen, destino: destino.slice(0, 100), pagina_origen: paginaDeOrigen() });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initWhatsappNumber();
   medirWhatsapp();
   medirInstagram();
+  medirIdaAlCatalogo();
 
   const toggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');

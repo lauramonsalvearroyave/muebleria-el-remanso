@@ -251,12 +251,75 @@ function attachCatalogInteractions(root) {
   });
 }
 
-function renderHomeCategoryTeasers(root, categories) {
+function piezasDe(products, categoryId) {
+  return products.filter(p => p.categoryId === categoryId);
+}
+
+// Si la coleccion tiene su pagina encendida (/salas, /comedores...), se va
+// alla: ahi la gente se queda mas. Si no, a su seccion del catalogo.
+function enlaceDeColeccion(categoryId) {
+  const pag = ((window.ER_PAGINAS && window.ER_PAGINAS.publicadas) || [])
+    .find(p => p.tipo === 'categoria' && p.categoria === categoryId);
+  return pag ? `/${pag.slug}` : `/catalogo#${categoryId}`;
+}
+
+// Las colecciones llevan la foto de su primera pieza: una foto invita mas
+// que un titulo solo.
+function renderHomeCategoryTeasers(root, categories, products) {
+  const t = window.ErI18n.t;
   const visible = categories.filter(c => !c.flagship);
-  root.innerHTML = visible.map(c => `
-    <a href="/catalogo#${esc(c.id)}" class="card">
-      <h3>${esc(c.label)}</h3>
-      ${c.teaser ? `<p>${esc(c.teaser)}</p>` : ''}
+  root.innerHTML = visible.map(c => {
+    const piezas = piezasDe(products, c.id);
+    const conFoto = piezas.find(p => fotosDe(p).length);
+    const foto = conFoto
+      ? `<div class="coleccion-foto"><img src="${esc(variante(fotosDe(conFoto)[0], 'w_700,f_auto,q_auto'))}" alt="" loading="lazy" decoding="async"></div>`
+      : '';
+    const cuantas = piezas.length
+      ? `<span class="coleccion-cuantas">${piezas.length} ${esc(t(piezas.length === 1 ? 'home.cat_piece' : 'home.cat_pieces'))}</span>`
+      : '';
+    return `
+    <a href="${esc(enlaceDeColeccion(c.id))}" class="card coleccion${foto ? '' : ' sin-foto'}" data-origen="colecciones">
+      ${foto}
+      <div class="coleccion-texto">
+        <h3>${esc(c.label)}</h3>
+        ${c.teaser ? `<p>${esc(c.teaser)}</p>` : ''}
+        <span class="coleccion-ir">${cuantas}<span data-i18n="home.cat_go">${esc(t('home.cat_go'))}</span> →</span>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// Piezas destacadas del inicio: las marcadas como "Destacado" en el panel.
+// Si hay menos de 4, se completa con una pieza con foto de cada coleccion,
+// para que siempre haya muebles a la vista: la segunda, porque la primera
+// ya es la foto de su coleccion justo debajo. Cada una lleva a su ficha del
+// catalogo, que la abre en grande.
+const MAX_DESTACADAS = 6;
+function renderHomeFeatured(root, categories, products) {
+  const conFoto = products.filter(p => fotosDe(p).length && !p.soldOut);
+  let lista = conFoto.filter(p => p.featured);
+  if (lista.length < 4) {
+    categories.forEach(c => {
+      const deLaColeccion = conFoto.filter(p => p.categoryId === c.id && !lista.includes(p));
+      const pieza = (!c.flagship && deLaColeccion[1]) || deLaColeccion[0];
+      if (pieza) lista.push(pieza);
+    });
+  }
+  lista = lista.slice(0, MAX_DESTACADAS);
+  if (!lista.length) {
+    root.closest('section').hidden = true;
+    return;
+  }
+  const nombres = {};
+  categories.forEach(c => { nombres[c.id] = c.label; });
+  root.classList.toggle('destacadas--4', lista.length === 4);
+  root.innerHTML = lista.map(p => `
+    <a href="/catalogo#pieza-${esc(encodeURIComponent(p.id))}" class="destacada" data-origen="destacadas">
+      <div class="destacada-foto"><img src="${esc(variante(fotosDe(p)[0], 'w_700,f_auto,q_auto'))}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div>
+      <div class="destacada-texto">
+        ${nombres[p.categoryId] ? `<span class="destacada-coleccion">${esc(nombres[p.categoryId])}</span>` : ''}
+        <h3>${esc(p.name)}</h3>
+      </div>
     </a>`).join('');
 }
 
@@ -750,7 +813,9 @@ async function init() {
 
   const catalogRoot = document.getElementById('catalogRoot');
   const homeRoot = document.getElementById('homeCategoriesRoot');
+  const featuredRoot = document.getElementById('homeFeaturedRoot');
   if (homeRoot) homeRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
+  if (featuredRoot) featuredRoot.innerHTML = `<div style="grid-column:1/-1;">${spinnerHtml(96)}</div>`;
   const flagshipLink = document.getElementById('homeFlagshipLink');
   const heroSlot = document.getElementById('heroImageSlot');
   const aboutSlot = document.getElementById('aboutImageSlot');
@@ -776,7 +841,7 @@ async function init() {
     const materiales = renderMaterialImages();
     const [todasLasCategorias, products] = await Promise.all([
       window.ErFirebase.fetchCategories(),
-      catalogRoot ? window.ErFirebase.fetchProducts() : Promise.resolve([])
+      (catalogRoot || homeRoot || featuredRoot) ? window.ErFirebase.fetchProducts() : Promise.resolve([])
     ]);
     // Hay categorias que solo agrupan piezas para una pagina (Exterior: cada
     // pieza ya esta en su seccion). No salen como seccion del catalogo.
@@ -784,13 +849,16 @@ async function init() {
     await Promise.all([homeImages, comments, materiales]);
 
     if (catalogRoot) renderCatalogPage(catalogRoot, categories, products);
-    if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories);
+    if (homeRoot) renderHomeCategoryTeasers(homeRoot, categories, products);
+    if (featuredRoot) renderHomeFeatured(featuredRoot, categories, products);
     if (flagshipLink) {
       const flagship = categories.find(c => c.flagship);
       if (flagship) flagshipLink.setAttribute('href', `/catalogo#${flagship.id}`);
     }
   } catch (err) {
     console.error('No se pudo cargar el catálogo:', err);
+    // Mejor sin la franja que con el spinner girando para siempre.
+    if (featuredRoot) featuredRoot.closest('section').hidden = true;
     if (catalogRoot) {
       catalogRoot.innerHTML = `<p class="admin-empty">No se pudo cargar el catálogo. Intenta de nuevo más tarde.</p>`;
     }
