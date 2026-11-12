@@ -409,6 +409,22 @@ section{ padding: 68px 0; }
 /* ===== Section variants ===== */
 .section-alt{ background: var(--sand); }
 .section-dark{ background: var(--black-deep); color: var(--cream); }
+/* Inicio: sin cortes bruscos entre secciones. Las franjas beige nacen y
+   mueren en el crema de la pagina, y la banda oscura de la linea Remanso se
+   desvanece arriba y abajo (mascara), como si saliera de la penumbra. La
+   invitacion final solo se funde arriba: abajo la recibe el pie oscuro. */
+.pagina-inicio .section-alt{
+  background: linear-gradient(180deg, var(--cream) 0, var(--sand) 140px, var(--sand) calc(100% - 140px), var(--cream) 100%);
+}
+.pagina-inicio .section-alt.cta-final{
+  background: linear-gradient(180deg, var(--cream) 0, var(--sand) 140px);
+}
+.pagina-inicio .linea-remanso{
+  border:0;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
+}
+
 .section-dark h2, .section-dark h3{ color: var(--cream); }
 .section-dark p{ color: rgba(251,246,236,.78); }
 
