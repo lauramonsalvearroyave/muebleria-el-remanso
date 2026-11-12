@@ -7,7 +7,7 @@
 
 import { esc, variante } from './paginas.mjs';
 
-const MINIMO = 4;   // el mismo de assets/js/instagram.js
+const MINIMO = 3;   // el mismo de assets/js/instagram.js
 const RECORTE = 'c_fill,g_center,ar_4:5';
 const GUIA = 'docs/instagram.md';
 const ACCIONES = 'https://github.com/lauramonsalvearroyave/muebleria-el-remanso/actions/workflows/paginas.yml';

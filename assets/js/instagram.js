@@ -16,8 +16,9 @@
 
 (function () {
   var PERFIL = 'https://www.instagram.com/muebleria_elremanso/';
-  // Con menos de 4 no llena ni una fila en escritorio: mejor no mostrarla.
-  var MINIMO = 4;
+  // Con 3 llena una fila de tres (ig-grid--3); con menos se ve a medias.
+  // Behold gratis trae 6 y se sacan hasta 3 fijadas: pueden quedar 3.
+  var MINIMO = 3;
 
   // Vertical 4:5, el formato de las publicaciones de Instagram: se ven
   // completas, con el texto de abajo. El panel usa este mismo recorte.

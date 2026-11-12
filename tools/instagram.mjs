@@ -58,6 +58,18 @@ async function pedirFeed() {
   return d.posts;
 }
 
+// Instagram pone primero las publicaciones fijadas (hasta 3), aunque sean
+// viejas, y Behold no las marca. Una de las tres primeras que es mas vieja
+// que alguna de las que vienen despues esta fijada: se saca. Lo demas se
+// ordena de la mas nueva a la mas vieja.
+function sinFijadas(media) {
+  const fecha = m => Date.parse(m.timestamp) || 0;
+  const quedan = media.filter((m, i) => i >= 3 || !media.slice(i + 1).some(o => fecha(o) > fecha(m)));
+  const fijadas = media.length - quedan.length;
+  if (fijadas) console.log(`Instagram: ${fijadas} publicacion(es) fijada(s) fuera del sitio.`);
+  return quedan.sort((a, b) => fecha(b) - fecha(a));
+}
+
 async function subirACloudinary(urlOrigen) {
   const fd = new FormData();
   fd.append('file', urlOrigen);
@@ -88,7 +100,7 @@ async function main() {
     nuevo = { ...anterior, ok: false, motivo: 'sin_conexion' };
   } else {
     try {
-      const media = await pedirFeed();
+      const media = sinFijadas(await pedirFeed());
       const posts = [];
       for (const m of media) {
         if (posts.length >= MAX_POSTS) break;
