@@ -333,7 +333,7 @@ const DICT = {
 
     whatsapp_title: { es: 'WhatsApp', en: 'WhatsApp' },
     whatsapp_hours: { es: '+57 310 459 9629', en: '+57 310 459 9629' },
-    whatsapp_btn:   { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
+    whatsapp_btn:   { es: 'Escríbenos por WhatsApp', en: 'Message us on WhatsApp' },
 
     instagram_title: { es: 'Instagram', en: 'Instagram' },
     instagram_desc:  { es: 'Mira nuestro trabajo día a día.', en: 'See our day-to-day work.' },

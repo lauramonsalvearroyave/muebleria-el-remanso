@@ -303,6 +303,10 @@ section{ padding: 68px 0; }
 .pieza-insignia:first-child .pieza-insignia__texto em{ font-size:1rem; }
 
 .linea-remanso__acciones{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:40px; }
+/* Mismos botones que en todo el sitio; sobre el estuche oscuro, el de
+   catalogo lleva filo dorado para no perderse en el fondo. */
+.linea-remanso__acciones .btn-primary{ border-color: rgba(240,181,102,.6); }
+.linea-remanso__acciones .btn-primary:hover{ border-color: var(--gold-soft); background: var(--black); }
 .btn-claro{ background: transparent; color: var(--cream); border-color: rgba(251,246,236,.45); }
 .btn-claro:hover{ background: rgba(251,246,236,.1); border-color: var(--gold-soft); }
 

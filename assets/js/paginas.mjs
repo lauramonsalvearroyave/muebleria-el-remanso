@@ -279,15 +279,33 @@ function bloqueVisible(pagina, clave) {
   return !!b && b.visible !== false;
 }
 
-function botonesHtml(botones, numero, clasePrimero) {
+// Botones de accion iguales en todo el sitio (como en el inicio): primero
+// "Ver catálogo" en oscuro, despues "Escríbenos por WhatsApp" en dorado, y
+// cualquier otro al final con borde. El texto de esos dos tambien se
+// unifica aunque en el panel se haya escrito otro.
+const TIPO_ORDEN = { catalogo: 0, wa: 1, otro: 2 };
+const TIPO_CLASE = { catalogo: 'btn btn-primary', wa: 'btn btn-whatsapp', otro: 'btn btn-outline' };
+const TIPO_TEXTO = {
+  catalogo: { es: 'Ver catálogo', en: 'View Catalog' },
+  wa: { es: 'Escríbenos por WhatsApp', en: 'Message us on WhatsApp' }
+};
+function tipoDeBoton(url) {
+  if (/^https:\/\/wa\.me\//.test(url)) return 'wa';
+  if (/^\/catalogo\/?$/.test(url)) return 'catalogo';
+  return 'otro';
+}
+
+function botonesHtml(botones, numero) {
   return (botones || [])
     .filter(b => b && tx(b.text, 'es') && b.url)
-    .map((b, i) => {
+    .map(b => {
       const url = String(b.url).replace(/^https:\/\/wa\.me\/\d+/, `https://wa.me/${numero || WA_DEFECTO}`);
-      const wa = /^https:\/\/wa\.me\//.test(url);
-      const clase = wa ? 'btn btn-whatsapp' : (i === 0 && clasePrimero ? 'btn btn-primary' : 'btn btn-outline');
-      const destino = esExterno(url) ? ' target="_blank" rel="noopener"' : '';
-      return bi('a', b.text, ` href="${esc(url)}" class="${clase}"${destino}`);
+      return { url, tipo: tipoDeBoton(url), text: b.text };
+    })
+    .sort((a, b) => TIPO_ORDEN[a.tipo] - TIPO_ORDEN[b.tipo])
+    .map(b => {
+      const destino = esExterno(b.url) ? ' target="_blank" rel="noopener"' : '';
+      return bi('a', TIPO_TEXTO[b.tipo] || b.text, ` href="${esc(b.url)}" class="${TIPO_CLASE[b.tipo]}"${destino}`);
     })
     .join('\n          ');
 }
@@ -431,7 +449,7 @@ const RENDER_BLOQUE = {
         ${tituloBloque(b.titulo)}
         ${biParrafos(b.texto, ' class="lede center"')}
         <div class="hero-cta" style="justify-content:center;">
-          ${botonesHtml(b.botones, ctx.whatsapp, true)}
+          ${botonesHtml(b.botones, ctx.whatsapp)}
         </div>
       </div>`;
   },
@@ -467,7 +485,7 @@ export function renderMain(pagina, ctx) {
         ${bi('h1', t.h1)}
         ${biParrafos(t.intro, ' class="lede"')}
         <div class="hero-cta">
-          ${botonesHtml(ctaBotones, ctx.whatsapp, true)}
+          ${botonesHtml(ctaBotones, ctx.whatsapp)}
         </div>
       </div>
       ${hero.url ? `<div class="hero-art">${imgResponsiva(hero.url, hero.alt, { sizes: '(max-width: 860px) 100vw, 520px', prioridad: true })}</div>` : ''}
@@ -569,8 +587,8 @@ ${JSON.stringify(jsonLd, null, 2).replace(/</g, '\\u003c')}
 const B = (es, en) => ({ es, en });
 const WA = `https://wa.me/${WA_DEFECTO}`;
 const BOTONES_DEFECTO = [
-  { text: B('Escríbenos por WhatsApp', 'Message us on WhatsApp'), url: WA },
-  { text: B('Ver todo el catálogo', 'View the full catalog'), url: '/catalogo' }
+  { text: B('Ver catálogo', 'View Catalog'), url: '/catalogo' },
+  { text: B('Escríbenos por WhatsApp', 'Message us on WhatsApp'), url: WA }
 ];
 const COBERTURA = { visible: true, texto: B('Hacemos envíos a toda Colombia desde nuestro taller en Las Palmas, kilómetro 17.', 'We ship anywhere in Colombia from our workshop in Las Palmas, kilometer 17.') };
 const ENCARGO = (es, en) => ({
