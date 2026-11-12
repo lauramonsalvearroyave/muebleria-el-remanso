@@ -289,9 +289,11 @@ function renderHomeCategoryTeasers(root, categories, products) {
   }).join('');
 }
 
-// Linea insignia del inicio: sus piezas con foto (hasta 4), sobre la banda
-// oscura. El nombre se muestra sin el " · Línea Insignia" del final, que
-// ahi sobra. Sin piezas, queda solo el texto con sus botones.
+// Linea insignia del inicio: mosaico con sus piezas con foto (hasta 4). La
+// primera va en grande; el CSS acomoda el resto segun cuantas sean
+// (mosaico--1 a mosaico--4). Cada una lleva su frase, que es lo que la hace
+// sentir especial. El nombre va sin el " · Línea Insignia" del final, que
+// ahi sobra. Sin piezas, quedan el titulo y los botones.
 function renderHomeFlagship(root, categories, products) {
   const insignia = categories.find(c => c.flagship);
   const piezas = insignia ? products.filter(p => p.categoryId === insignia.id && fotosDe(p).length).slice(0, 4) : [];
@@ -299,10 +301,14 @@ function renderHomeFlagship(root, categories, products) {
     root.hidden = true;
     return;
   }
-  root.innerHTML = piezas.map(p => `
+  root.classList.add(`mosaico--${piezas.length}`);
+  root.innerHTML = piezas.map((p, i) => `
     <a href="/catalogo#pieza-${esc(encodeURIComponent(p.id))}" class="pieza-insignia" data-origen="linea_remanso">
-      <img src="${esc(variante(fotosDe(p)[0], 'w_700,f_auto,q_auto'))}" alt="${esc(p.name)}" loading="lazy" decoding="async">
-      <span>${esc(String(p.name || '').split(' · ')[0])}</span>
+      <img src="${esc(variante(fotosDe(p)[0], i === 0 ? 'w_1200,f_auto,q_auto' : 'w_800,f_auto,q_auto'))}" alt="${esc(p.name)}" loading="lazy" decoding="async">
+      <span class="pieza-insignia__texto">
+        <strong>${esc(String(p.name || '').split(' · ')[0])}</strong>
+        ${p.story ? `<em>${esc(p.story)}</em>` : ''}
+      </span>
     </a>`).join('');
 }
 
@@ -481,6 +487,8 @@ async function renderMaterialImages() {
   });
 }
 
+const MINIMO_COMENTARIOS = 3;
+
 async function renderComments() {
   const section = document.getElementById('commentsSection');
   if (!section) return;
@@ -492,7 +500,9 @@ async function renderComments() {
     console.error('No se pudieron cargar los comentarios:', err);
     return;                         // la seccion se queda oculta, que es lo correcto
   }
-  if (!comments.length) return;     // sin comentarios reales, no se muestra nada
+  // Un carrusel con uno o dos comentarios se ve vacio, y hasta resta
+  // confianza: la seccion aparece sola cuando ya hay suficientes.
+  if (comments.length < MINIMO_COMENTARIOS) return;
 
   const track = document.getElementById('commentsTrack');
   track.innerHTML = comments.map(testimonialHtml).join('');

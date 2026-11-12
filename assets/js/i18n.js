@@ -96,8 +96,8 @@ const DICT = {
     mat_piola_desc:  { es: 'Cuerda trenzada de uso marino, suave al sentarse y muy resistente a la humedad y al roce. No se deshilacha ni se endurece con el tiempo.', en: 'Braided marine rope — soft to sit on, and highly resistant to damp and friction. It does not fray or stiffen over time.' },
 
     flagship_eyebrow: { es: 'Línea insignia', en: 'Signature Line' },
-    flagship_title:   { es: 'Remanso: lo mejor de nuestro oficio', en: 'Remanso: the best of our craft' },
-    flagship_lede:    { es: 'Así llamamos a las piezas que mejor representan nuestras manos: lo más querido de El Remanso.', en: 'This is what we call the pieces that best represent our hands — the most beloved of El Remanso.' },
+    flagship_title:   { es: 'Línea Remanso', en: 'The Remanso Line' },
+    flagship_lede:    { es: 'Lo mejor de nuestro oficio: las piezas que mejor representan nuestras manos, lo más querido de El Remanso.', en: 'The best of our craft: the pieces that best represent our hands, the most beloved of El Remanso.' },
     flagship_cta: { es: 'Ver la línea Remanso', en: 'See the Remanso Line' },
     flagship_cta_wa: { es: 'Quiero una pieza Remanso', en: 'I want a Remanso piece' },
 
