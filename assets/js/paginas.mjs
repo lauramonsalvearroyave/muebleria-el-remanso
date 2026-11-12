@@ -305,13 +305,16 @@ function tipoDeBoton(url) {
   return 'otro';
 }
 
-function botonesHtml(botones, numero) {
+// sinCatalogo: en las paginas de cada coleccion ya se esta dentro del
+// catalogo, asi que su boton sobra.
+function botonesHtml(botones, numero, sinCatalogo) {
   return (botones || [])
     .filter(b => b && tx(b.text, 'es') && b.url)
     .map(b => {
       const url = String(b.url).replace(/^https:\/\/wa\.me\/\d+/, `https://wa.me/${numero || WA_DEFECTO}`);
       return { url, tipo: tipoDeBoton(url), text: b.text };
     })
+    .filter(b => !(sinCatalogo && b.tipo === 'catalogo'))
     .sort((a, b) => TIPO_ORDEN[a.tipo] - TIPO_ORDEN[b.tipo])
     .map(b => {
       const destino = esExterno(b.url) ? ' target="_blank" rel="noopener"' : '';
@@ -453,14 +456,23 @@ const RENDER_BLOQUE = {
       <div class="grid grid-3 pagina-galeria">${items}</div>`;
   },
 
+  // En las paginas de cada coleccion el cierre es WhatsApp, acompanado de
+  // lo que ayuda a decidir: los materiales y como trabajamos (si estan
+  // encendidas). Las demas paginas llevan Ver catalogo + WhatsApp.
   cta(pagina, b, ctx) {
+    const esCategoria = pagina.type === 'categoria';
+    const apoyo = esCategoria ? (ctx.apoyo || []).filter(a => APOYO[a.tipo]) : [];
+    const enlaces = apoyo.length
+      ? `<p class="cta-apoyo">${apoyo.map(a => `<span>${bi('a', APOYO[a.tipo], ` href="/${esc(a.slug)}"`)} →</span>`).join('')}</p>`
+      : '';
     return `
       <div class="text-center">
         ${tituloBloque(b.titulo)}
         ${biParrafos(b.texto, ' class="lede center"')}
         <div class="hero-cta" style="justify-content:center;">
-          ${botonesHtml(b.botones, ctx.whatsapp)}
+          ${botonesHtml(b.botones, ctx.whatsapp, esCategoria)}
         </div>
+        ${enlaces}
       </div>`;
   },
 
@@ -473,7 +485,12 @@ const RENDER_BLOQUE = {
   }
 };
 
-// Contenido de <main>. ctx = { products, fotosMateriales, whatsapp }
+const APOYO = {
+  materiales: { es: 'Conoce los materiales', en: 'Explore the materials' },
+  proceso: { es: 'Cómo trabajamos', en: 'How we work' }
+};
+
+// Contenido de <main>. ctx = { products, fotosMateriales, whatsapp, apoyo }
 export function renderMain(pagina, ctx) {
   const t = pagina.text || {};
   const hero = pagina.heroImage || {};
@@ -495,20 +512,15 @@ export function renderMain(pagina, ctx) {
         ${bi('h1', t.h1)}
         ${biParrafos(t.intro, ' class="lede"')}
         <div class="hero-cta">
-          ${botonesHtml(ctaBotones, ctx.whatsapp)}
+          ${botonesHtml(ctaBotones, ctx.whatsapp, esCategoria)}
         </div>
       </div>
       ${hero.url ? `<div class="hero-art">${imgResponsiva(hero.url, hero.alt, { sizes: '(max-width: 860px) 100vw, 520px', prioridad: true })}</div>` : ''}
     </div>
   </section>`;
 
-  // "Siguenos en Instagram" (solo paginas de categoria): justo despues del
-  // llamado a WhatsApp, nunca antes de los productos ni de ese llamado. Nace
-  // oculto; assets/js/instagram.js lo llena solo si esta encendido en el
-  // panel. Si el llamado esta oculto, va al final.
-  const instagram = '\n  <section id="instagramSection" class="seccion-instagram" data-ubicacion="categoria" hidden></section>';
-  let instagramPuesto = !esCategoria;
-
+  // "Siguenos en Instagram" va solo en el inicio: en las paginas de cada
+  // coleccion no aporta a la decision.
   let alterna = true;
   const secciones = (TIPOS[pagina.type] || TIPOS.categoria).bloques
     .filter(clave => bloqueVisible(pagina, clave))
@@ -518,21 +530,16 @@ export function renderMain(pagina, ctx) {
       alterna = !alterna;
       const tight = clave === 'encargo' || clave === 'cobertura';
       const clases = [alterna ? 'section-alt' : '', tight ? 'section-tight' : '', `bloque-${clave}`].filter(Boolean).join(' ');
-      let salida = `
+      return `
   <section class="${clases}">
     <div class="container">
       ${html}
     </div>
   </section>`;
-      if (clave === 'cta' && !instagramPuesto) {
-        salida += instagram;
-        instagramPuesto = true;
-      }
-      return salida;
     })
     .join('');
 
-  return encabezado + secciones + (instagramPuesto ? '' : instagram);
+  return encabezado + secciones;
 }
 
 function imagenCompartir(pagina) {

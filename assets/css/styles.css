@@ -1158,6 +1158,11 @@ html:not(.pag-como-trabajamos) [data-requiere-pagina="como-trabajamos"]{ display
 .migas a{ color: var(--gold-bronze); }
 .migas a:hover{ text-decoration: underline; }
 .pagina-productos, .materiales-recomendados, .pagina-galeria, .guia-materiales{ margin-top: 26px; }
+/* Cierre de las paginas de cada coleccion: WhatsApp y, debajo, lo que ayuda
+   a decidir (materiales y como trabajamos). */
+.cta-apoyo{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px 28px; margin:22px 0 0; font-weight:800; font-size:.92rem; color: var(--gold-bronze); }
+.cta-apoyo a{ color: var(--gold-bronze); text-decoration:underline; text-underline-offset:3px; }
+.cta-apoyo a:hover{ color: var(--near-black); }
 .materiales-recomendados .material-card h3{ margin:0; font-size:1.05rem; }
 .pagina-enlace{ margin: 26px 0 0; }
 .pagina-encargo{ display:block; margin:0; }

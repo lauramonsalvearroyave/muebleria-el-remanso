@@ -144,10 +144,10 @@ function armar(esqueleto, { head, main, slug, robots, catalogoActivo, scriptsExt
   html = reemplazarUna(html, /<main>[\s\S]*<\/main>/, () => `<main>\n${main}\n</main>`, '<main>');
   html = reemplazarUna(html, /<body>/, `<body data-pagina="${P.esc(slug)}">`, '<body>');
   if (!catalogoActivo) html = html.replace('<a href="/catalogo" class="active"', '<a href="/catalogo"');
-  // En /catalogo el boton del encabezado lleva a WhatsApp ("Hablar con el
-  // equipo"): ahi ya se esta viendo el catalogo. En las demas paginas, como
-  // en el resto del sitio, lleva al catalogo.
-  html = reemplazarUna(html, /<a href="https:\/\/wa\.me\/\d+"[^>]*data-i18n="header\.cta_talk"[^>]*>[^<]*<\/a>/,
+  // En /catalogo y en las paginas de cada coleccion el boton del encabezado
+  // lleva a WhatsApp ("Hablar con el equipo"): ahi ya se esta dentro del
+  // catalogo. En las demas (Materiales, Como trabajamos...) lleva al catalogo.
+  if (!catalogoActivo) html = reemplazarUna(html, /<a href="https:\/\/wa\.me\/\d+"[^>]*data-i18n="header\.cta_talk"[^>]*>[^<]*<\/a>/,
     '<a href="/catalogo" class="btn btn-outline" data-i18n="header.cta_catalog">Ver catálogo</a>', 'el boton del encabezado');
   if (scriptsExtra) html = reemplazarUna(html, /<\/body>/, `${scriptsExtra}\n</body>`, '</body>');
   return html;
@@ -295,7 +295,10 @@ async function main() {
   const ctx = {
     products,
     fotosMateriales: settingsMateriales || {},
-    whatsapp: (settingsSite && settingsSite.whatsappNumber) || P.WA_DEFECTO
+    whatsapp: (settingsSite && settingsSite.whatsappNumber) || P.WA_DEFECTO,
+    // Materiales y Como trabajamos, si estan encendidas: las paginas de cada
+    // coleccion las enlazan al final, junto a WhatsApp.
+    apoyo: ['materiales', 'proceso'].map(tipo => publicadas.find(p => p.type === tipo)).filter(Boolean).map(p => ({ slug: p.slug, tipo: p.type }))
   };
 
   // Todas las paginas conocidas, encendidas o no: las iniciales siempre (asi

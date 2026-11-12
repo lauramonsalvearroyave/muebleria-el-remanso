@@ -101,7 +101,6 @@ function render() {
     <div class="switches">
       ${interruptor('active', 'Sección encendida', cfg.active)}
       ${interruptor('showOnHome', 'Mostrar en el inicio', cfg.showOnHome !== false)}
-      ${interruptor('showOnCategories', 'Mostrar en las páginas de categoría', cfg.showOnCategories !== false)}
     </div>
     <p class="form-note">Aunque esté encendida, si la conexión con Instagram falla la sección no se muestra hasta que vuelva a funcionar.</p>
 
@@ -130,8 +129,10 @@ function mensaje(texto, tipo) {
 
 async function guardar() {
   leer();
-  if (cfg.active && !cfg.showOnHome && !cfg.showOnCategories) {
-    mensaje('Elige dónde se muestra: en el inicio, en las páginas de categoría o en ambos.', 'error');
+  // Solo se muestra en el inicio: en las paginas de cada coleccion no aporta
+  // (alli lo que ayuda a decidir son los materiales y como trabajamos).
+  if (cfg.active && !cfg.showOnHome) {
+    mensaje('La sección solo se muestra en el inicio: enciende "Mostrar en el inicio" o apaga la sección.', 'error');
     return;
   }
   const btn = $('igGuardar');
