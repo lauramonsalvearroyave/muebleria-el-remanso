@@ -108,13 +108,14 @@ function productCardHtml(p) {
         <div class="product-badges">${badges.join('')}</div>
         ${media}
         ${contador}
-        ${botonCompartirHtml(t('catalog.share_btn'))}
       </div>
       <div class="product-body">
         <div class="product-tags">${materialTag}${customTag}</div>
         <h3>${esc(p.name)}</h3>
         ${story}
-        ${interestBtn}
+        <div class="product-acciones">${interestBtn}
+          ${botonCompartirHtml(t('catalog.share_btn'))}
+        </div>
       </div>
     </div>`;
 }
@@ -470,7 +471,6 @@ function setUpLightbox() {
 
   // Delegacion: las fichas se dibujan despues de leer Firestore.
   document.addEventListener('click', (e) => {
-    if (e.target.closest('.btn-compartir')) return;   // va dentro de la foto, pero no la amplia
     const thumb = e.target.closest('.product-thumb.is-zoomable');
     if (!thumb) return;
     const foto = thumb.querySelector('img');

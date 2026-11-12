@@ -214,12 +214,14 @@ export function tarjetaProducto(p) {
         <div class="product-badges">${badges.join('')}</div>
         ${media}
         ${contador}
-        <button class="btn-compartir" type="button" aria-label="Compartir esta pieza" data-i18n-aria="catalog.share_btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>
       </div>
       <div class="product-body">
         <div class="product-tags">${materialTag}${customTag}</div>
         <h3>${esc(p.name)}</h3>
-        ${story}${interestBtn}
+        ${story}
+        <div class="product-acciones">${interestBtn}
+          <button class="btn-compartir" type="button" aria-label="Compartir esta pieza" data-i18n-aria="catalog.share_btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+        </div>
       </div>
     </div>`;
 }
