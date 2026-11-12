@@ -232,18 +232,26 @@ section{ padding: 68px 0; }
   .destacadas > div{ flex:1 0 100%; }   /* el spinner mientras carga */
 }
 
-/* Linea Remanso: la insignia, como vitrina de lujo. Banda oscura con
+/* Linea Remanso: la insignia, como vitrina de lujo. Estuche oscuro con
    brillo dorado (la atmosfera de la portada del manual de marca), titulo
    grande en dorado entre filetes, y mosaico: la pieza principal en grande,
    las demas alrededor, cada una con marco dorado y su frase. */
-.linea-remanso{
+.linea-remanso{ padding: 40px 0; }
+.linea-remanso__estuche{
   position:relative; overflow:hidden; color: var(--cream);
-  padding: 96px 0;
-  border-top:1px solid rgba(240,181,102,.25); border-bottom:1px solid rgba(240,181,102,.25);
+  padding: 72px 56px 64px;
+  border-radius: 32px;
+  border:1px solid rgba(240,181,102,.3);
+  box-shadow: 0 30px 70px -20px rgba(20,16,12,.45), 0 10px 24px -12px rgba(20,16,12,.25);
   background:
     radial-gradient(circle at 50% 0%, rgba(240,181,102,.18), transparent 55%),
     radial-gradient(circle at 90% 100%, rgba(240,181,102,.10), transparent 50%),
     linear-gradient(180deg, var(--black-deep), var(--near-black));
+}
+/* Filete dorado interior del estuche, como el de las piezas. */
+.linea-remanso__estuche::before{
+  content:''; position:absolute; inset:12px; pointer-events:none;
+  border:1px solid rgba(240,181,102,.18); border-radius: 24px;
 }
 .linea-remanso__cab{ text-align:center; max-width:680px; margin:0 auto 44px; }
 .linea-remanso__sello{
@@ -304,7 +312,9 @@ section{ padding: 68px 0; }
 /* En el celular: la principal a lo ancho y las demas en una fila debajo,
    solo con su nombre (la frase no cabe a ese tamano). */
 @media (max-width: 760px){
-  .linea-remanso{ padding:64px 0; }
+  .linea-remanso{ padding:24px 0; }
+  .linea-remanso__estuche{ padding:48px 16px 36px; border-radius:24px; }
+  .linea-remanso__estuche::before{ inset:8px; border-radius:18px; }
   .linea-remanso__cab{ margin-bottom:30px; }
   .mosaico--4, .mosaico--3, .mosaico--2{ gap:10px; grid-template-rows: 280px 150px; }
   .mosaico--4{ grid-template-columns: repeat(3,1fr); }
@@ -449,15 +459,10 @@ section{ padding: 68px 0; }
 .section-alt{ background: var(--sand); }
 .section-dark{ background: var(--black-deep); color: var(--cream); }
 /* Inicio: sin cortes bruscos entre secciones. Las franjas beige nacen y
-   mueren en el crema de la pagina, y la banda oscura de la linea Remanso se
-   desvanece arriba y abajo (mascara), como si saliera de la penumbra. */
+   mueren en el crema de la pagina. La linea Remanso no necesita fundirse:
+   es un estuche que flota sobre el crema. */
 .pagina-inicio .section-alt{
   background: linear-gradient(180deg, var(--cream) 0, var(--sand) 140px, var(--sand) calc(100% - 140px), var(--cream) 100%);
-}
-.pagina-inicio .linea-remanso{
-  border:0;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
-          mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
 }
 
 .section-dark h2, .section-dark h3{ color: var(--cream); }
