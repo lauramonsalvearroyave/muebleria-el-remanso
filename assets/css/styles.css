@@ -204,8 +204,7 @@ section{ padding: 68px 0; }
 
 /* ===== Inicio: piezas destacadas y colecciones con foto =====
    (assets/js/catalog-render.js: renderHomeFeatured y
-   renderHomeCategoryTeasers). En el celular las destacadas se deslizan de
-   lado: muestran muebles sin empujar todo lo demas hacia abajo. */
+   renderHomeCategoryTeasers). */
 .destacadas{ display:grid; grid-template-columns: repeat(3,1fr); gap:20px; }
 .destacadas--4{ grid-template-columns: repeat(4,1fr); }
 .destacada{
@@ -223,13 +222,11 @@ section{ padding: 68px 0; }
 .destacadas-cta{ margin-top:28px; }
 @media (max-width: 900px){ .destacadas, .destacadas--4{ grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 620px){
-  .destacadas, .destacadas--4{
-    display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:14px;
-    margin:0 -16px; padding:4px 16px 12px; scrollbar-width:none;
-  }
-  .destacadas::-webkit-scrollbar{ display:none; }
-  .destacada{ flex:0 0 72%; scroll-snap-align:start; }
-  .destacadas > div{ flex:1 0 100%; }   /* el spinner mientras carga */
+  /* En el celular, en cuadricula de dos que baja, igual que las colecciones. */
+  .destacadas, .destacadas--4{ gap:12px; }
+  .destacada-texto{ padding:10px 12px 12px; }
+  .destacada-coleccion{ font-size:.6rem; }
+  .destacada h3{ font-size:.9rem; }
 }
 
 /* Linea Remanso: la insignia, como vitrina de lujo. Estuche oscuro con
@@ -355,7 +352,7 @@ section{ padding: 68px 0; }
   border-left:3px solid var(--gold);
   font-family: var(--font-display); font-weight:800; font-size:1.45rem; line-height:1.35; color: var(--near-black);
 }
-.historia__pilares{ list-style:none; padding:0; margin:24px 0 28px; display:grid; gap:16px; }
+.historia__pilares{ list-style:none; padding:0; margin:24px 0 18px; display:grid; gap:16px; }
 .historia__pilares li{ display:grid; grid-template-columns:46px 1fr; gap:14px; align-items:start; }
 .historia__icono{
   width:46px; height:46px; border-radius:50%; background: var(--white);
@@ -365,6 +362,8 @@ section{ padding: 68px 0; }
 .historia__icono svg{ width:20px; height:20px; fill:none; stroke: var(--gold-bronze); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .historia__pilares h3{ margin:2px 0 2px; font-size:1.02rem; }
 .historia__pilares p{ margin:0; font-size:.92rem; }
+.historia__mas{ margin:0 0 22px 60px; font-size:.9rem; font-weight:800; color: var(--gold-bronze); }
+.historia__mas a{ color: var(--gold-bronze); text-decoration:underline; text-underline-offset:3px; }
 @media (max-width: 860px){
   .historia__grid{ grid-template-columns: 1fr; gap:36px; }
   .historia__foto .hero-art{ aspect-ratio: 4/3; }
