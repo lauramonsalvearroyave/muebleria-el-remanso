@@ -182,10 +182,20 @@ const ETIQUETA_MATERIAL = {
 // Misma ficha que dibuja assets/js/catalog-render.js (productCardHtml), para
 // que las piezas se vean igual aqui que en /catalogo y que "Me interesa" y el
 // visor de fotos funcionen sin cambios. Si se cambia una, cambiar la otra.
+// "Nuevo" se quita solo a los DIAS_NUEVO dias de marcado: isNew guarda la
+// fecha (o false). Misma regla que assets/js/catalog-render.js y admin.js.
+export const DIAS_NUEVO = 15;
+const NUEVO_DESDE_ANTES = '2026-11-12T00:00:00-05:00';
+export function esNueva(p) {
+  if (!p.isNew) return false;
+  const desde = Date.parse(p.isNew === true ? NUEVO_DESDE_ANTES : p.isNew);
+  return !isNaN(desde) && Date.now() - desde < DIAS_NUEVO * 86400000;
+}
+
 export function tarjetaProducto(p) {
   const badges = [];
   if (p.featured) badges.push('<span class="product-badge featured" data-i18n="catalog.badge_featured">Destacado</span>');
-  if (p.isNew) badges.push('<span class="product-badge new" data-i18n="catalog.badge_new">Nuevo</span>');
+  if (esNueva(p)) badges.push('<span class="product-badge new" data-i18n="catalog.badge_new">Nuevo</span>');
   if (p.soldOut) badges.push('<span class="product-badge soldout" data-i18n="catalog.badge_soldout">Agotado</span>');
 
   const galeria = fotosDe(p);
@@ -209,7 +219,7 @@ export function tarjetaProducto(p) {
         </button>`;
 
   return `
-    <div class="product-card${p.soldOut ? ' is-soldout' : ''}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}">
+    <div class="product-card${p.soldOut ? ' is-soldout' : ''}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}"${p.featured ? ' data-destacada' : ''}${esNueva(p) ? ' data-nueva' : ''}>
       <div class="product-thumb${zoomable}"${datosGaleria}>
         <div class="product-badges">${badges.join('')}</div>
         ${media}

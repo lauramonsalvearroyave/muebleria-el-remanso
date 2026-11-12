@@ -781,6 +781,10 @@ img.er-cargando{ opacity:0; }
   font-weight:700; font-size:.85rem; cursor:pointer; color: var(--near-black);
 }
 .filter-chip.active, .filter-chip:hover{ background: var(--near-black); color:#fff; border-color:var(--near-black); }
+/* Destacados y Nuevos: filo dorado, para que se lean como filtros
+   especiales y no como una coleccion mas. */
+.filter-chip--especial{ border-color: var(--gold); color: var(--gold-bronze); }
+.filter-chip--especial.active, .filter-chip--especial:hover{ background: var(--gold); border-color: var(--gold); color:#fff; }
 
 /* ===== Visor de foto ampliada =====
    object-fit: contain (no cover): la foto se ve completa, sin recortar. */

@@ -175,6 +175,8 @@ const DICT = {
     lede: { es: 'Cada mueble tiene un nombre propio y una pequeña historia. Escríbenos si algo te enamora.', en: 'Every piece carries its own name and a small story. Write to us if something catches your heart.' },
 
     filter_all: { es: 'Todas', en: 'All' },
+    filter_featured: { es: 'Destacados', en: 'Featured' },
+    filter_new: { es: 'Nuevos', en: 'New' },
     photo_note: { es: 'Foto próximamente', en: 'Photo coming soon' },
     interest_btn: { es: 'Me interesa', en: "I'm interested" },
     empty_category: { es: 'Pronto agregaremos piezas a esta colección.', en: "We'll be adding pieces to this collection soon." },

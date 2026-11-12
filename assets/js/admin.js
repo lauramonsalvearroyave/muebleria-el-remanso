@@ -284,6 +284,32 @@ function revisarExterior() {
   return aviso.textContent;
 }
 
+// "Nuevo" se quita solo a los DIAS_NUEVO dias: isNew guarda la fecha en
+// que se marco (o false). Misma regla que assets/js/catalog-render.js y
+// assets/js/paginas.mjs. Las marcadas antes (isNew: true) cuentan desde
+// NUEVO_DESDE_ANTES.
+const DIAS_NUEVO = 15;
+const NUEVO_DESDE_ANTES = '2026-11-12T00:00:00-05:00';
+function nuevaDesde(p) {
+  if (!p || !p.isNew) return null;
+  const desde = Date.parse(p.isNew === true ? NUEVO_DESDE_ANTES : p.isNew);
+  return isNaN(desde) ? null : desde;
+}
+function esNueva(p) {
+  const desde = nuevaDesde(p);
+  return desde !== null && Date.now() - desde < DIAS_NUEVO * 86400000;
+}
+function nuevaHasta(p) {
+  const desde = nuevaDesde(p);
+  return desde === null ? '' : new Date(desde + DIAS_NUEVO * 86400000).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+}
+// Al guardar: si ya estaba como nueva, se conserva su fecha (guardar otra
+// vez no reinicia los 15 dias); si se acaba de marcar, cuenta desde hoy.
+function valorNuevo(marcada, existente) {
+  if (!marcada) return false;
+  return esNueva(existente) ? existente.isNew : new Date().toISOString();
+}
+
 function renderProductForm() {
   const editing = products.find(p => p.id === editingProductId);
   const form = document.getElementById('productForm');
@@ -295,7 +321,9 @@ function renderProductForm() {
   form.querySelector('#prod-order').value = editing ? (editing.order ?? 0) : 0;
   form.querySelector('#prod-soldout').checked = editing ? !!editing.soldOut : false;
   form.querySelector('#prod-featured').checked = editing ? !!editing.featured : false;
-  form.querySelector('#prod-new').checked = editing ? !!editing.isNew : false;
+  form.querySelector('#prod-new').checked = editing ? esNueva(editing) : false;
+  const notaNuevo = form.querySelector('#prod-new-hasta');
+  if (notaNuevo) notaNuevo.textContent = editing && esNueva(editing) ? `(hasta el ${nuevaHasta(editing)})` : `(se quita solo a los ${DIAS_NUEVO} días)`;
   fotosProducto = editing ? galeriaDe(editing) : [];
   form.querySelector('#prod-image-path').value = '';
   renderGaleriaProducto();
@@ -337,7 +365,7 @@ function renderProductList() {
     const nFotos = galeriaDe(p).length;
     if (nFotos > 1) pills.push(`<span class="tag-pill">${nFotos} fotos</span>`);
     if (p.featured) pills.push('<span class="tag-pill">Destacado</span>');
-    if (p.isNew) pills.push('<span class="tag-pill">Nuevo</span>');
+    if (esNueva(p)) pills.push(`<span class="tag-pill">Nuevo · hasta ${esc(nuevaHasta(p))}</span>`);
     if (p.soldOut) pills.push('<span class="tag-pill">Agotado</span>');
     if (isHidden) pills.push('<span class="tag-pill">Oculto</span>');
     return `
@@ -405,7 +433,7 @@ async function saveProductFromForm(e) {
       ...fotos,
       soldOut: form.querySelector('#prod-soldout').checked,
       featured: form.querySelector('#prod-featured').checked,
-      isNew: form.querySelector('#prod-new').checked
+      isNew: valorNuevo(form.querySelector('#prod-new').checked, existing)
     } : {
       name,
       story: form.querySelector('#prod-story').value.trim(),
@@ -415,7 +443,7 @@ async function saveProductFromForm(e) {
       order: Number(form.querySelector('#prod-order').value) || 0,
       soldOut: form.querySelector('#prod-soldout').checked,
       featured: form.querySelector('#prod-featured').checked,
-      isNew: form.querySelector('#prod-new').checked,
+      isNew: valorNuevo(form.querySelector('#prod-new').checked, existing),
       active: existing ? existing.active !== false : true,
       ...fotos,
       imagePath: ''

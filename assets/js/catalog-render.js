@@ -61,13 +61,25 @@ function botonCompartirHtml(etiqueta) {
   return `<button class="btn-compartir" type="button" aria-label="${esc(etiqueta)}" data-i18n-aria="catalog.share_btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>`;
 }
 
+// "Nuevo" se quita solo: isNew guarda la fecha en que se marco (o false), y
+// la pieza deja de verse como nueva DIAS_NUEVO dias despues. Las marcadas
+// antes de guardar la fecha (isNew: true) cuentan desde NUEVO_DESDE_ANTES.
+// La misma regla esta en assets/js/paginas.mjs y assets/js/admin.js.
+const DIAS_NUEVO = 15;
+const NUEVO_DESDE_ANTES = '2026-11-12T00:00:00-05:00';
+function esNueva(p) {
+  if (!p.isNew) return false;
+  const desde = Date.parse(p.isNew === true ? NUEVO_DESDE_ANTES : p.isNew);
+  return !isNaN(desde) && Date.now() - desde < DIAS_NUEVO * 86400000;
+}
+
 function productCardHtml(p) {
   const t = window.ErI18n.t;
   const soldOutClass = p.soldOut ? ' is-soldout' : '';
 
   const badges = [];
   if (p.featured) badges.push(`<span class="product-badge featured" data-i18n="catalog.badge_featured">${esc(t('catalog.badge_featured'))}</span>`);
-  if (p.isNew) badges.push(`<span class="product-badge new" data-i18n="catalog.badge_new">${esc(t('catalog.badge_new'))}</span>`);
+  if (esNueva(p)) badges.push(`<span class="product-badge new" data-i18n="catalog.badge_new">${esc(t('catalog.badge_new'))}</span>`);
   if (p.soldOut) badges.push(`<span class="product-badge soldout" data-i18n="catalog.badge_soldout">${esc(t('catalog.badge_soldout'))}</span>`);
 
   // Una pieza puede tener varias fotos. La portada vive en imageUrl y las
@@ -103,7 +115,7 @@ function productCardHtml(p) {
     </button>`;
 
   return `
-    <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}">
+    <div class="product-card${soldOutClass}" data-product-id="${esc(p.id)}" id="pieza-${esc(p.id)}"${p.featured ? ' data-destacada' : ''}${esNueva(p) ? ' data-nueva' : ''}>
       <div class="product-thumb${zoomable}"${datosGaleria}>
         <div class="product-badges">${badges.join('')}</div>
         ${media}
@@ -186,7 +198,15 @@ function renderCatalogPage(root, categories, products) {
   products.forEach(p => { (byCategory[p.categoryId] ||= []).push(p); });
   Object.values(byCategory).forEach(list => list.sort((a, b) => (a.order || 0) - (b.order || 0)));
 
+  // Destacados y Nuevos van justo despues de "Todas", y solo si hay piezas
+  // asi: un filtro que deja la pagina vacia no sirve.
+  const especiales = [
+    ['destacados', 'catalog.filter_featured', products.some(p => p.featured)],
+    ['nuevos', 'catalog.filter_new', products.some(esNueva)]
+  ].filter(e => e[2])
+    .map(([id, clave]) => `<button class="filter-chip filter-chip--especial" data-filter="${id}" data-i18n="${clave}">${esc(t(clave))}</button>`);
   const chips = [`<button class="filter-chip active" data-filter="todos" data-i18n="catalog.filter_all">${esc(t('catalog.filter_all'))}</button>`]
+    .concat(especiales)
     .concat(categories.map(c => `<button class="filter-chip" data-filter="${esc(c.id)}">${esc(c.label)}</button>`))
     .join('');
 
@@ -208,11 +228,11 @@ function irALaSeccionDelEnlace(root) {
   if (!id) return;
 
   const bloque = root.querySelector(`.category-block[data-category="${CSS.escape(id)}"]`);
-  if (!bloque) return;
-
   // Se activa tambien el filtro: quien hizo clic en "Sofas" viene buscando
-  // sofas, no el catalogo entero abierto por ahi.
+  // sofas, no el catalogo entero abierto por ahi. /catalogo#nuevos y
+  // /catalogo#destacados abren esos filtros (sirven para Instagram).
   const chip = root.querySelector(`.filter-chip[data-filter="${CSS.escape(id)}"]`);
+  if (!bloque && !chip) return;
   if (chip) chip.click();
 
   // El clic del filtro ya desplaza a la barra; si no hubo chip, se va al bloque.
@@ -238,7 +258,22 @@ function attachCatalogInteractions(root) {
           nombre: (chip.textContent || '').trim().slice(0, 100)
         });
       }
+      // Destacados / Nuevos filtran pieza por pieza dentro de cada coleccion
+      // y esconden las colecciones que se quedan sin ninguna.
+      const marca = { destacados: 'data-destacada', nuevos: 'data-nueva' }[category];
       blocks.forEach(block => {
+        const fichas = block.querySelectorAll('.product-card');
+        if (marca) {
+          let hay = 0;
+          fichas.forEach(c => {
+            const si = c.hasAttribute(marca);
+            c.style.display = si ? '' : 'none';
+            if (si) hay++;
+          });
+          block.style.display = hay ? '' : 'none';
+          return;
+        }
+        fichas.forEach(c => { c.style.display = ''; });
         const match = category === 'todos' || block.dataset.category === category;
         block.style.display = match ? '' : 'none';
       });
@@ -808,14 +843,17 @@ async function actualizarProductosDeLaPagina() {
     .sort((a, b) => (a.order || 0) - (b.order || 0) || String(a.name || '').localeCompare(String(b.name || '')));
 
   // Si lo que se ve no cambio, no se redibuja: evita el parpadeo de las fotos.
-  const firma = (id, nombre, foto, historia, agotado) => [id, nombre, foto, historia, agotado].join('|');
+  const firma = (...datos) => datos.join('|');
   const actual = [...grid.querySelectorAll('.product-card')].map(c => firma(
     c.dataset.productId,
     (c.querySelector('h3')?.textContent || '').trim(),
     c.querySelector('.product-thumb img')?.dataset.full || '',
     (c.querySelector('.product-name-story')?.textContent || '').trim(),
-    c.classList.contains('is-soldout'))).join('\n');
-  const nueva = lista.map(p => firma(p.id, (p.name || '').trim(), fotosDe(p)[0] || '', (p.story || '').trim(), !!p.soldOut)).join('\n');
+    c.classList.contains('is-soldout'),
+    c.hasAttribute('data-nueva'),
+    c.hasAttribute('data-destacada'))).join('\n');
+  const nueva = lista.map(p => firma(p.id, (p.name || '').trim(), fotosDe(p)[0] || '', (p.story || '').trim(),
+    !!p.soldOut, esNueva(p), !!p.featured)).join('\n');
   if (actual === nueva) return;
 
   grid.innerHTML = lista.length
