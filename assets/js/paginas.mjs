@@ -309,7 +309,7 @@ const RENDER_BLOQUE = {
     return `
       ${tituloBloque(b.titulo)}
       ${biParrafos(b.texto, ' class="lede"')}
-      <div class="grid ${grid} pagina-productos">${tarjetas}</div>`;
+      <div class="grid ${grid} pagina-productos" data-categoria="${esc(pagina.categoryId)}">${tarjetas}</div>`;
   },
 
   materiales(pagina, b, ctx) {

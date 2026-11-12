@@ -525,11 +525,71 @@ function setUpLightbox() {
   }, { passive: true });
 }
 
+// ---------- Paginas de aterrizaje (/salas, /exterior...) ----------
+
+// Las fotos ya vienen en el HTML, pero en un celular lento tardan: mientras
+// bajan se ve el spinner en su hueco y no un recuadro vacio.
+function spinnerMientrasCargan(raiz) {
+  raiz.querySelectorAll('.hero-art img, .material-swatch img, .product-thumb img').forEach(img => {
+    if (img.complete) return;   // ya estaba (o venia de la cache)
+    const hueco = img.parentElement;
+    const tam = hueco.classList.contains('hero-art') ? 130 : hueco.classList.contains('material-swatch') ? 56 : 80;
+    const capa = document.createElement('div');
+    capa.className = 'er-carga-foto';
+    capa.innerHTML = spinnerHtml(tam);
+    hueco.appendChild(capa);
+    img.classList.add('er-cargando');
+    const listo = () => { capa.remove(); img.classList.remove('er-cargando'); };
+    img.addEventListener('load', listo, { once: true });
+    img.addEventListener('error', listo, { once: true });
+  });
+}
+
+// El HTML publicado trae las piezas que habia al generarlo, y GitHub lo
+// regenera cada pocas horas. Se vuelven a leer de Firestore para que una
+// pieza recien cargada en el panel salga ya, igual que en /catalogo.
+// Mismo filtro y orden que productosDeCategoria() en assets/js/paginas.mjs.
+async function actualizarProductosDeLaPagina() {
+  const grid = document.querySelector('.pagina-productos[data-categoria]');
+  if (!grid || !window.ErFirebase) return;
+  const id = grid.dataset.categoria;
+  let products;
+  try {
+    products = await window.ErFirebase.fetchProducts();
+  } catch (err) {
+    console.error('No se pudieron actualizar las piezas:', err);
+    return;   // se quedan las del HTML publicado
+  }
+  const lista = products
+    .filter(p => p.categoryId === id || (Array.isArray(p.categoryIds) && p.categoryIds.includes(id)))
+    .sort((a, b) => (a.order || 0) - (b.order || 0) || String(a.name || '').localeCompare(String(b.name || '')));
+
+  // Si lo que se ve no cambio, no se redibuja: evita el parpadeo de las fotos.
+  const firma = (id, nombre, foto, historia, agotado) => [id, nombre, foto, historia, agotado].join('|');
+  const actual = [...grid.querySelectorAll('.product-card')].map(c => firma(
+    c.dataset.productId,
+    (c.querySelector('h3')?.textContent || '').trim(),
+    c.querySelector('.product-thumb img')?.dataset.full || '',
+    (c.querySelector('.product-name-story')?.textContent || '').trim(),
+    c.classList.contains('is-soldout'))).join('\n');
+  const nueva = lista.map(p => firma(p.id, (p.name || '').trim(), fotosDe(p)[0] || '', (p.story || '').trim(), !!p.soldOut)).join('\n');
+  if (actual === nueva) return;
+
+  grid.innerHTML = lista.length
+    ? lista.map(productCardHtml).join('')
+    : `<p class="admin-empty" style="grid-column:1/-1;" data-i18n="catalog.empty_category">${esc(window.ErI18n.t('catalog.empty_category'))}</p>`;
+  grid.classList.toggle('grid-4', lista.length >= 4);
+  grid.classList.toggle('grid-3', lista.length < 4);
+  spinnerMientrasCargan(grid);
+}
+
 async function init() {
-  // Paginas de aterrizaje (/salas, /exterior...): el contenido ya viene en el
-  // HTML publicado. De este archivo solo necesitan el visor de fotos.
+  // Paginas de aterrizaje: el contenido ya viene en el HTML publicado. De este
+  // archivo necesitan el visor, el spinner de las fotos y las piezas al dia.
   if (document.body.dataset.pagina) {
     setUpLightbox();
+    spinnerMientrasCargan(document);
+    actualizarProductosDeLaPagina();
     return;
   }
 

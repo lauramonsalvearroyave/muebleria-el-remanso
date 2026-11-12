@@ -425,6 +425,17 @@ section{ padding: 68px 0; }
 /* En los huecos de foto el spinner ocupa todo el alto disponible */
 .hero-art .er-loader{ position:absolute; inset:0; min-height:0; padding:0; }
 
+/* Paginas de aterrizaje: capa con spinner sobre cada foto mientras baja
+   (assets/js/catalog-render.js, spinnerMientrasCargan). */
+.er-carga-foto{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--sand); border-radius:inherit;
+}
+.er-carga-foto .er-loader{ position:static; min-height:0; padding:0; }
+img.er-cargando{ opacity:0; }
+.hero-art img, .material-swatch img, .product-thumb img{ transition: opacity .3s ease; }
+
 /* Bloque de identificacion legal */
 .legal-id{
   background: var(--sand); border-left:3px solid var(--gold);
