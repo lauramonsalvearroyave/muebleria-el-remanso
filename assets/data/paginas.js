@@ -5,6 +5,7 @@ window.ER_PAGINAS = {
       "id": "columpios",
       "slug": "columpios",
       "tipo": "categoria",
+      "categoria": "camas-nido-y-columpios",
       "menu": {
         "es": "Columpios y camas nido",
         "en": "Swings & nest beds"
@@ -17,6 +18,7 @@ window.ER_PAGINAS = {
       "id": "comedores",
       "slug": "comedores",
       "tipo": "categoria",
+      "categoria": "comedores",
       "menu": {
         "es": "Comedores",
         "en": "Dining sets"
@@ -41,6 +43,7 @@ window.ER_PAGINAS = {
       "id": "exterior",
       "slug": "exterior",
       "tipo": "categoria",
+      "categoria": "exterior",
       "menu": {
         "es": "Exterior",
         "en": "Outdoor"
@@ -65,6 +68,7 @@ window.ER_PAGINAS = {
       "id": "salas",
       "slug": "salas",
       "tipo": "categoria",
+      "categoria": "salas",
       "menu": {
         "es": "Salas",
         "en": "Living room sets"
