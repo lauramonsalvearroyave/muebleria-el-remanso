@@ -323,6 +323,45 @@ section{ padding: 68px 0; }
   .pieza-insignia:first-child .pieza-insignia__texto em{ font-size:.9rem; }
 }
 
+/* Nuestra historia (inicio): foto del taller con sello, la frase del
+   nombre como cita, los tres motivos con icono y dos botones. */
+.historia__grid{ display:grid; grid-template-columns: 1fr 1.05fr; gap:60px; align-items:center; }
+.historia__grid:has(.historia__foto.sin-foto){ grid-template-columns: 1fr; max-width:720px; }
+.historia__foto{ position:relative; }
+.historia__foto.sin-foto{ display:none; }
+.historia__foto .hero-art{ aspect-ratio: 4/5; }
+.historia__sello{
+  position:absolute; right:-22px; bottom:34px; z-index:2;
+  display:flex; align-items:center; gap:12px;
+  background: var(--black-deep); color: var(--cream);
+  border:1px solid rgba(240,181,102,.45); border-radius:18px;
+  padding:12px 18px 12px 12px; box-shadow: 0 16px 40px rgba(20,16,12,.3);
+}
+.historia__sello img{ width:44px; height:44px; border-radius:50%; }
+.historia__sello > span{ display:flex; flex-direction:column; font-size:.74rem; letter-spacing:.04em; color: rgba(251,246,236,.75); line-height:1.3; }
+.historia__sello strong{ font-family: var(--font-display); font-size:1rem; letter-spacing:0; color: var(--gold-soft); }
+.historia__cita{
+  position:relative; margin:18px 0 14px; padding:4px 0 4px 22px;
+  border-left:3px solid var(--gold);
+  font-family: var(--font-display); font-weight:800; font-size:1.45rem; line-height:1.35; color: var(--near-black);
+}
+.historia__pilares{ list-style:none; padding:0; margin:24px 0 28px; display:grid; gap:16px; }
+.historia__pilares li{ display:grid; grid-template-columns:46px 1fr; gap:14px; align-items:start; }
+.historia__icono{
+  width:46px; height:46px; border-radius:50%; background: var(--white);
+  border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center;
+  box-shadow: var(--shadow-card);
+}
+.historia__icono svg{ width:20px; height:20px; fill:none; stroke: var(--gold-bronze); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.historia__pilares h3{ margin:2px 0 2px; font-size:1.02rem; }
+.historia__pilares p{ margin:0; font-size:.92rem; }
+@media (max-width: 860px){
+  .historia__grid{ grid-template-columns: 1fr; gap:36px; }
+  .historia__foto .hero-art{ aspect-ratio: 4/3; }
+  .historia__sello{ right:12px; bottom:-18px; }
+  .historia__cita{ font-size:1.22rem; }
+}
+
 /* Colecciones: se acomodan solas. Tres por fila (dos en tableta y en el
    celular) y, si la ultima fila queda incompleta, se centra: nunca queda
    un hueco a un lado, sin importar cuantas colecciones haya. */
@@ -411,13 +450,9 @@ section{ padding: 68px 0; }
 .section-dark{ background: var(--black-deep); color: var(--cream); }
 /* Inicio: sin cortes bruscos entre secciones. Las franjas beige nacen y
    mueren en el crema de la pagina, y la banda oscura de la linea Remanso se
-   desvanece arriba y abajo (mascara), como si saliera de la penumbra. La
-   invitacion final solo se funde arriba: abajo la recibe el pie oscuro. */
+   desvanece arriba y abajo (mascara), como si saliera de la penumbra. */
 .pagina-inicio .section-alt{
   background: linear-gradient(180deg, var(--cream) 0, var(--sand) 140px, var(--sand) calc(100% - 140px), var(--cream) 100%);
-}
-.pagina-inicio .section-alt.cta-final{
-  background: linear-gradient(180deg, var(--cream) 0, var(--sand) 140px);
 }
 .pagina-inicio .linea-remanso{
   border:0;

@@ -230,6 +230,12 @@ const DICT = {
     p1: { es: 'En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.', en: 'At El Remanso we work alongside weavers who have mastered wicker, yaré, rattan and banana fiber for years. We combine that traditional knowledge with synthetic fiber and nautical rope so you can also enjoy woven furniture on your terrace or garden, without worrying about the weather.' },
     p2: { es: 'Cada pieza sale de nuestro taller revisada a mano, una por una, antes de llegar a tu casa.', en: 'Every piece leaves our workshop hand-checked, one by one, before it reaches your home.' },
 
+    quote:       { es: '"Remanso" es ese lugar donde el agua se detiene y todo se vuelve quieto.', en: '"Remanso" is that place where the water stops and everything grows still.' },
+    lede_short:  { es: 'Así entendemos nuestro trabajo: tomarnos el tiempo necesario para tejer cada mueble a mano, con materiales naturales y mucho cuidado por el detalle.', en: 'That is how we understand our work: taking the time needed to weave every piece by hand, with natural materials and great care for detail.' },
+    seal_top:    { es: 'Tejido a mano en', en: 'Hand-woven in' },
+    cta_process: { es: 'Conoce cómo trabajamos', en: 'See how we work' },
+    cta_wa:      { es: 'Cuéntanos tu idea', en: 'Tell us your idea' },
+
     why_title: { es: 'Por qué la gente vuelve', en: 'Why People Come Back' },
     why1_title: { es: 'Sin prisa', en: 'Unhurried' },
     why1_desc:  { es: 'Cada mueble pasa por manos que llevan años haciendo esto, y que no se apuran.', en: 'Every piece passes through hands that have done this for years, and never rush.' },

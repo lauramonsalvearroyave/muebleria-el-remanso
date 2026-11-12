@@ -202,38 +202,41 @@
        solo si esta encendida en el panel. Si no, no ocupa espacio. -->
   <section id="instagramSection" class="seccion-instagram" data-ubicacion="inicio" hidden></section>
 
-  <!-- NUESTRA HISTORIA (antes "Nosotros") -->
-  <section class="section-alt" id="nosotros">
-    <div class="container grid grid-2" style="align-items:center;">
-      <div>
+  <!-- NUESTRA HISTORIA (con "Por qué la gente vuelve" adentro)
+       Foto del taller con sello, la frase del nombre como cita, los tres
+       motivos con icono y dos caminos a la accion. La foto se administra en
+       el panel (Ajustes); si no hay, se oculta y el texto ocupa el ancho. -->
+  <section class="section-alt historia-inicio" id="nosotros">
+    <div class="container historia__grid">
+      <div class="historia__foto">
+        <div class="hero-art" id="aboutImageSlot"></div>
+        <div class="historia__sello">
+          <img src="assets/img/logo-mark.png" alt="" width="44" height="44">
+          <span><span data-i18n="about.seal_top">Tejido a mano en</span><strong>Las Palmas, Envigado</strong></span>
+        </div>
+      </div>
+      <div class="historia__texto">
         <span class="eyebrow" data-i18n="about.eyebrow">Nuestra historia</span>
         <h2 data-i18n="about.title">El oficio de tejer con calma</h2>
-        <p class="lede" data-i18n="about.lede">"Remanso" es ese lugar donde el agua se detiene y todo se vuelve quieto. Así entendemos nuestro trabajo: tomarnos el tiempo necesario para tejer cada mueble a mano.</p>
-        <p data-i18n="about.p1">En El Remanso trabajamos junto a tejedores que dominan el mimbre, el yaré, el rattán y la calceta de plátano desde hace años. Combinamos ese conocimiento tradicional con fibra sintética y piola náutica para que también puedas disfrutar de muebles tejidos en tu terraza o jardín, sin preocuparte por el clima.</p>
-        <p data-i18n="about.p2">Cada pieza sale de nuestro taller revisada a mano, una por una, antes de llegar a tu casa.</p>
-      </div>
-      <!-- Foto del taller: se administra en el panel (Ajustes). Si no hay
-           foto cargada, este hueco se oculta solo. -->
-      <div class="hero-art" style="aspect-ratio:1;" id="aboutImageSlot"></div>
-    </div>
-  </section>
-
-  <!-- POR QUÉ ELEGIRNOS -->
-  <section>
-    <div class="container text-center">
-      <h2 data-i18n="about.why_title">Por qué la gente vuelve</h2>
-      <div class="grid grid-3" style="margin-top:30px;">
-        <div class="card">
-          <h3 data-i18n="about.why1_title">Sin prisa</h3>
-          <p data-i18n="about.why1_desc">Cada mueble pasa por manos que llevan años haciendo esto, y que no se apuran.</p>
-        </div>
-        <div class="card">
-          <h3 data-i18n="about.why2_title">Con nombre propio</h3>
-          <p data-i18n="about.why2_desc">Le ponemos nombre a cada pieza antes de que tenga dueño.</p>
-        </div>
-        <div class="card">
-          <h3 data-i18n="about.why3_title">De la mano</h3>
-          <p data-i18n="about.why3_desc">Desde la primera medida hasta que lo vemos entrar por tu puerta.</p>
+        <blockquote class="historia__cita" data-i18n="about.quote">"Remanso" es ese lugar donde el agua se detiene y todo se vuelve quieto.</blockquote>
+        <p class="lede" data-i18n="about.lede_short">Así entendemos nuestro trabajo: tomarnos el tiempo necesario para tejer cada mueble a mano, con materiales naturales y mucho cuidado por el detalle.</p>
+        <ul class="historia__pilares">
+          <li>
+            <span class="historia__icono"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <div><h3 data-i18n="about.why1_title">Sin prisa</h3><p data-i18n="about.why1_desc">Cada mueble pasa por manos que llevan años haciendo esto, y que no se apuran.</p></div>
+          </li>
+          <li>
+            <span class="historia__icono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="8" cy="8" r="1.5"/></svg></span>
+            <div><h3 data-i18n="about.why2_title">Con nombre propio</h3><p data-i18n="about.why2_desc">Le ponemos nombre a cada pieza antes de que tenga dueño.</p></div>
+          </li>
+          <li>
+            <span class="historia__icono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.6a4.6 4.6 0 0 0-8-3.1 4.6 4.6 0 0 0-8 3.1c0 5 8 10.4 8 10.4s8-5.4 8-10.4Z"/></svg></span>
+            <div><h3 data-i18n="about.why3_title">De la mano</h3><p data-i18n="about.why3_desc">Desde la primera medida hasta que lo vemos entrar por tu puerta.</p></div>
+          </li>
+        </ul>
+        <div class="hero-cta">
+          <a href="/como-trabajamos" class="btn btn-primary" data-i18n="about.cta_process">Conoce cómo trabajamos</a>
+          <a href="https://wa.me/573104599629?text=Hola%20El%20Remanso%2C%20les%20escribo%20desde%20la%20p%C3%A1gina%20web.%20Me%20gustar%C3%ADa%20contarles%20una%20idea%20para%20un%20mueble." target="_blank" rel="noopener" class="btn btn-whatsapp" data-i18n="about.cta_wa">Cuéntanos tu idea</a>
         </div>
       </div>
     </div>
@@ -262,7 +265,7 @@
   </section>
 
   <!-- CTA FINAL -->
-  <section class="section-alt cta-final">
+  <section class="cta-final">
     <div class="container text-center">
       <h2 data-i18n="home.final_title">¿Conversamos sobre tu próximo mueble?</h2>
       <p class="lede center" data-i18n="home.final_lede">Explora el catálogo o escríbenos directamente por WhatsApp.</p>
