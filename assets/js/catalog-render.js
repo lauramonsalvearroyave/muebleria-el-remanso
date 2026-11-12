@@ -643,18 +643,37 @@ function setUpCompartir() {
   window.addEventListener('resize', cerrar);
 }
 
-// Quien abre un enlace compartido (#pieza-<id>) llega a esa ficha, resaltada
-// un momento para que se vea cual era. Devuelve si la encontro.
+// Quien abre un enlace compartido (#pieza-<id>) ve la pieza en grande, como
+// si le hubiera dado clic. Detras queda la pagina en esa ficha, que se
+// resalta al cerrar el visor para que se vea cual era. Devuelve si la encontro.
 function irALaPiezaDelEnlace() {
   const m = /^#pieza-(.+)$/.exec(location.hash);
   if (!m) return false;
   const card = document.getElementById('pieza-' + decodeURIComponent(m[1]));
   if (!card) return false;
+
+  const resaltar = () => {
+    card.classList.remove('pieza-enlazada');
+    void card.offsetWidth;   // reinicia la animacion
+    card.classList.add('pieza-enlazada');
+  };
   const top = card.getBoundingClientRect().top + window.scrollY - 100;
-  window.scrollTo({ top, behavior: 'smooth' });
-  card.classList.remove('pieza-enlazada');
-  void card.offsetWidth;   // reinicia la animacion
-  card.classList.add('pieza-enlazada');
+  const thumb = card.querySelector('.product-thumb.is-zoomable');
+  const visor = document.getElementById('photoLightbox');
+  if (!thumb || !visor) {
+    // Sin foto (o sin visor) no hay nada que ampliar: solo se baja a la ficha.
+    window.scrollTo({ top, behavior: 'smooth' });
+    resaltar();
+    return true;
+  }
+  window.scrollTo({ top });   // sin animacion: el visor la taparia a medias
+  thumb.click();              // abre el visor por el mismo camino que un clic
+  const alCerrar = new MutationObserver(() => {
+    if (!visor.hidden) return;
+    alCerrar.disconnect();
+    resaltar();
+  });
+  alCerrar.observe(visor, { attributes: true, attributeFilter: ['hidden'] });
   return true;
 }
 
