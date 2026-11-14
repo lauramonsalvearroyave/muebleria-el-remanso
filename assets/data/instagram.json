@@ -1,8 +1,15 @@
 {
   "ok": true,
   "motivo": "",
-  "actualizado": "2026-11-13T15:45:14.754Z",
+  "actualizado": "2026-11-14T14:59:46.420Z",
   "posts": [
+    {
+      "id": "18132422062870804",
+      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794668385/ddvmgktmwvwlr6wwlppv.jpg",
+      "fuente": "original",
+      "link": "https://www.instagram.com/p/DfswuMikQjh/",
+      "alt": "Guárdala para cuando vayas a elegir tu próximo mueble."
+    },
     {
       "id": "17942900994385333",
       "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794584714/oyzi5raozdyhvoamyduk.jpg",
@@ -37,13 +44,6 @@
       "fuente": "original",
       "link": "https://www.instagram.com/p/DfibAJRxsP7/",
       "alt": "Tu próximo rincón está a un clic: muebleriaelremanso.com 🤍 O escríbenos al WhatsApp +57 310 459 9629. Encuentras el enlace…"
-    },
-    {
-      "id": "18108792983642494",
-      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794333561/zjtneph4nztqvh3njj4v.jpg",
-      "fuente": "original",
-      "link": "https://www.instagram.com/p/Dfia4YDR4_l/",
-      "alt": "Comedores, camas nido y lámparas tejidas a mano. Explóralos en muebleriaelremanso.com"
     }
   ]
 }
