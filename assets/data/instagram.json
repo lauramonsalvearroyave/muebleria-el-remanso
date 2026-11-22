@@ -1,8 +1,15 @@
 {
   "ok": true,
   "motivo": "",
-  "actualizado": "2026-11-20T10:28:43.614Z",
+  "actualizado": "2026-11-22T07:33:52.681Z",
   "posts": [
+    {
+      "id": "18144112054624481",
+      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795332832/pb0kpuc2z7zmqivkproc.jpg",
+      "fuente": "original",
+      "link": "https://www.instagram.com/p/DfsyA1TxvL4/",
+      "alt": "Sala Tregua: una pausa amable entre el ruido y tu casa. 🌿"
+    },
     {
       "id": "17995760787113543",
       "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795170523/zc1pmqyg271vdlzh9j06.jpg",
@@ -37,13 +44,6 @@
       "fuente": "original",
       "link": "https://www.instagram.com/p/DfswuMikQjh/",
       "alt": "Guárdala para cuando vayas a elegir tu próximo mueble."
-    },
-    {
-      "id": "17942900994385333",
-      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1794584714/oyzi5raozdyhvoamyduk.jpg",
-      "fuente": "original",
-      "link": "https://www.instagram.com/p/DfYRISvxREN/",
-      "alt": "Sala Nativa: una pieza inspirada en lo natural y en la belleza de lo hecho a mano."
     }
   ]
 }
