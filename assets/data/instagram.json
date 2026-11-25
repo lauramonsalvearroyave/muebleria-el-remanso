@@ -1,14 +1,14 @@
 {
   "ok": true,
   "motivo": "",
-  "actualizado": "2026-11-24T05:37:31.125Z",
+  "actualizado": "2026-11-25T00:54:49.050Z",
   "posts": [
     {
-      "id": "18139587289635875",
-      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795498649/pxyjtgydcg2cwa9pbozf.jpg",
+      "id": "17985372218935983",
+      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795568088/iyu8i2ereiozxmpdvvfz.jpg",
       "fuente": "original",
-      "link": "https://www.instagram.com/reel/DgGhRHhsVZE/",
-      "alt": "Así llegan a casa. 🚚 Algunas de nuestras entregas recientes: una sala completa rumbo a Cartagena, y una Mesa Manantial y…"
+      "link": "https://www.instagram.com/p/Dful0fxRuM0/",
+      "alt": "Nueva en El Remanso: la Cama Nido Capullo. 🤍 Un refugio tejido a mano para guardarte del mundo, junto a la piscina o en tu…"
     },
     {
       "id": "17924157492452306",
@@ -25,13 +25,6 @@
       "alt": "Sala Tregua: una pausa amable entre el ruido y tu casa. 🌿"
     },
     {
-      "id": "18155234437534079",
-      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795498650/qcuzyywavrcw69byvyuk.jpg",
-      "fuente": "original",
-      "link": "https://www.instagram.com/reel/Df-y4R8s2Bs/",
-      "alt": "De nuestro taller a su nuevo hogar. 🪑 Así nació la Silla Trama: madera, fibra tejida hebra por hebra y cojines hechos a la…"
-    },
-    {
       "id": "17995760787113543",
       "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795170523/zc1pmqyg271vdlzh9j06.jpg",
       "fuente": "original",
@@ -44,6 +37,13 @@
       "fuente": "original",
       "link": "https://www.instagram.com/p/Df5owMykdAO/",
       "alt": "Silla Trama: a la altura de las buenas charlas."
+    },
+    {
+      "id": "17956517232338031",
+      "image": "https://res.cloudinary.com/pu28ccmt/image/upload/v1795568088/aylpwao3tgausrucvf3w.jpg",
+      "fuente": "original",
+      "link": "https://www.instagram.com/p/Dfsvnr6xsyr/",
+      "alt": "¿Ya conoces nuestra web? 🌿 Entra a muebleriaelremanso.com y usa los filtros para encontrar lo que buscas:"
     }
   ]
 }
